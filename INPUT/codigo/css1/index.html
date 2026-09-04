@@ -11,7 +11,8 @@
       padding: 20px;
     }
 body.dark-mode {
-  background-color: #ffff;
+  background-color: #333;
+  color:#f3f2f2;
 }
     /* ==========================================
        ESTADO 2 — Grid Básico (SIN RESOLVER a propósito)
@@ -51,25 +52,41 @@ body.dark-mode {
        @media (min-width: 700px) {
       .grid-item {
         border-radius: 50px;
-        background-color: red; 
+        background-color: rgb(255, 146, 240); 
         }
        }
      
-      background-color: #030C38;
+      background-color: #e2e2e2;
       padding: 15px;
       border-radius: 8px;
     }
 
     .grid-item {
-      background-color: #9C6056;
+      background-color: #aa4bc2;
       color: white;
       padding: 30px;
       text-align: center;
       font-size: 1.5rem;
       border-radius: 6px;
     }
-    .grid-item {
-      background-color: #9C6056;
+
+    @media (min-width: 600px){
+.grid-item-2 {
+    display:none;
+}
+
+    }
+    .grid-item-2{
+      background-color: #8724a0;
+      color: white;
+      padding: 30px;
+      text-align: center;
+      font-size: 1.5rem;
+      border-radius: 6px;
+    }
+
+    .grid-item-3{
+      background-color: #71098b;
       color: white;
       padding: 30px;
       text-align: center;
@@ -106,9 +123,15 @@ body.dark-mode {
   <button id="boton2">Modo Oscuro</button>
 
    <div id="caja2" class="grid-container">
-    <div class="grid-item">A</div>
-    <div class="grid-item">B</div>
-    <div class="grid-item">C</div>
+    <div class="grid-item-2">A</div>
+    <div class="grid-item-2">B</div>
+    <div class="grid-item-2">C</div>
+  </div>
+
+  <div id="caja3" class="grid-container">
+    <div class="grid-item-3">D</div>
+    <div class="grid-item-3">E</div>
+    <div class="grid-item-3">F</div>
   </div>
 
   <script>
@@ -131,6 +154,30 @@ btnMsgg.addEventListener("click", function () {
 
 });
 
+// Guardamos todos los elementos .grid-item-3 en una lista (NodeList)
+let gridItems3 = document.querySelectorAll(".grid-item-3");
+
+// matchMedia crea un objeto que "escucha" una condición de ancho de pantalla,
+// igual que un @media de CSS pero consultable desde JS.
+// .matches será true si la ventana mide 600px o más en este momento.
+let mediaQuery600 = window.matchMedia("(min-width: 600px)");
+
+// Esta función decide si los items se ocultan o se muestran.
+// Recibe "event", que es el objeto mediaQuery600 (o el evento "change").
+function toggleGridItems3(event) {
+  gridItems3.forEach(function (item) {
+    // Si event.matches es true (pantalla ancha) -> display:none (se ocultan)
+    // Si es false (pantalla angosta) -> display:"" (vuelve al valor del CSS)
+    item.style.display = event.matches ? "none" : "";
+  });
+}
+
+// La ejecutamos una vez al cargar la página, para que arranque en el estado correcto
+toggleGridItems3(mediaQuery600);
+
+// Y quedamos escuchando el evento "change": se dispara cada vez que la ventana
+// cruza el umbral de 600px (al agrandar o achicar), no en cada pixel de resize
+mediaQuery600.addEventListener("change", toggleGridItems3);
 
   </script>
 </body>
