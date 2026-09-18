@@ -1,0 +1,480 @@
+/*-----Estilos Generales----------------------------*/
+
+/*Estas variables tienen los colores principales de la galería. Asi pude reutilizarlos en diferentes partes del diseño para mantener una apariencia .*/
+
+:root {
+  --fondo: #f5f3f8;
+  --tarjeta: #ffffff;
+  --texto: #211d29;
+  --texto-secundario: #716b78;
+  --morado: #6f4bb2;
+  --morado-claro: #eee8f8;
+  --borde: #e4dfe9;
+  --sombra: rgba(40, 25, 55, 0.12);
+}
+
+body {
+  margin: 0;
+  padding: 70px 40px 50px;
+  font-family: Arial, Helvetica, sans-serif;
+  background-image: radial-gradient(
+    rgba(111, 75, 178, 0.12) 1px,
+    transparent 1px
+  );
+  background-size: 24px 24px;
+  color: var(--texto);
+  transition:
+    background 0.8s ease,
+    color 0.4s ease;
+}
+
+* {box-sizing: border-box;}
+
+
+/*-----Boton DarkMode----------------------------*/
+
+.btn-dark {
+  position: fixed;
+  top: 20px;
+  right: 25px;
+  z-index: 1000;
+  padding: 12px 18px;
+  border: none;
+  border-radius: 25px;
+  background: #211d29;
+  color: white;
+  font-size: 14px;
+  font-weight: bold;
+  cursor: pointer;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+  transition:
+    transform 0.3s ease,
+    background 0.3s ease;
+}
+
+.btn-dark:hover {
+  transform: scale(1.05);
+}
+
+
+body.dark-mode {
+  --fondo: #15121a;
+  --tarjeta: #211d29;
+  --texto: #f7f3fa;
+  --texto-secundario: #b9b1c1;
+  --morado: #b08be8;
+  --morado-claro: #332b3d;
+  --borde: #3b3345;
+  --sombra: rgba(0, 0, 0, 0.35);
+
+
+  background-color: #15121a;
+  background-image: radial-gradient(
+    rgba(176, 139, 232, 0.12) 1px,
+    transparent 1px);
+  background-size: 24px 24px;
+}
+
+body.dark-mode .btn-dark {
+  background: white;
+  color: #211d29;
+}
+
+
+/*-----Encabezado de la galeria----------------------------*/
+
+.encabezado {
+  max-width: 1000px;
+  margin: 0 auto 45px;
+  text-align: center;
+}
+
+.etiqueta {
+  margin: 0 0 10px;
+  color: var(--morado);
+  font-size: 13px;
+  font-weight: bold;
+  font-style: italic;
+  letter-spacing: 3px;
+}
+
+.encabezado h1 {
+  margin: 0;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(40px, 7vw, 76px);
+  line-height: 0.95;
+  letter-spacing: -3px;
+}
+
+.intro {
+  max-width: 600px;
+  margin: 20px auto 0;
+  color: var(--texto-secundario);
+  font-size: 16px;
+  line-height: 1.6;
+}
+
+
+/*-----Boton volver a todos los albumes----------------------*/
+
+.btn-volver {
+  display: none;
+  margin: 0 auto 30px;
+  padding: 12px 20px;
+  border: 1px solid var(--borde);
+  border-radius: 25px;
+  background: var(--tarjeta);
+  color: var(--texto);
+  font-size: 14px;
+  font-weight: bold;
+  cursor: pointer;
+  box-shadow: 0 6px 20px var(--sombra);
+  transition:
+    transform 0.3s ease,
+    background 0.3s ease,
+    box-shadow 0.3s ease;
+}
+
+.btn-volver:hover {
+  transform: translateY(-3px);
+  background: var(--morado-claro);
+  box-shadow:
+    0 8px 25px var(--sombra),
+    0 5px 25px rgba(111, 75, 178, 0.25);
+}
+
+.btn-volver.mostrar {
+  display: block;
+}
+
+
+/*-----Galeria de los albunes----------------------------*/
+
+.galeria {
+  max-width: 1250px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 25px;
+}
+
+
+/*-----Tarjeta en general---------------------------*/
+
+.card {
+  overflow: hidden;
+  background: var(--tarjeta);
+  border: 1px solid var(--borde);
+  border-radius: 22px;
+  box-shadow:
+    0 10px 65px var(--sombra),
+    0 10px 55px rgba(111, 75, 178, 0.30);
+
+  transition:
+    transform 0.35s ease,
+    box-shadow 0.35s ease,
+    background 0.4s ease;
+
+  animation: aparecer 0.6s ease both;
+}
+
+.card:hover {
+  transform: translateY(-8px) scale(1.03);
+  box-shadow:
+    0 18px 40px var(--sombra),
+    0 10px 45px rgba(111, 75, 178, 0.32);
+}
+
+.card.seleccionada {
+  transform: scale(1.08);
+  position: relative;
+  z-index: 10;
+  box-shadow:
+    0 25px 60px var(--sombra),
+    0 12px 55px rgba(111, 75, 178, 0.38);
+}
+
+
+/*-----Brillo de las tarjetas en modo oscuro---------------*/
+
+body.dark-mode .card {
+  box-shadow:
+    0 10px 30px rgba(0, 0, 0, 0.45),
+    0 8px 45px rgba(176, 139, 232, 0.35);
+}
+
+body.dark-mode .card:hover {
+  box-shadow:
+    0 18px 40px rgba(0, 0, 0, 0.50),
+    0 10px 55px rgba(194, 156, 255, 0.55);
+}
+
+body.dark-mode .card.seleccionada {
+  box-shadow:
+    0 25px 60px rgba(0, 0, 0, 0.55),
+    0 12px 65px rgba(194, 156, 255, 0.65);
+}
+
+
+.galeria.mostrar-una {
+  display: flex;
+
+  justify-content: center;
+
+  align-items: flex-start;
+}
+
+.galeria.mostrar-una .card:not(.seleccionada) {
+  display: none;
+}
+
+.galeria.mostrar-una .card.seleccionada {
+  width: min(600px, 90vw);
+
+  transform: scale(1);
+}
+
+
+/*-----Portada del album----------------------------*/
+
+.card-imagen {
+  width: 100%;
+  height: 330px;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.5s ease;
+}
+
+.card:hover .card-imagen {
+  transform: scale(1.04);
+}
+
+
+/*-----Contenido del album----------------------------*/
+
+.card-body {
+  padding: 22px;
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 15px;
+  margin-bottom: 10px;
+}
+
+.card-nombre {
+  margin: 0;
+  font-size: 21px;
+  line-height: 1.2;
+}
+
+.card-año {
+  flex-shrink: 0;
+  padding: 6px 10px;
+  border-radius: 20px;
+  background: var(--morado-claro);
+  color: var(--morado);
+  font-size: 12px;
+  font-weight: bold;
+}
+
+.card-subtitle {
+  margin: 0 0 15px;
+  color: var(--texto-secundario);
+  font-size: 13px;
+}
+
+
+/*-----Estadístcas del album----------------------------*/
+
+.card-stats {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+  margin-bottom: 18px;
+}
+
+.stat {
+  padding: 10px;
+  border-radius: 12px;
+  background: var(--morado-claro);
+}
+
+.stat-label {
+  display: block;
+  margin-bottom: 4px;
+  color: var(--texto-secundario);
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.stat-value {
+  font-size: 13px;
+  font-weight: bold;
+}
+
+
+/*-----Descripción del album----------------------------*/
+
+.card-descripcion {
+  margin: 0 0 18px;
+  color: var(--texto-secundario);
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+
+/*-----Canciones Destacadas----------------------------*/
+
+.card-canciones-titulo {
+  margin: 0 0 10px;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.card-canciones {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.card-canciones li {
+  padding: 6px 9px;
+  border: 1px solid var(--borde);
+  border-radius: 20px;
+  color: var(--texto-secundario);
+  font-size: 11px;
+  transition:
+    background 0.3s ease,
+    color 0.3s ease;
+}
+
+.card-canciones li:hover {
+  background: #6f4bb2;
+  color: white;
+}
+
+
+/*-----Animacion de aparición----------------------------*/
+
+@keyframes aparecer {
+
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+}
+
+
+/*-----Responsive----------------------------*/
+
+@media (max-width: 900px) {
+  body {
+    padding: 70px 25px 40px;
+  }
+  .galeria {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+}
+
+
+@media (max-width: 600px) {
+  body {
+    padding: 75px 15px 30px;
+  }
+  .galeria {
+    grid-template-columns: 1fr;
+  }
+
+  .card-imagen {
+    height: 300px;
+  }
+  .encabezado h1 {
+    letter-spacing: -2px;
+  }
+  .btn-dark {
+    top: 15px;
+
+    right: 15px;
+  }
+
+}
+
+
+@media (min-width: 1000px) {
+  .galeria {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  .card-imagen {
+    height: 320px;
+  }
+  .card-nombre {
+    font-size: 1.7rem;
+  }
+  .card-descripcion {
+    font-size: 0.95rem;
+  }
+  .stat-value {
+    font-size: 1.1rem;
+  }
+
+}
+
+/*-----Página de gestión----------------------------*/
+
+.pagina-gestion { display: flex; padding: 0; min-height: 100vh; }
+
+.sidebar {
+  width: 220px;
+  flex-shrink: 0;
+  padding: 30px 16px;
+  background: var(--tarjeta);
+  border-right: 1px solid var(--borde);
+}
+
+.sidebar h2 { margin: 0 0 20px; color: var(--morado); }
+.sidebar nav { display: flex; flex-direction: column; gap: 8px; }
+
+.sidebar-item {
+  padding: 10px 12px;
+  border: none;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--texto);
+  text-align: left;
+  cursor: pointer;
+}
+
+.sidebar-item:hover, .sidebar-item.activo { background: var(--morado-claro); color: var(--morado); }
+.sidebar-volver { display: block; margin-top: 30px; color: var(--texto-secundario); text-decoration: none; }
+
+.contenido { flex: 1; padding: 40px; overflow-x: auto; }
+
+.pagina-gestion table { width: 100%; border-collapse: collapse; background: var(--tarjeta); }
+.pagina-gestion th, .pagina-gestion td { padding: 10px; border-bottom: 1px solid var(--borde); text-align: left; }
+
+.formulario { display: flex; flex-direction: column; gap: 12px; max-width: 480px; margin-top: 16px; }
+.formulario label { display: flex; flex-direction: column; gap: 4px; font-size: 14px; }
+.formulario input[type="text"], .formulario input[type="number"], .contenido select { padding: 8px; border: 1px solid var(--borde); border-radius: 6px; }
+.formulario button { padding: 10px; border: none; border-radius: 8px; background: var(--morado); color: #fff; cursor: pointer; }
+
+@media (max-width: 700px) {
+  .pagina-gestion { flex-direction: column; }
+  .sidebar { width: 100%; }
+}
+
+.btn-eliminar { margin-left: 12px; padding: 8px 16px; border: none; border-radius: 8px; background: #c0392b; color: #fff; cursor: pointer; }
