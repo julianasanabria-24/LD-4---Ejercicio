@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gestión de álbumes BTS</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body class="pagina-gestion">
+
+  <aside class="sidebar">
+    <h2>Gestión</h2>
+    <nav>
+      <button class="sidebar-item activo" data-vista="todos">Mostrar todos</button>
+      <button class="sidebar-item" data-vista="crear">Crear álbum</button>
+      <button class="sidebar-item" data-vista="leer">Consultar álbum</button>
+      <button class="sidebar-item" data-vista="actualizar">Actualizar álbum</button>
+      <button class="sidebar-item" data-vista="eliminar">Eliminar álbum</button>
+    </nav>
+    <a class="sidebar-volver" href="index.html">← Volver a la galería</a>
+  </aside>
+
+  <main class="contenido">
+
+    <section class="vista" id="vista-todos">
+      <h1>Todos los álbumes</h1>
+      <table id="tabla-albums">
+        <thead>
+          <tr><th>Nombre</th><th>Año</th><th>Tipo</th><th>Era</th><th>Canciones</th><th>Favorito</th></tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </section>
+
+    <section class="vista" id="vista-crear" hidden>
+      <h1>Crear álbum</h1>
+      <form id="form-crear" class="formulario"></form>
+    </section>
+
+    <section class="vista" id="vista-leer" hidden>
+      <h1>Consultar álbum</h1>
+      <select id="select-leer"></select>
+      <div id="detalle"></div>
+    </section>
+
+    <section class="vista" id="vista-actualizar" hidden>
+      <h1>Actualizar álbum</h1>
+      <select id="select-actualizar"></select>
+      <form id="form-actualizar" class="formulario"></form>
+    </section>
+
+    <section class="vista" id="vista-eliminar" hidden>
+      <h1>Eliminar álbum</h1>
+      <select id="select-eliminar"></select>
+      <button id="btn-eliminar" class="btn-eliminar">Eliminar</button>
+    </section>
+
+  </main>
+
+  <script src="data.js"></script>
+  <script src="gestion.js"></script>
+
+</body>
+</html>
