@@ -9,6 +9,23 @@
 
 <body class="pagina-gestion">
 
+  <section class="login" id="login">
+    <form id="form-login" class="formulario login-tarjeta">
+      <h1>Iniciar sesión</h1>
+      <label>Usuario
+        <input type="text" name="usuario" autocomplete="username" required>
+      </label>
+      <label>Contraseña
+        <input type="password" name="password" autocomplete="current-password" required>
+      </label>
+      <p class="login-error" id="login-error" hidden>Usuario o contraseña incorrectos.</p>
+      <button type="submit">Entrar</button>
+      <a class="sidebar-volver" href="index.html">← Volver a la galería</a>
+    </form>
+  </section>
+
+  <div class="panel-admin" id="panel-admin" hidden>
+
   <aside class="sidebar">
     <h2>Gestión</h2>
     <nav>
@@ -58,6 +75,10 @@
 
   </main>
 
+  </div>
+
+  <script src="credenciales.js"></script>
+  <script src="login.js"></script>
   <script src="data.js"></script>
   <script src="gestion.js"></script>
 

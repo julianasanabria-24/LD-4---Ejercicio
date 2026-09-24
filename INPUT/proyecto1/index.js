@@ -112,36 +112,44 @@ function crearCarta(album) {
 
 const galeria = document.getElementById("galeria");
 
-/* Recorremos todos los álbumes del array.
-  Por cada álbum:
-  1. Llamamos a crearCarta().
-  2. La función construye una tarjeta.
-  3. Agregamos la tarjeta a la galería. */
+/* Esta función recibe un array de objetos y los pinta en la galería.
+  1. Vacía la galería, para poder llamarla varias veces sin duplicar tarjetas.
+  2. Por cada objeto llama a crearCarta(), que construye la tarjeta.
+  3. Agrega la tarjeta a la galería. */
 
-albums.forEach(function(album) {
+function renderizarHeroes(listaObjetos) {
 
-  galeria.appendChild(
-    crearCarta(album)
-  );
+  galeria.innerHTML = "";
 
-});
+  listaObjetos.forEach(function(objeto) {
+
+    galeria.appendChild(
+      crearCarta(objeto)
+    );
+
+  });
+
+}
+
+renderizarHeroes(obtenerAlbums());
 
 
 /*-----Seleccionar una tarjeta----------------------------*/
 
-/* Cuando hacemos clic sobre una tarjeta, mostramos únicamente esa tarjeta.*/
+/* Cuando hacemos clic sobre una tarjeta, mostramos únicamente esa tarjeta.
+  El evento se escucha en la galería (delegación de eventos) y no en cada tarjeta:
+  así también funciona con las tarjetas que se vuelven a pintar al filtrar. */
 
-const tarjetas = document.querySelectorAll(".card");
+const btnVolver = document.getElementById("btn-volver");
 
-tarjetas.forEach(function(tarjeta) {
+galeria.addEventListener("click", function(e) {
 
-  tarjeta.addEventListener("click", function() {
+  const tarjeta = e.target.closest(".card");
+  if (!tarjeta) return;
 
-    tarjeta.classList.add("seleccionada");
-    galeria.classList.add("mostrar-una");
-    btnVolver.classList.add("mostrar");
-
-  });
+  tarjeta.classList.add("seleccionada");
+  galeria.classList.add("mostrar-una");
+  btnVolver.classList.add("mostrar");
 
 });
 
@@ -150,13 +158,11 @@ tarjetas.forEach(function(tarjeta) {
 
 /* Al hacer clic, quitamos la selección y mostramos nuevamente todas las tarjetas. */
 
-const btnVolver = document.getElementById("btn-volver");
-
-btnVolver.addEventListener("click", function() {
+function quitarSeleccion() {
 
   galeria.classList.remove("mostrar-una");
 
-  tarjetas.forEach(function(tarjeta) {
+  galeria.querySelectorAll(".card").forEach(function(tarjeta) {
 
     tarjeta.classList.remove("seleccionada");
 
@@ -164,7 +170,74 @@ btnVolver.addEventListener("click", function() {
 
   btnVolver.classList.remove("mostrar");
 
-});
+}
+
+btnVolver.addEventListener("click", quitarSeleccion);
+
+
+/*-----Filtros por año y estilo----------------------------*/
+
+/* Los botones se crean a partir de los valores que existen en los datos:
+  si se agrega un álbum con un año o estilo nuevo, su botón aparece solo.
+  Los dos filtros se combinan: por ejemplo, 2018 + EDM. */
+
+const filtros = { año: "todos", estilo: "todos" };
+const filtroVacio = document.getElementById("filtro-vacio");
+
+function valoresUnicos(clave) {
+
+  const valores = obtenerAlbums()
+    .map(function(album) { return album[clave]; })
+    .filter(function(valor) { return valor !== undefined && valor !== ""; });
+
+  return [...new Set(valores)];
+}
+
+function crearBotonesFiltro(clave, valores) {
+
+  const contenedor = document.getElementById(`filtro-${clave}`);
+
+  ["todos", ...valores].forEach(function(valor) {
+
+    const boton = document.createElement("button");
+    boton.classList.add("filtro-boton");
+    boton.textContent = valor === "todos" ? "Todos" : valor;
+    boton.dataset.valor = valor;
+
+    if (valor === "todos") boton.classList.add("activo");
+
+    boton.addEventListener("click", function() {
+
+      filtros[clave] = valor;
+
+      contenedor.querySelectorAll(".filtro-boton").forEach(function(b) {
+        b.classList.toggle("activo", b === boton);
+      });
+
+      aplicarFiltros();
+
+    });
+
+    contenedor.appendChild(boton);
+  });
+}
+
+function aplicarFiltros() {
+
+  const filtrados = obtenerAlbums().filter(function(album) {
+    const coincideAño = filtros.año === "todos" || String(album.año) === filtros.año;
+    const coincideEstilo = filtros.estilo === "todos" || album.estilo === filtros.estilo;
+    return coincideAño && coincideEstilo;
+  });
+
+  quitarSeleccion();
+  renderizarHeroes(filtrados);
+  filtroVacio.hidden = filtrados.length > 0;
+}
+
+/* Años de más reciente a más antiguo; estilos en orden alfabético. */
+crearBotonesFiltro("año", valoresUnicos("año").sort(function(a, b) { return b - a; }).map(String));
+crearBotonesFiltro("estilo", valoresUnicos("estilo").sort());
 
 
 /*-----Boton Modo Oscuro----------------------------*/

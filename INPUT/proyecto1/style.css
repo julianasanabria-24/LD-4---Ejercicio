@@ -148,6 +148,70 @@ body.dark-mode .btn-dark {
 }
 
 
+/*-----Filtros por año y estilo----------------------------*/
+
+.filtros {
+  max-width: 1250px;
+  margin: 0 auto 30px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.filtro-grupo {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.filtro-titulo {
+  min-width: 55px;
+  color: var(--morado);
+  font-size: 13px;
+  font-weight: bold;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+
+.filtro-botones {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.filtro-boton {
+  padding: 8px 16px;
+  border: 1px solid var(--borde);
+  border-radius: 25px;
+  background: var(--tarjeta);
+  color: var(--texto);
+  font-size: 14px;
+  cursor: pointer;
+  transition:
+    background 0.3s ease,
+    color 0.3s ease,
+    transform 0.3s ease;
+}
+
+.filtro-boton:hover {
+  transform: translateY(-2px);
+  background: var(--morado-claro);
+}
+
+.filtro-boton.activo {
+  border-color: var(--morado);
+  background: var(--morado);
+  color: var(--tarjeta);
+}
+
+.filtro-vacio {
+  margin: 0;
+  color: var(--texto-secundario);
+  font-size: 14px;
+}
+
+
 /*-----Galeria de los albunes----------------------------*/
 
 .galeria {
@@ -436,7 +500,16 @@ body.dark-mode .card.seleccionada {
 
 /*-----Página de gestión----------------------------*/
 
-.pagina-gestion { display: flex; padding: 0; min-height: 100vh; }
+.pagina-gestion { padding: 0; min-height: 100vh; }
+
+.panel-admin { display: flex; min-height: 100vh; }
+.panel-admin[hidden], .login[hidden] { display: none; }
+
+.login { display: flex; align-items: center; justify-content: center; min-height: 100vh; padding: 20px; }
+.login-tarjeta { width: 100%; max-width: 360px; padding: 30px; background: var(--tarjeta); border: 1px solid var(--borde); border-radius: 12px; box-shadow: 0 10px 30px var(--sombra); }
+.login-tarjeta h1 { margin: 0 0 8px; color: var(--morado); font-size: 24px; }
+.login-error { margin: 0; color: #c0392b; font-size: 14px; }
+.login-tarjeta .sidebar-volver { margin-top: 8px; text-align: center; font-size: 14px; }
 
 .sidebar {
   width: 220px;
@@ -469,11 +542,11 @@ body.dark-mode .card.seleccionada {
 
 .formulario { display: flex; flex-direction: column; gap: 12px; max-width: 480px; margin-top: 16px; }
 .formulario label { display: flex; flex-direction: column; gap: 4px; font-size: 14px; }
-.formulario input[type="text"], .formulario input[type="number"], .contenido select { padding: 8px; border: 1px solid var(--borde); border-radius: 6px; }
+.formulario input[type="text"], .formulario input[type="number"], .formulario input[type="password"], .contenido select { padding: 8px; border: 1px solid var(--borde); border-radius: 6px; }
 .formulario button { padding: 10px; border: none; border-radius: 8px; background: var(--morado); color: #fff; cursor: pointer; }
 
 @media (max-width: 700px) {
-  .pagina-gestion { flex-direction: column; }
+  .panel-admin { flex-direction: column; }
   .sidebar { width: 100%; }
 }
 
