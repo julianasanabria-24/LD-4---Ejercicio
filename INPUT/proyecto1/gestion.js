@@ -91,6 +91,33 @@ así que no se pueden usar desde la consola para saltarse el login. */
   }
 
 
+  /*-----Usuarios registrados----------------------------*/
+
+  /* Lee la misma clave que game.js escribe en localStorage. Es de solo lectura acá,
+  así que no hace falta guardar nada, solo pintar lo que ya haya. */
+
+  const cuerpoUsuarios = document.querySelector("#tabla-usuarios tbody");
+  const usuariosVacio = document.getElementById("usuarios-vacio");
+
+  function mostrarUsuarios() {
+    const guardado = localStorage.getItem("usuariosGame");
+    const usuarios = guardado ? JSON.parse(guardado) : [];
+
+    cuerpoUsuarios.innerHTML = "";
+    usuarios.forEach(function(usuario) {
+      const fila = document.createElement("tr");
+      [usuario.nombre, usuario.alias, usuario.email, usuario.password].forEach(function(valor) {
+        const celda = document.createElement("td");
+        celda.textContent = valor;
+        fila.appendChild(celda);
+      });
+      cuerpoUsuarios.appendChild(fila);
+    });
+
+    usuariosVacio.hidden = usuarios.length > 0;
+  }
+
+
   /*-----Selectores----------------------------*/
 
   const selectLeer = document.getElementById("select-leer");
@@ -208,6 +235,7 @@ así que no se pueden usar desde la consola para saltarse el login. */
     llenarSelectores();
     mostrarDetalle();
     cargarParaActualizar();
+    mostrarUsuarios();
   }
 
 

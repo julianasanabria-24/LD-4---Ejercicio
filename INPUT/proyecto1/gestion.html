@@ -34,6 +34,7 @@
       <button class="sidebar-item" data-vista="leer">Consultar álbum</button>
       <button class="sidebar-item" data-vista="actualizar">Actualizar álbum</button>
       <button class="sidebar-item" data-vista="eliminar">Eliminar álbum</button>
+      <button class="sidebar-item" data-vista="usuarios">Usuarios registrados</button>
     </nav>
     <a class="sidebar-volver" href="index.html">← Volver a la galería</a>
   </aside>
@@ -71,6 +72,17 @@
       <h1>Eliminar álbum</h1>
       <select id="select-eliminar"></select>
       <button id="btn-eliminar" class="btn-eliminar">Eliminar</button>
+    </section>
+
+    <section class="vista" id="vista-usuarios" hidden>
+      <h1>Usuarios registrados</h1>
+      <p class="filtro-vacio" id="usuarios-vacio" hidden>Todavía no se registró ningún usuario.</p>
+      <table id="tabla-usuarios">
+        <thead>
+          <tr><th>Nombre</th><th>Alias</th><th>Email</th><th>Contraseña</th></tr>
+        </thead>
+        <tbody></tbody>
+      </table>
     </section>
 
   </main>

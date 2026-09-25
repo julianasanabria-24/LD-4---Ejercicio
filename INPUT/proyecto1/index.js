@@ -235,9 +235,39 @@ function aplicarFiltros() {
   filtroVacio.hidden = filtrados.length > 0;
 }
 
-/* Años de más reciente a más antiguo; estilos en orden alfabético. */
-crearBotonesFiltro("año", valoresUnicos("año").sort(function(a, b) { return b - a; }).map(String));
+/* Estilos en orden alfabético. */
 crearBotonesFiltro("estilo", valoresUnicos("estilo").sort());
+
+
+/*-----Slider vertical de año----------------------------*/
+
+/* El slider se mueve por índices de un array de años únicos (ascendente), no por los años
+mismos: así solo se pueden elegir años que existan de verdad, sin huecos en el rango. */
+
+const añosOrdenados = valoresUnicos("año").sort(function(a, b) { return a - b; });
+
+const sliderAño = document.getElementById("slider-año");
+const sliderAñoValor = document.getElementById("slider-año-valor");
+const btnAñoTodos = document.getElementById("filtro-año-todos");
+
+sliderAño.min = 0;
+sliderAño.max = Math.max(0, añosOrdenados.length - 1);
+sliderAño.step = 1;
+sliderAño.value = sliderAño.max;
+sliderAñoValor.textContent = añosOrdenados[sliderAño.value] || "-";
+
+sliderAño.addEventListener("input", function() {
+  filtros.año = String(añosOrdenados[sliderAño.value]);
+  sliderAñoValor.textContent = filtros.año;
+  btnAñoTodos.classList.remove("activo");
+  aplicarFiltros();
+});
+
+btnAñoTodos.addEventListener("click", function() {
+  filtros.año = "todos";
+  btnAñoTodos.classList.add("activo");
+  aplicarFiltros();
+});
 
 
 /*-----Boton Modo Oscuro----------------------------*/
