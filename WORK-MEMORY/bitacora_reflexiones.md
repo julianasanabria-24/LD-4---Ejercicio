@@ -76,3 +76,21 @@ layout) tiene más sentido para el proyecto.
 - `writing-mode: vertical-lr` + `direction: rtl` es la forma moderna de poner un `<input type="range">` en vertical, sin depender de `-webkit-appearance` distinto por navegador.
 - Como `obtenerAlbums()` ya lee de `localStorage` si hay álbumes editados desde `gestion.html`, el juego de memoria queda sincronizado automáticamente con esos cambios, sin tocar nada extra.
 - El mismo patrón de "si falta el id, se lo asigno al leer" que usé para los álbumes sirve para cualquier dato en `localStorage` que cambia de forma con el tiempo (usuarios, intentos): los registros viejos no se rompen.
+
+
+## 2026-10-15
+
+**Cambios**
+- Empecé `supabase1/`, mi primer proyecto conectado a una base de datos real en Supabase, en vez de `localStorage`.
+- Armé la estructura en 4 scripts que se cargan en orden: la librería de Supabase (CDN) → `supabaseClient.js` (crea el cliente) → `datos.js` (todas las consultas CRUD en un objeto `Datos`) → `gestion.js` (formulario, tabla y eventos).
+- Conecté `supabaseClient.js` a mi proyecto de Supabase con la URL y la anon key, y agregué el alias `db` para los ejercicios.
+- Creé `prueba.html` y `prueba.js`: un botón "Traer productos" y un `div` de resultado, para practicar los Pasos 2–4 de la guía.
+
+**Hallazgos**
+- El orden de los `<script>` importa: si `supabaseClient.js` se carga antes que el CDN, `supabase.createClient` todavía no existe.
+- Separar "hablar con la base de datos" (`datos.js`) de "pintar la página" (`gestion.js`) deja cambiar uno sin tocar el otro.
+- La anon key está pensada para ir en el navegador; lo que protege los datos son las políticas RLS de cada tabla, no esconder la clave. Igual, en el repo público la subí con un placeholder.
+
+**Errores**
+- Pegué la URL con `/rest/v1/` al final; la librería agrega esa ruta sola, así que quedaba duplicada. La URL correcta es solo `https://<proyecto>.supabase.co`.
+- La guía usa `db` y mi archivo creaba `supabaseClient`; se resolvió con `const db = supabaseClient;`.
