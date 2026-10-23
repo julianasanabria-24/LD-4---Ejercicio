@@ -6,6 +6,173 @@
        todavía cuando supabaseClient.js intente usarlo -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
+  <style>
+    /* Variables de color: si quieres cambiar un tono, cámbialo solo aquí */
+    :root {
+      --rosa-fondo: #fff0f5;     /* fondo de la página */
+      --rosa-claro: #ffe4ee;     /* fondo de los campos */
+      --rosa-borde: #f8bbd0;     /* bordes */
+      --rosa-medio: #f06292;     /* botón y detalles */
+      --rosa-fuerte: #d81b60;    /* hover y títulos */
+      --texto: #4a1530;          /* texto principal */
+    }
+
+    body {
+      font-family: system-ui, sans-serif;
+      background: var(--rosa-fondo);
+      color: var(--texto);
+      padding: 24px 16px;
+    }
+
+    /* La "tarjeta" del formulario */
+    #form-producto {
+      max-width: 480px;
+      margin: 24px auto;
+      background: #fff;
+      padding: 28px;
+      border-radius: 16px;
+      border: 1px solid var(--rosa-borde);
+      box-shadow: 0 8px 24px rgba(216, 27, 96, 0.12);
+    }
+
+    #form-producto h2 {
+      margin-top: 0;
+      color: var(--rosa-fuerte);
+      text-align: center;
+    }
+
+    /* Los <br> ya no hacen falta: cada label ocupa su propia fila */
+    #form-producto br { display: none; }
+
+    /* Cada label se vuelve una columna: texto arriba, campo abajo */
+    #form-producto label {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      margin-bottom: 16px;
+      font-weight: 600;
+      font-size: 0.95rem;
+    }
+
+    #form-producto input[type="text"],
+    #form-producto input[type="number"],
+    #form-producto input[type="url"],
+    #form-producto textarea {
+      padding: 10px 12px;
+      border: 1.5px solid var(--rosa-borde);
+      border-radius: 10px;
+      background: var(--rosa-claro);
+      color: var(--texto);
+      font: inherit;
+      font-weight: normal;
+    }
+
+    #form-producto textarea {
+      min-height: 80px;
+      resize: vertical;
+    }
+
+    /* :focus = cuando el usuario está escribiendo en ese campo */
+    #form-producto input:focus,
+    #form-producto textarea:focus {
+      outline: none;
+      border-color: var(--rosa-medio);
+      background: #fff;
+      box-shadow: 0 0 0 3px rgba(240, 98, 146, 0.25);
+    }
+
+    /* El checkbox va en la misma fila que su texto */
+    #form-producto label:has(input[type="checkbox"]) {
+      flex-direction: row;
+      align-items: center;
+    }
+
+    #form-producto input[type="checkbox"] {
+      width: 20px;
+      height: 20px;
+      accent-color: var(--rosa-medio);  /* colorea la casilla marcada */
+    }
+
+    /* Botones (el del formulario y "Traer productos") */
+    button {
+      background: var(--rosa-medio);
+      color: #fff;
+      border: none;
+      padding: 12px 20px;
+      border-radius: 999px;
+      font: inherit;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.1s;
+    }
+
+    #form-producto button { width: 100%; }
+
+    button:hover  { background: var(--rosa-fuerte); }
+    button:active { transform: scale(0.97); }   /* efecto de "presionado" */
+
+    /* Mensaje de "Producto agregado con ID..." */
+    #notificacion {
+      max-width: 480px;
+      margin: 0 auto;
+      text-align: center;
+      color: var(--rosa-fuerte);
+      font-weight: 600;
+    }
+
+    /* Buscador: campo y botón en la misma fila */
+    #form-busqueda {
+      max-width: 480px;
+      margin: 32px auto 16px;
+      display: flex;
+      gap: 8px;
+    }
+
+    #input-busqueda {
+      flex: 1;              /* ocupa todo el espacio que deja el botón */
+      padding: 12px 16px;
+      border: 1.5px solid var(--rosa-borde);
+      border-radius: 999px;
+      background: #fff;
+      color: var(--texto);
+      font: inherit;
+    }
+
+    #input-busqueda:focus {
+      outline: none;
+      border-color: var(--rosa-medio);
+      box-shadow: 0 0 0 3px rgba(240, 98, 146, 0.25);
+    }
+
+    /* Resultados: una cuadrícula que se acomoda al ancho de la pantalla */
+    #resultados-busqueda {
+      max-width: 900px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 16px;
+    }
+
+    .tarjeta-busqueda {
+      background: #fff;
+      border: 1px solid var(--rosa-borde);
+      border-radius: 14px;
+      padding: 16px;
+      box-shadow: 0 4px 12px rgba(216, 27, 96, 0.08);
+    }
+
+    .tarjeta-busqueda img {
+      width: 100%;
+      aspect-ratio: 1;
+      object-fit: cover;
+      border-radius: 10px;
+    }
+
+    .tarjeta-busqueda h3 { margin: 8px 0; color: var(--rosa-fuerte); }
+    .tarjeta-busqueda p  { margin: 4px 0; }
+    .tarjeta-busqueda .categorias { font-size: 0.85rem; color: var(--rosa-medio); }
+  </style>
+
 </head>
 <body>
 
@@ -15,9 +182,69 @@
   <div id="resultado2"></div>
   <div id="resultado3"></div>
   <div id="resultado4"></div>
+  <div id="resultado5"></div>
+  <div id="resultado6"></div>
+  <div id="resultado7"></div>
+  <div id="resultado8"></div>
 
-  <button id="btn2">Aregar Producto</button>
+  <!-- FORMULARIO: cada campo corresponde a una propiedad del objeto
+       productoPrueba (y a una columna de la tabla en Supabase).
+       El atributo "name" de cada input es el que usamos en prueba2.js
+       para leer su valor. "required" hace que el navegador no deje
+       enviar el formulario si ese campo está vacío. -->
+  <form id="form-producto">
+    <h2>Agregar producto</h2>
+
+    <label>Nombre
+      <input type="text" name="nombre" required>
+    </label><br>
+
+    <label>Descripción
+      <textarea name="description" required></textarea>
+    </label><br>
+
+    <!-- type="number" solo deja escribir números (sin step solo acepta enteros) -->
+    <label>Precio
+      <input type="number" name="precio" min="0" required>
+    </label><br>
+
+    <label>Unidades
+      <input type="number" name="unidades" min="0" required>
+    </label><br>
+
+    <!-- El descuento va de 0 a 1 (0.1 = 10%), igual que en productoPrueba -->
+    <label>Descuento (0 a 1, ej: 0.1 = 10%)
+      <input type="number" name="descuento" min="0" max="1" step="any" value="0">
+    </label><br>
+
+    <!-- Un checkbox da true/false, perfecto para "disponible" -->
+    <label>Disponible
+      <input type="checkbox" name="disponible" checked>
+    </label><br>
+
+    <!-- Las categorías se escriben separadas por coma y en el JS
+         las convertimos en un array: "tecnologia, audio" → ["tecnologia", "audio"] -->
+    <label>Categorías (separadas por coma)
+      <input type="text" name="categorias" placeholder="tecnologia, audio">
+    </label><br>
+
+    <label>URL de la imagen
+      <input type="url" name="imagen_url" placeholder="https://...">
+    </label><br>
+
+    <!-- type="submit": al hacer clic se dispara el evento "submit" del formulario -->
+    <button type="submit" id="btn2">Agregar Producto</button>
+  </form>
   <div id="notificacion"></div>
+
+  <!-- BUSCADOR: un solo campo que busca por nombre, por categoría,
+       o por ID si escribes solo un número -->
+  <form id="form-busqueda">
+    <input type="search" id="input-busqueda"
+           placeholder="Buscar por nombre, categoría o ID..." required>
+    <button type="submit">Buscar</button>
+  </form>
+  <div id="resultados-busqueda"></div>
   
   <!-- supabaseClient.js crea "db" (sección 4.3): el cliente ya
        conectado a tu proyecto de Supabase. Lo vamos a usar en

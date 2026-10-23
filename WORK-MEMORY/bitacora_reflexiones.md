@@ -94,3 +94,26 @@ layout) tiene más sentido para el proyecto.
 **Errores**
 - Pegué la URL con `/rest/v1/` al final; la librería agrega esa ruta sola, así que quedaba duplicada. La URL correcta es solo `https://<proyecto>.supabase.co`.
 - La guía usa `db` y mi archivo creaba `supabaseClient`; se resolvió con `const db = supabaseClient;`.
+
+
+## 2026-10-23
+
+**Cambios**
+- En `prueba2.js` agregué listas para descripción, precio, disponible, categorías, unidades e imagen de cada producto.
+- Creé en `prueba2.html` un formulario para agregar productos con los mismos campos que el objeto `productoPrueba`; al enviarlo se arma el objeto con `FormData` y se inserta en Supabase con `agregarProducto()`.
+- Después de agregar, el formulario se limpia y las listas se recargan solas con `document.getElementById("btn-traer").click()`.
+- Le di estilos al formulario en tonos rosados, con los colores guardados en variables CSS (`:root`).
+- Agregué un buscador de un solo campo: si escribo un número busca por ID (`buscarProductoPorId`); si escribo texto busca por nombre (`buscarProductosPorNombre`) y por categoría a la vez, y muestra los resultados como tarjetas.
+
+**Hallazgos**
+- Si la propiedad no coincide exactamente con el nombre de la columna, JavaScript devuelve `undefined`, sin error. Mis columnas eran `description` (en inglés) y `categorias` (en plural); `console.log(data)` muestra los nombres reales.
+- En JavaScript `90.000` vale `90`: el punto es decimal.
+- Todo lo que viene de un input llega como texto; hay que convertirlo con `Number()`. Un checkbox sin marcar no aparece en `FormData` (da `null`).
+- Si sale "agregado con ID", la fila sí se creó; la página no la mostraba porque las listas no se recargan solas.
+- Supabase no puede filtrar dentro de una columna tipo `json` (ni `ilike` ni `contains`), así que la búsqueda por categoría se hace en JavaScript con `filter` + `some`. Con `normalize("NFD")` se quitan las tildes para que "tecnologia" encuentre "tecnología".
+
+**Errores**
+- `undefined` en las listas por usar `producto.descripciones` y `producto.precios` en vez de los nombres reales de las columnas.
+- El botón de agregar buscaba el id `btn-agregar-obj`, pero en el HTML era `btn2`, y le pasaba `producto`, una variable que no existía.
+- El listener del botón de agregar y las funciones de búsqueda quedaron pegados dentro de otro `addEventListener`; las saqué afuera.
+- Las funciones de búsqueda consultaban la tabla `productos_practica`, que no existe; la mía es `products_practice`.
