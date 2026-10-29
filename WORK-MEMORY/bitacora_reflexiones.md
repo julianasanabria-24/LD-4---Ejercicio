@@ -142,3 +142,8 @@ layout) tiene más sentido para el proyecto.
 **Errores**
 - Las imágenes no se veían: los productos 1–3 tenían `imagen_url = null` (nunca ejecuté `agregar_imagen.sql`) y el televisor tenía la URL de la página de Éxito, no la de la foto. Para la foto hay que usar clic derecho → "Copiar dirección de imagen".
 - Una copia de `modificarProducto` quedó pegada dentro del listener del buscador y consultaba `productos_practica` en vez de `products_practice`; la borré.
+
+**Reflexión**
+- Lo que más me sirvió fue ver que editar y eliminar son casi iguales a agregar: cambia `insert` por `update` o `delete`, pero siempre con `.eq('id', id)`, porque sin eso se afecta toda la tabla. Me quedó claro que el filtro es lo más importante de esas dos operaciones.
+- Me costó entender por qué no salían las imágenes: pensé que era un error del código, y en realidad eran los datos (URLs vacías y una URL de página en vez de la foto). Aprendí a revisar primero qué hay guardado en la base de datos antes de cambiar el código.
+- Del diseño, me gustó que con variables CSS se pueda cambiar todo el tema (claro/oscuro) tocando solo unos colores; quiero repasar `grid-template-areas` porque todavía me cuesta imaginar cómo se acomodan las áreas.
