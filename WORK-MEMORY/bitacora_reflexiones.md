@@ -117,3 +117,28 @@ layout) tiene más sentido para el proyecto.
 - El botón de agregar buscaba el id `btn-agregar-obj`, pero en el HTML era `btn2`, y le pasaba `producto`, una variable que no existía.
 - El listener del botón de agregar y las funciones de búsqueda quedaron pegados dentro de otro `addEventListener`; las saqué afuera.
 - Las funciones de búsqueda consultaban la tabla `productos_practica`, que no existe; la mía es `products_practice`.
+
+
+## 2026-10-29
+
+**Cambios**
+- Creé `modificarProducto(id, cambios)` con `.update().eq('id', id).select()` y reutilicé el mismo formulario para editar: un `<input type="hidden" name="id">` decide si el submit agrega o modifica, y un botón "Cancelar" vuelve al modo agregar.
+- Agregué `eliminarProducto(id)` con `.delete().eq('id', id)`, con un `confirm()` antes de borrar.
+- Pasé los resultados de la búsqueda a un recuadro "Productos" al lado del formulario, primero como tarjetas y después como tabla, con los botones Editar y Eliminar en cada fila. Al abrir la página muestra todos los productos; con el buscador vacío vuelven a salir todos.
+- Moví "Traer productos" a una sección "Catálogo" dentro del formulario.
+- Organicé el formulario en 3 columnas con `grid-template-areas` y en 3 grupos numerados (Información básica, Precio e inventario, Detalles).
+- Agregué modo claro / oscuro: las variables de color cambian con `<html data-tema="oscuro">` y la elección se guarda en `localStorage`.
+- Rediseño visual: granulado de fondo (SVG con `feTurbulence`), manchas de color animadas, tarjetas de vidrio (`backdrop-filter`), botones con degradado, fuente Plus Jakarta Sans y un encabezado con estadísticas en vivo (total, disponibles, agotados, unidades).
+- Vista previa de la imagen al escribir la URL, y la foto de cada fila de la tabla es clicable para cambiar la imagen.
+
+**Hallazgos**
+- Sin `.eq()`, `update()` y `delete()` afectan TODAS las filas de la tabla.
+- Con RLS, si no hay política para `update` o `delete`, Supabase no da error: solo devuelve un array vacío. Por eso reviso `data.length === 0`.
+- Un `<button>` dentro de un `<form>` sin `type` es `submit` por defecto: el de "Traer productos" necesitaba `type="button"`.
+- `form.reset()` no limpia un `input hidden` al que le cambié `.value` por código; hay que vaciarlo a mano.
+- Los botones que se crean con `innerHTML` pierden sus eventos al redibujar; la delegación de eventos (`evento.target.closest(".btn-editar")` en el contenedor) lo resuelve. El evento `error` de un `<img>` no sube al contenedor, así que se escucha en fase de captura (tercer parámetro `true`).
+- Un `</style>` escrito dentro de un comentario CSS cierra la etiqueta `<style>` antes de tiempo.
+
+**Errores**
+- Las imágenes no se veían: los productos 1–3 tenían `imagen_url = null` (nunca ejecuté `agregar_imagen.sql`) y el televisor tenía la URL de la página de Éxito, no la de la foto. Para la foto hay que usar clic derecho → "Copiar dirección de imagen".
+- Una copia de `modificarProducto` quedó pegada dentro del listener del buscador y consultaba `productos_practica` en vez de `products_practice`; la borré.
