@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Supabase 1</title>
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <header>
+    <h1>Gestión de registros</h1>
+    <p id="estado" class="estado">Conectando…</p>
+  </header>
+
+  <main>
+    <section class="tarjeta">
+      <h2 id="tituloFormulario">Nuevo registro</h2>
+      <form id="formulario">
+        <input type="hidden" id="id">
+        <label>
+          Nombre
+          <input type="text" id="nombre" required>
+        </label>
+        <label>
+          Descripción
+          <textarea id="descripcion" rows="3"></textarea>
+        </label>
+        <div class="acciones">
+          <button type="submit" id="btnGuardar">Guardar</button>
+          <button type="button" id="btnCancelar" class="secundario" hidden>Cancelar</button>
+        </div>
+      </form>
+    </section>
+
+    <section class="tarjeta">
+      <h2>Registros</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Nombre</th>
+            <th>Descripción</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody id="tablaCuerpo"></tbody>
+      </table>
+    </section>
+  </main>
+
+  <!-- 1° Librería de Supabase -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/supabaseClient.js"></script>  <!-- 2° -->
+  <script src="js/datos.js"></script>           <!-- 3° -->
+  <script src="js/gestion.js"></script>         <!-- 4° -->
+</body>
+</html>

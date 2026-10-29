@@ -1,0 +1,95 @@
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Game - Login</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+  <div class="login" id="login-game">
+    <div class="login-tarjeta">
+      <h1>Iniciar sesión</h1>
+
+      <form class="formulario" id="form-login-game">
+        <label>
+          Nombre
+          <input type="text" name="nombre" required>
+        </label>
+        <label>
+          Alias
+          <input type="text" name="alias" required>
+        </label>
+        <label>
+          Email
+          <input type="text" name="email" required>
+        </label>
+        <p class="login-error" id="email-error-game" hidden>
+          El email no tiene un formato válido.
+        </p>
+        <label>
+          Contraseña
+          <input type="password" name="password" required>
+        </label>
+        <ul class="password-checklist" id="password-checklist"></ul>
+        <p class="login-error" id="login-error-game" hidden>
+          La contraseña no cumple los requisitos.
+        </p>
+        <p class="login-error" id="credenciales-error-game" hidden>
+          Email o contraseña incorrectos.
+        </p>
+        <p class="login-exito" id="login-exito-game" hidden></p>
+        <button type="submit">Entrar</button>
+      </form>
+    </div>
+  </div>
+
+  <section class="juego-memoria" id="juego-memoria" hidden>
+    <header class="juego-header">
+      <div class="juego-logo">🎴 Memoria BTS</div>
+      <div class="juego-hud">
+        <div class="juego-hud-item">
+          <span class="juego-hud-valor" id="juego-timer">00:00</span>
+          <span class="juego-hud-label">Tiempo</span>
+        </div>
+        <div class="juego-hud-divider"></div>
+        <div class="juego-hud-item">
+          <span class="juego-hud-valor" id="juego-intentos">0</span>
+          <span class="juego-hud-label">Intentos</span>
+        </div>
+        <div class="juego-hud-item">
+          <span class="juego-hud-valor" id="juego-pares">0/6</span>
+          <span class="juego-hud-label">Pares</span>
+        </div>
+        <div class="juego-hud-divider"></div>
+        <button type="button" id="juego-btn-reiniciar" class="filtro-boton">↺ Reiniciar</button>
+      </div>
+    </header>
+
+    <div class="juego-tablero" id="juego-tablero"></div>
+
+    <div class="juego-overlay" id="juego-overlay-victoria">
+      <div class="juego-modal">
+        <div class="juego-trofeo">🏆</div>
+        <h2>¡Encontraste todos los pares!</h2>
+        <div class="juego-stats">
+          <div class="juego-stat">
+            <span class="juego-stat-num" id="juego-stat-tiempo">--:--</span>
+            <span class="juego-stat-label">Tiempo</span>
+          </div>
+          <div class="juego-stat">
+            <span class="juego-stat-num" id="juego-stat-intentos">0</span>
+            <span class="juego-stat-label">Intentos</span>
+          </div>
+        </div>
+        <button type="button" id="juego-btn-de-nuevo" class="filtro-boton activo">Jugar de nuevo</button>
+      </div>
+    </div>
+  </section>
+
+  <script src="data.js"></script>
+  <script src="game.js"></script>
+
+</body>
+</html>

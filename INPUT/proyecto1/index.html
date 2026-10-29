@@ -1,0 +1,54 @@
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Galería de álbumes BTS</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+  <button id="btn-dark" class="btn-dark">
+    🌙 Modo Oscuro
+  </button>
+
+  <header class="encabezado">
+    <p class="etiqueta">COLECCIÓN MUSICAL</p>
+    <h1>Álbumes de BTS</h1>
+    <p class="intro">
+      Una colección de álbumes que representan diferentes etapas
+      de la trayectoria musical de BTS.
+    </p>
+  </header>
+
+  <!-- <nav><a href="gestion.html">Ir a gestión</a></nav> -->
+
+  <section class="filtros" id="filtros">
+    <div class="filtro-grupo">
+      <span class="filtro-titulo">Estilo</span>
+      <div class="filtro-botones" id="filtro-estilo"></div>
+    </div>
+    <p class="filtro-vacio" id="filtro-vacio" hidden>No hay álbumes con esa combinación.</p>
+  </section>
+
+  <button id="btn-volver" class="btn-volver"> Ver todos los álbumes </button>
+
+  <div class="galeria-layout">
+    <aside class="filtro-año-lateral">
+      <span class="filtro-titulo">Año</span>
+      <div class="filtro-año-control">
+        <button type="button" class="filtro-boton activo" id="filtro-año-todos">Todos</button>
+        <div class="slider-año-wrap">
+          <input type="range" id="slider-año" class="slider-año">
+          <span class="slider-año-valor" id="slider-año-valor"></span>
+        </div>
+      </div>
+    </aside>
+    <section class="galeria" id="galeria"></section>
+  </div>
+
+  <script src="data.js"></script>
+  <script src="index.js"></script>
+
+</body>
+</html>
