@@ -1,0 +1,513 @@
+/* =================================================================
+   ESTILOS DE "MI CUENTA" (cliente.html)
+   Misma estética que prueba2.html: variables de color, vidrio,
+   degradados, manchas animadas y granulado.
+   ================================================================= */
+
+/* Variables de color: si quieres cambiar un tono, cámbialo solo aquí */
+:root {
+  --rosa-fondo: #fff0f5;     /* fondo de la página */
+  --rosa-medio: #f06292;     /* detalles */
+  --rosa-fuerte: #d81b60;    /* textos destacados */
+  --texto: #4a1530;          /* texto principal */
+  --texto-suave: #8a5a70;    /* etiquetas y textos de ayuda */
+  --superficie: #fff;        /* fondo del campo activo */
+  --linea: #f3d9e3;          /* bordes finos */
+  --peligro: #c62828;
+  --anillo: rgba(240, 98, 146, 0.18);   /* halo del campo activo */
+  --grano-opacidad: 0.09;    /* intensidad del granulado */
+  --degradado: linear-gradient(135deg, #ff3d7f 0%, #ff7a59 55%, #ffb547 100%);
+  --vidrio: rgba(255, 255, 255, 0.62);       /* tarjetas semitransparentes */
+  --borde-vidrio: rgba(255, 255, 255, 0.85);
+  --campo-vidrio: rgba(255, 255, 255, 0.7);
+  --sombra-color: rgba(216, 27, 96, 0.35);
+  --mancha-1: rgba(255, 61, 127, 0.38);      /* manchas animadas del fondo */
+  --mancha-2: rgba(255, 181, 71, 0.32);
+  --mancha-3: rgba(167, 112, 255, 0.28);
+}
+
+/* MODO OSCURO: solo cambiamos las variables */
+:root[data-tema="oscuro"] {
+  --rosa-fondo: #1c1016;
+  --rosa-medio: #e0557f;
+  --rosa-fuerte: #ff8fb5;
+  --texto: #fbe6ee;
+  --texto-suave: #c9a3b4;
+  --superficie: #241319;
+  --linea: #3a2029;
+  --peligro: #ef5350;
+  --anillo: rgba(224, 85, 127, 0.25);
+  --grano-opacidad: 0.13;
+  --degradado: linear-gradient(135deg, #ff4d8d 0%, #c55cff 55%, #6b7bff 100%);
+  --vidrio: rgba(30, 16, 24, 0.55);
+  --borde-vidrio: rgba(255, 255, 255, 0.08);
+  --campo-vidrio: rgba(255, 255, 255, 0.04);
+  --sombra-color: rgba(0, 0, 0, 0.6);
+  --mancha-1: rgba(255, 77, 141, 0.30);
+  --mancha-2: rgba(107, 123, 255, 0.26);
+  --mancha-3: rgba(197, 92, 255, 0.22);
+  color-scheme: dark;
+}
+
+body {
+  font-family: "Plus Jakarta Sans", system-ui, sans-serif;
+  color: var(--texto);
+  background: var(--rosa-fondo);
+  padding: 24px 16px;
+  min-height: 100vh;
+  margin: 0;
+  box-sizing: border-box;
+  transition: background 0.2s, color 0.2s;
+}
+
+/* GRANULADO: capa de "ruido" encima del fondo (SVG dentro del CSS) */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  opacity: var(--grano-opacidad);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* MANCHAS DE COLOR ANIMADAS detrás de todo */
+body::after {
+  content: "";
+  position: fixed;
+  inset: -20%;
+  z-index: -2;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at 15% 20%, var(--mancha-1), transparent 32%),
+    radial-gradient(circle at 85% 15%, var(--mancha-2), transparent 30%),
+    radial-gradient(circle at 70% 85%, var(--mancha-3), transparent 34%);
+  filter: blur(40px);
+  animation: flotar 22s ease-in-out infinite alternate;
+}
+
+@keyframes flotar {
+  from { transform: translate(0, 0) rotate(0deg); }
+  to   { transform: translate(4%, -3%) rotate(8deg); }
+}
+
+/* Botón de tema fijo arriba a la derecha */
+#btn-tema {
+  position: fixed;
+  top: 12px;
+  right: 12px;
+  z-index: 10;
+  padding: 8px 14px;
+  color: var(--texto);
+  background: var(--vidrio);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--borde-vidrio);
+  box-shadow: none;
+}
+#btn-tema:hover { background: var(--campo-vidrio); }
+
+/* ENCABEZADO: pastilla + título con degradado */
+.encabezado {
+  max-width: 960px;
+  margin: 40px auto 28px;
+  text-align: center;        /* centra el título, el texto y la pastilla */
+  animation: aparecer 0.6s ease both;
+}
+
+.etiqueta-superior {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: var(--vidrio);
+  border: 1px solid var(--linea);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--texto-suave);
+}
+
+/* El puntito verde que "late" = conectado a la base de datos */
+.etiqueta-superior::before {
+  content: "";
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #22c55e;
+  animation: latido 2s infinite;
+}
+
+@keyframes latido {
+  0%   { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.6); }
+  70%  { box-shadow: 0 0 0 8px rgba(34, 197, 94, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0); }
+}
+
+.encabezado h1 {
+  margin: 12px 0 6px;
+  font-size: clamp(2rem, 4vw, 3rem);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1.05;
+}
+
+/* Texto con degradado: el fondo se "recorta" a las letras */
+.texto-degradado {
+  background: var(--degradado);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.encabezado p { margin: 0; color: var(--texto-suave); }
+
+/* El <section> solo agrupa: el ancho lo controla .tarjetas */
+#panel-cuenta {
+  max-width: 960px;
+  margin: 0 auto;
+}
+
+/* ESTADO DE SESIÓN como "pastilla" de vidrio */
+#estado-sesion {
+  /* fit-content = el cuadro mide lo que mide el texto, no todo el ancho;
+     margin auto a los lados lo centra */
+  width: fit-content;
+  max-width: 100%;
+  box-sizing: border-box;
+  margin: 0 auto 20px;
+  text-align: center;
+  padding: 12px 18px;
+  border-radius: 14px;
+  background: var(--vidrio);
+  border: 1px solid var(--borde-vidrio);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  color: var(--rosa-fuerte);
+  font-weight: 600;
+}
+
+/* DOS COLUMNAS: Registrarme | Iniciar sesión.
+   minmax(0, 1fr) evita que un contenido largo ensanche la columna */
+.tarjetas {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 24px;
+  align-items: start;
+}
+
+/* En celular: una tarjeta debajo de la otra */
+@media (max-width: 760px) {
+  .tarjetas { grid-template-columns: minmax(0, 1fr); }
+}
+
+/* hidden deja de funcionar si otra regla le pone display (grid, flex)
+   al mismo elemento; esta regla le devuelve la prioridad */
+[hidden] { display: none !important; }
+
+/* MI PERFIL: una sola tarjeta, centrada y no tan ancha */
+#resumen-perfil {
+  max-width: 560px;
+  margin: 0 auto;
+}
+
+/* Lista de datos: término a la izquierda, valor a la derecha */
+.datos-perfil {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 12px 20px;
+  margin: 8px 0 0;
+}
+.datos-perfil dt {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--texto-suave);
+  align-self: center;
+}
+.datos-perfil dd {
+  margin: 0;
+  font-weight: 600;
+  overflow-wrap: anywhere;   /* un correo largo no se sale de la tarjeta */
+}
+
+/* SIDEBAR: panel fijo a la derecha, del alto de la pantalla.
+   Cerrado: translateX(100%) lo corre su propio ancho hacia la derecha,
+   o sea, justo afuera de la pantalla. Abierto: vuelve a su lugar. */
+#sidebar-perfil {
+  position: fixed;
+  top: 0;
+  right: 0;
+  z-index: 30;
+  width: min(420px, 100%);   /* 420px, o toda la pantalla en celular */
+  height: 100dvh;
+  box-sizing: border-box;
+  overflow-y: auto;          /* si no cabe, hace scroll por dentro */
+  padding: 32px;
+  background: var(--vidrio);
+  backdrop-filter: blur(24px) saturate(150%);
+  -webkit-backdrop-filter: blur(24px) saturate(150%);
+  border-left: 1px solid var(--borde-vidrio);
+  box-shadow: -30px 0 60px -30px var(--sombra-color);
+  transform: translateX(100%);
+  transition: transform 0.35s ease;
+}
+#sidebar-perfil.abierto { transform: none; }
+
+/* Franja de degradado en el borde izquierdo del sidebar */
+#sidebar-perfil::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 4px;
+  background: var(--degradado);
+}
+
+/* En el sidebar el formulario no necesita su propia tarjeta */
+#form-perfil {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* Botón ✕: arriba a la derecha, sin degradado */
+#btn-cerrar-sidebar {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  background: var(--campo-vidrio);
+  color: var(--texto-suave);
+  border: 1px solid var(--borde-vidrio);
+  box-shadow: none;
+}
+#btn-cerrar-sidebar:hover { color: var(--rosa-fuerte); }
+
+/* Capa oscura detrás del sidebar. Invisible y "transparente a los
+   clics" (pointer-events: none) hasta que se abre el sidebar */
+#fondo-sidebar {
+  position: fixed;
+  inset: 0;
+  z-index: 25;
+  background: rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.35s ease;
+}
+#fondo-sidebar.visible {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* Correo de solo lectura: se nota que no se puede editar */
+#panel-cuenta input[readonly] {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+#panel-cuenta input[readonly]:focus {
+  box-shadow: none;
+  border-color: var(--borde-vidrio);
+  background: var(--campo-vidrio);
+}
+
+/* VIDRIO ("glassmorphism"): tarjetas semitransparentes que
+   difuminan lo que hay detrás */
+#form-registro,
+#form-login,
+#resumen-perfil {
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 32px;
+  background: var(--vidrio);
+  backdrop-filter: blur(20px) saturate(150%);
+  -webkit-backdrop-filter: blur(20px) saturate(150%);
+  border: 1px solid var(--borde-vidrio);
+  border-radius: 24px;
+  box-shadow: 0 30px 60px -30px var(--sombra-color), inset 0 1px 0 var(--borde-vidrio);
+  animation: aparecer 0.6s ease both;
+}
+#form-login { animation-delay: 0.1s; }
+
+/* Franja de color arriba de cada tarjeta */
+#form-registro::before,
+#form-login::before,
+#resumen-perfil::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: var(--degradado);
+}
+
+/* Título con línea fina debajo y un cuadradito de color al lado */
+#form-registro h3,
+#form-login h3,
+#resumen-perfil h3,
+#form-perfil h3 {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 0 0 8px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--linea);
+  font-size: 1.4rem;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+}
+#form-registro h3::before,
+#form-login h3::before,
+#resumen-perfil h3::before,
+#form-perfil h3::before {
+  content: "";
+  width: 12px;
+  height: 12px;
+  border-radius: 4px;
+  background: var(--degradado);
+  box-shadow: 0 0 16px var(--rosa-medio);
+  flex-shrink: 0;
+}
+
+/* Etiquetas pequeñas encima de cada campo */
+#panel-cuenta label {
+  margin-top: 6px;
+  font-weight: 600;
+  font-size: 0.82rem;
+  color: var(--texto-suave);
+}
+
+#panel-cuenta input {
+  padding: 11px 14px;
+  border: 1px solid var(--borde-vidrio);
+  border-radius: 12px;
+  background: var(--campo-vidrio);
+  color: var(--texto);
+  font: inherit;
+  font-size: 0.95rem;
+  transition: border-color 0.15s, box-shadow 0.15s, background 0.15s;
+}
+
+/* :focus = cuando el usuario está escribiendo en ese campo */
+#panel-cuenta input:focus {
+  outline: none;
+  background: var(--superficie);
+  border-color: var(--rosa-medio);
+  box-shadow: 0 0 0 4px var(--anillo), 0 8px 24px -12px var(--rosa-medio);
+}
+
+/* BOTONES con degradado, sombra de color y se "levantan" al pasar el mouse */
+button {
+  background: var(--degradado);
+  color: #fff;
+  border: none;
+  padding: 12px 20px;
+  border-radius: 999px;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 10px 24px -12px var(--rosa-medio);
+  transition: transform 0.15s, box-shadow 0.15s, filter 0.15s, background 0.15s;
+}
+button:hover {
+  filter: brightness(1.08);
+  transform: translateY(-2px);
+  box-shadow: 0 16px 30px -12px var(--rosa-medio);
+}
+button:active { transform: translateY(0) scale(0.98); }
+
+/* Botón de cada formulario: ancho completo, esquinas menos redondas */
+#form-registro button,
+#form-login button,
+#form-perfil button,
+#btn-editar-perfil {
+  margin-top: 16px;
+  padding: 15px 20px;
+  border-radius: 12px;
+  font-size: 1rem;
+}
+
+/* CERRAR SESIÓN: botón "de contorno", sin degradado */
+#btn-logout {
+  display: block;
+  margin: 24px auto 0;
+  background: transparent;
+  color: var(--texto-suave);
+  border: 1px solid var(--linea);
+  box-shadow: none;
+}
+#btn-logout:hover {
+  background: var(--campo-vidrio);
+  color: var(--peligro);
+  border-color: var(--peligro);
+}
+
+/* =================================================================
+   MI PERFIL COMO COLUMNA LATERAL FIJA (cuando hay sesión iniciada)
+   Va al final a propósito: a igual fuerza gana la última regla, y así
+   le gana al "position: relative" de las tarjetas de vidrio.
+   ================================================================= */
+#resumen-perfil {
+  position: fixed;
+  top: 0;
+  bottom: 0;                 /* top 0 + bottom 0 = todo el alto de la pantalla */
+  left: 0;
+  z-index: 20;
+  width: 300px;
+  max-width: none;
+  margin: 0;
+  box-sizing: border-box;
+  overflow-y: auto;          /* si no cabe, hace scroll por dentro */
+  border-radius: 0 24px 24px 0;   /* redondeado solo del lado derecho */
+  border-left: none;
+}
+
+/* Con sesión, el contenido de la página se corre a la derecha para
+   no quedar debajo de la columna (300px + un respiro de 24px).
+   La clase "con-sesion" la pone cliente.js en mostrarEstadoSesion() */
+body.con-sesion { padding-left: 324px; }
+
+/* Cerrar sesión al fondo de la columna: margin-top: auto en un flex
+   en columna empuja el elemento hasta abajo */
+#resumen-perfil #btn-logout {
+  margin: auto 0 0;
+  width: 100%;
+  border-radius: 12px;
+}
+
+/* En celular no cabe una columna fija: vuelve a ser una tarjeta normal */
+@media (max-width: 760px) {
+  #resumen-perfil {
+    position: relative;
+    width: auto;
+    max-width: 560px;
+    margin: 0 auto;
+    border-radius: 24px;
+    border-left: 1px solid var(--borde-vidrio);
+  }
+  body.con-sesion { padding-left: 16px; }
+  #resumen-perfil #btn-logout { margin-top: 8px; }
+}
+
+/* Aparecer: sube un poco mientras se hace visible */
+@keyframes aparecer {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: none; }
+}
+
+/* Si la persona tiene activado "reducir movimiento", apagamos animaciones */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; }
+}

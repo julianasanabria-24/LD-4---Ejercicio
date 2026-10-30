@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Mi cuenta</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <!-- Misma tipografía que prueba2.html -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet" />
+
+    <!-- Pone el tema ANTES de dibujar la página (así no "parpadea" en claro) -->
+    <script>
+      let temaGuardado = null;
+      try { temaGuardado = localStorage.getItem("tema"); } catch (e) {}
+      document.documentElement.dataset.tema = temaGuardado ||
+        (matchMedia("(prefers-color-scheme: dark)").matches ? "oscuro" : "claro");
+    </script>
+
+    <!-- Estilos de esta página, en su propio archivo -->
+    <link rel="stylesheet" href="css/cuenta.css" />
+  </head>
+  <body>
+    <button type="button" id="btn-tema">🌙 Modo oscuro</button>
+
+    <header class="encabezado">
+      <span class="etiqueta-superior">Conectado a Supabase</span>
+      <h1>Mi <span class="texto-degradado">cuenta</span></h1>
+      <p>Crea tu cuenta o inicia sesión para continuar.</p>
+    </header>
+
+    <section id="panel-cuenta">
+      <p id="estado-sesion">No has iniciado sesión.</p>
+
+      <!-- Las dos tarjetas lado a lado (en celular, una debajo de la otra) -->
+      <div class="tarjetas">
+        <form id="form-registro">
+          <h3>Registrarme</h3>
+          <label for="registro-nombre">Nombre</label>
+          <input id="registro-nombre" type="text" placeholder="Ej: Sofía" required />
+
+          <label for="registro-correo">Correo</label>
+          <input id="registro-correo" type="email" placeholder="tucorreo@gmail.com" required />
+
+          <label for="registro-password">Contraseña</label>
+          <input id="registro-password" type="password" minlength="6" placeholder="Mínimo 6 caracteres" required />
+
+          <button type="submit">Crear cuenta</button>
+        </form>
+
+        <form id="form-login">
+          <h3>Iniciar sesión</h3>
+          <label for="login-correo">Correo</label>
+          <input id="login-correo" type="email" placeholder="tucorreo@gmail.com" required />
+
+          <label for="login-password">Contraseña</label>
+          <input id="login-password" type="password" placeholder="Tu contraseña" required />
+
+          <button type="submit">Iniciar sesión</button>
+        </form>
+      </div>
+
+      <!-- MI PERFIL: resumen de los datos guardados. Oculto (hidden) hasta
+           que el login sale bien; cliente.js lo llena con leerCliente() -->
+      <article id="resumen-perfil" hidden>
+        <h3>Mi perfil</h3>
+        <!-- <dl> = lista de "término: valor" (dt = término, dd = valor) -->
+        <dl class="datos-perfil">
+          <dt>Nombre</dt>    <dd id="resumen-nombre">—</dd>
+          <dt>Correo</dt>    <dd id="resumen-correo">—</dd>
+          <dt>Teléfono</dt>  <dd id="resumen-telefono">—</dd>
+          <dt>Dirección</dt> <dd id="resumen-direccion">—</dd>
+          <dt>Ciudad</dt>    <dd id="resumen-ciudad">—</dd>
+        </dl>
+        <button type="button" id="btn-editar-perfil">✎ Editar perfil</button>
+        <button id="btn-logout" type="button" hidden>Cerrar sesión</button>
+      </article>
+
+      <!-- Capa oscura detrás del sidebar: al hacer clic, se cierra -->
+      <div id="fondo-sidebar"></div>
+
+      <!-- SIDEBAR: panel que entra desde la derecha con el formulario de
+           UPDATE. Cerrado, está fuera de la pantalla (transform en el CSS).
+           inert = mientras está cerrado no se puede llegar a sus campos
+           con Tab ni hacer clic en ellos. -->
+      <aside id="sidebar-perfil" inert>
+        <button type="button" id="btn-cerrar-sidebar" aria-label="Cerrar">✕</button>
+
+      <form id="form-perfil">
+        <h3>Mis datos</h3>
+
+        <!-- readonly: se ve, pero no se puede escribir. El correo vive en
+             Auth; si lo cambiáramos solo en la tabla quedarían distintos -->
+        <label for="perfil-correo">Correo</label>
+        <input id="perfil-correo" type="email" readonly />
+
+        <label for="perfil-nombre">Nombre</label>
+        <input id="perfil-nombre" type="text" required />
+
+        <label for="perfil-telefono">Teléfono</label>
+        <input id="perfil-telefono" type="tel" placeholder="Ej: 300 123 4567" />
+
+        <label for="perfil-direccion">Dirección</label>
+        <input id="perfil-direccion" type="text" placeholder="Ej: Calle 10 # 5-20" />
+
+        <label for="perfil-ciudad">Ciudad</label>
+        <input id="perfil-ciudad" type="text" placeholder="Ej: Medellín" />
+
+        <button type="submit">Guardar cambios</button>
+      </form>
+      </aside>
+    </section>
+
+    <script src="js/supabaseClient.js"></script>
+    <script src="js/tema.js"></script>
+    <script src="js/cliente.js"></script>
+  </body>
+</html>

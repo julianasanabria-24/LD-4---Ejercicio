@@ -147,3 +147,50 @@ layout) tiene más sentido para el proyecto.
 - Lo que más me sirvió fue ver que editar y eliminar son casi iguales a agregar: cambia `insert` por `update` o `delete`, pero siempre con `.eq('id', id)`, porque sin eso se afecta toda la tabla. Me quedó claro que el filtro es lo más importante de esas dos operaciones.
 - Me costó entender por qué no salían las imágenes: pensé que era un error del código, y en realidad eran los datos (URLs vacías y una URL de página en vez de la foto). Aprendí a revisar primero qué hay guardado en la base de datos antes de cambiar el código.
 - Del diseño, me gustó que con variables CSS se pueda cambiar todo el tema (claro/oscuro) tocando solo unos colores; quiero repasar `grid-template-areas` porque todavía me cuesta imaginar cómo se acomodan las áreas.
+
+
+## 2026-10-30
+
+> 🔐 **HITO — Hasta aquí fue el proceso de login del proyecto.**
+> Registro e inicio de sesión con Supabase Auth funcionando en `cliente.html`. Lo que sigue (sección 5) es mostrar el estado de la sesión y cerrar sesión.
+
+**Cambios**
+- Creé `cliente.html` y `js/cliente.js` con dos formularios: Registrarme y Iniciar sesión.
+- `registrarCliente()` crea el usuario con `db.auth.signUp()` y después inserta su perfil en `clientes_practica`, con el mismo `id` (`data.user.id`) que le asignó Auth y `rol: 'cliente'`.
+- `iniciarSesion()` verifica correo y contraseña con `db.auth.signInWithPassword()`; el login con el usuario de Mariana funciona.
+- Estilos en un archivo aparte, `css/cuenta.css`, con la misma estética de `prueba2.html` (vidrio, degradados, manchas animadas, granulado, Plus Jakarta Sans). Las dos tarjetas van lado a lado y en celular una debajo de la otra.
+- Saqué el modo claro / oscuro a `js/tema.js`; usa la misma clave `"tema"` de `localStorage`, así que el tema se comparte con `prueba2.html`.
+
+**Hallazgos**
+- `signUp()` no toca mis tablas: crea el usuario en `auth.users`, que maneja Supabase. El perfil en mi tabla es un segundo paso.
+- Después de `signInWithPassword()`, `db` guarda la sesión y la manda sola en cada petición; ese id es el que ve `auth.uid()` en las políticas RLS.
+- Un status `400` quiere decir que el servidor rechazó la petición: el problema no está en la sintaxis de mi JS.
+- Que no salga error no quiere decir que funcione: al comentar `mostrarEstadoSesion()` se fue el `ReferenceError`, pero también el mensaje de sesión iniciada (error de lógica).
+
+**Errores**
+- `AuthApiError: Email address "sofia@gmail.com" is invalid` (400): Supabase rechaza correos inventados. Se resuelve con un correo real y alias `+` (`tucorreo+sofia@gmail.com`).
+- `ReferenceError: mostrarEstadoSesion is not defined`: llamaba una función que todavía no había escrito. Es el 3er `ReferenceError` del registro → repasar declaración vs. uso y scope.
+
+> ✏️ **Después del login: perfil del cliente (SELECT + UPDATE)**
+
+**Cambios**
+- Escribí `mostrarEstadoSesion()` con `db.auth.getUser()` y el botón de cerrar sesión con `db.auth.signOut()`. La función revisa la sesión al abrir la página, al iniciar sesión y al cerrarla.
+- Creé `sql/clientes_practica_perfil.sql`: columnas nuevas `telefono`, `direccion` y `ciudad`; políticas RLS para que cada cliente solo lea y edite su propia fila (`auth.uid() = id`); y permiso de update solo para `nombre`, `telefono`, `direccion` y `ciudad`, para que `correo` y `rol` no se puedan cambiar.
+- `leerCliente()` trae la fila con `.select('*').eq('id', id).maybeSingle()` y `cargarPerfil()` pone los datos en los campos del formulario.
+- `actualizarCliente()` hace `.update(cambios).eq('id', id).select()` y revisa `data.length === 0`, igual que en el CRUD de productos. El correo se ve pero es `readonly`.
+- Diseño: tarjeta **Mi perfil** fija como columna a la izquierda (`position: fixed`), con Cerrar sesión al fondo. **✎ Editar perfil** abre un sidebar desde la derecha con el formulario de update, que se cierra con ✕, clic en el fondo o Esc. Centré el encabezado y el mensaje de sesión (`width: fit-content` + `margin: auto`).
+
+**Hallazgos**
+- Una función declarada dentro de un `addEventListener` solo existe ahí adentro: mi `mostrarEstadoSesion()` estaba dentro del listener del login y el botón de cerrar sesión no la habría encontrado.
+- Un `.sql` en mi carpeta es solo texto: la tabla de Supabase no cambia hasta que lo ejecuto en el SQL Editor.
+- `.maybeSingle()` devuelve un objeto (o `null`) en vez de un array.
+- `update().select()` devuelve la fila ya actualizada, así que no hace falta volver a leer la tabla.
+- El sidebar se mueve con CSS (`transform: translateX(100%)` + `transition`); el JS solo pone o quita una clase. `inert` evita llegar con Tab a campos que no se ven.
+- Un elemento `position: fixed` sale del flujo: hay que dejarle espacio a mano (`body.con-sesion { padding-left }`).
+- `text-align: center` centra elementos `inline-flex` (como la pastilla), no solo texto.
+
+**Errores**
+- `PGRST204: Could not find the 'ciudad' column ... in the schema cache`: no había ejecutado el SQL de las columnas nuevas. Se resuelve ejecutándolo; `notify pgrst, 'reload schema';` refresca la lista de columnas de la API.
+
+**Reflexión**
+- _(pendiente: la escribe el estudiante)_
