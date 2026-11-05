@@ -188,6 +188,11 @@
       font-size: 0.95rem;
       font-weight: normal;
       transition: border-color 0.15s, box-shadow 0.15s, background 0.15s;
+      /* El campo mide exactamente lo que mide su columna (el padding y
+         el borde quedan por dentro gracias a border-box) */
+      width: 100%;
+      min-width: 0;
+      box-sizing: border-box;
     }
 
     #form-producto input::placeholder,
@@ -208,7 +213,11 @@
        Así el formulario queda más ancho y mucho menos alto. */
     #form-producto {
       display: grid;
-      grid-template-columns: 1fr 1fr 1fr;
+      /* minmax(0, 1fr) y no solo 1fr: "1fr" en realidad significa
+         minmax(auto, 1fr), y ese "auto" NO deja que la columna sea más
+         angosta que su contenido (un input tiene un ancho mínimo propio).
+         Con 0 como mínimo, las columnas sí se encogen y nada se sale. */
+      grid-template-columns: repeat(3, minmax(0, 1fr));
       grid-template-areas:
         "titulo      titulo      titulo"
         "g1          g1          g1"
@@ -244,7 +253,7 @@
 
     /* En pantallas angostas (celular) volvemos a una sola columna */
     @media (max-width: 640px) {
-      #form-producto { grid-template-columns: 1fr; grid-template-areas: none; padding: 22px; }
+      #form-producto { grid-template-columns: minmax(0, 1fr); grid-template-areas: none; padding: 22px; }
       #form-producto h2,
       #form-producto .grupo,
       #form-producto label { grid-area: auto; }
@@ -361,13 +370,13 @@
     }
 
     /* Buscador: campo y botón en la misma fila */
-    /* DOS COLUMNAS: formulario (más ancho) | recuadro de productos.
+    /* DOS COLUMNAS: formulario | recuadro de productos (más ancho).
        minmax(0, ...) evita que un contenido largo ensanche la columna */
     .layout {
       max-width: 1400px;
       margin: 48px auto 0;       /* deja espacio al botón de tema fijo */
       display: grid;
-      grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1.6fr);
       gap: 24px;
       align-items: start;        /* cada columna con su propio alto */
     }
@@ -862,6 +871,71 @@
     label:has(#vista-previa.cargada) #ayuda-imagen   { color: #16a34a; opacity: 1; }
     label:has(#vista-previa.con-error) #ayuda-imagen { color: var(--peligro); opacity: 1; }
 
+    /* BOTÓN DE VISTA (Tabla / Tarjetas): de contorno, como el de tema */
+    #btn-vista {
+      white-space: nowrap;
+      background: var(--campo-vidrio);
+      color: var(--texto);
+      border: 1px solid var(--borde-vidrio);
+      box-shadow: none;
+    }
+    #btn-vista:hover { background: var(--superficie); }
+
+    /* VISTA EN TARJETAS: auto-fill mete tantas columnas como quepan,
+       cada una de mínimo 170px; si sobra espacio, se reparten (1fr) */
+    .grilla-tarjetas {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+      gap: 14px;
+      padding: 14px;
+    }
+
+    .tarjeta {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      padding: 10px 10px 12px;
+      border-radius: 16px;
+      background: var(--vidrio);
+      border: 1px solid var(--borde-vidrio);
+      box-shadow: 0 14px 30px -20px var(--sombra-color);
+      transition: transform 0.15s, box-shadow 0.15s;
+      animation: aparecer 0.4s ease both;
+      animation-delay: calc(var(--i, 0) * 40ms);  /* igual que las filas */
+    }
+    .tarjeta:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 20px 36px -18px var(--sombra-color);
+    }
+
+    /* La foto ocupa todo el ancho y queda cuadrada (aspect-ratio 1 / 1).
+       Sirve para la <img> y para el cuadrito con la inicial */
+    .tarjeta .btn-foto { width: 100%; }
+    .tarjeta .miniatura {
+      width: 100%;
+      height: auto;
+      aspect-ratio: 1 / 1;
+      font-size: 2.4rem;
+    }
+
+    .tarjeta .nombre-producto { font-size: 0.95rem; line-height: 1.25; }
+    .tarjeta .categorias { font-size: 0.75rem; color: var(--rosa-medio); }
+
+    /* Precio a la izquierda, stock a la derecha */
+    .tarjeta-fila {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .tarjeta .precio { font-weight: 800; font-size: 1.05rem; }
+    .tarjeta .stock  { font-size: 0.78rem; color: var(--texto-suave); }
+
+    /* Los botones al fondo de la tarjeta, repartidos a lo ancho */
+    .tarjeta .acciones-fila { margin-top: auto; }
+    .tarjeta .acciones-fila button { flex: 1; }
+
     /* Aparecer: sube un poco mientras se hace visible */
     @keyframes aparecer {
       from { opacity: 0; transform: translateY(12px); }
@@ -998,6 +1072,9 @@
       <input type="search" id="input-busqueda"
              placeholder="Buscar por nombre, categoría o ID...">
       <button type="submit" id="btn-buscar">Buscar</button>
+      <!-- Cambia entre ver los productos en tabla o en tarjetas.
+           type="button" para que NO envíe el buscador al clicarlo -->
+      <button type="button" id="btn-vista" title="Cambiar vista">▦ Tarjetas</button>
     </form>
     <div id="resultados-busqueda"></div>
   </aside>

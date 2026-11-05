@@ -397,30 +397,95 @@ document.getElementById("resultados-busqueda").addEventListener("error", (evento
   }
 }, true);
 
-// Dibuja los productos como una TABLA dentro de #resultados-busqueda:
-// una fila (<tr>) por producto y una celda (<td>) por dato
+// ===================== VISTA: TABLA O TARJETAS =====================
+// vistaActual decide cómo dibuja mostrarResultados(). Guardamos también
+// los últimos productos mostrados, para redibujarlos al cambiar de vista
+// SIN volver a consultar Supabase.
+let vistaActual = "tabla";
+try { vistaActual = localStorage.getItem("vista") || "tabla"; } catch (e) {}
+let ultimosProductos = [];
+
+const btnVista = document.getElementById("btn-vista");
+
+function actualizarBotonVista() {
+  // El botón muestra la vista a la que VAS a cambiar, no la actual
+  btnVista.innerText = vistaActual === "tabla" ? "▦ Tarjetas" : "☰ Tabla";
+}
+
+btnVista.addEventListener("click", () => {
+  vistaActual = vistaActual === "tabla" ? "tarjetas" : "tabla";
+  try { localStorage.setItem("vista", vistaActual); } catch (e) {}
+  actualizarBotonVista();
+  mostrarResultados(ultimosProductos);
+});
+
+actualizarBotonVista();
+
+// 90000 → "$90.000" (formato colombiano, con punto de miles)
+const formato = (n) => '$' + Number(n).toLocaleString('es-CO');
+
+// Foto del producto como botón (clic = editar su imagen). La usan
+// las dos vistas, así no repetimos este HTML
+function fotoProducto(p) {
+  return `
+    <button type="button" class="btn-foto" data-id="${p.id}" title="Cambiar imagen">
+      ${p.imagen_url
+        ? `<img class="miniatura" src="${p.imagen_url}" alt="${p.nombre.trim()}" loading="lazy">`
+        : fotoSinImagen(p.nombre)}
+    </button>`;
+}
+
+// Dibuja los productos como TARJETAS: un <article> por producto.
+// Usan las MISMAS clases de botón (btn-editar, btn-eliminar, btn-foto)
+// que la tabla, así el listener de clics de abajo sirve para ambas.
+function mostrarTarjetas(productos, contenedor) {
+  const tarjetas = productos.map((p, i) => `
+    <article class="tarjeta" data-producto style="--i: ${i}">
+      ${fotoProducto(p)}
+      <div>
+        <span class="nombre-producto">${p.nombre.trim()}</span>
+        <span class="categorias">${(p.categorias || []).join(", ")}</span>
+      </div>
+      <div class="tarjeta-fila">
+        <span class="precio">${formato(p.precio)}</span>
+        <span class="stock">${p.unidades} uds.</span>
+      </div>
+      <span class="estado ${p.disponible ? "disponible" : "agotado"}">
+        ${p.disponible ? "Disponible" : "Agotado"}
+      </span>
+      <div class="acciones-fila">
+        <button type="button" class="btn-editar" data-id="${p.id}">Editar</button>
+        <button type="button" class="btn-eliminar" data-id="${p.id}">Eliminar</button>
+      </div>
+    </article>
+  `).join("");
+
+  contenedor.innerHTML = `<div class="grilla-tarjetas">${tarjetas}</div>`;
+}
+
+// Dibuja los productos dentro de #resultados-busqueda, en TABLA
+// (una fila <tr> por producto) o en TARJETAS, según vistaActual
 function mostrarResultados(productos) {
   const contenedor = document.getElementById("resultados-busqueda");
+  ultimosProductos = productos;
 
   if (productos.length === 0) {
     contenedor.innerHTML = "<p class='sin-resultados'>No se encontraron productos.</p>";
     return;
   }
 
-  // 90000 → "$90.000" (formato colombiano, con punto de miles)
-  const formato = (n) => '$' + Number(n).toLocaleString('es-CO');
+  if (vistaActual === "tarjetas") {
+    mostrarTarjetas(productos, contenedor);
+    return;
+  }
 
   // "i" es la posición de la fila (0, 1, 2...). La pasamos al CSS como
   // --i para que cada fila aparezca un poquito después que la anterior
   const filas = productos.map((p, i) => `
-    <tr style="--i: ${i}">
+    <tr data-producto style="--i: ${i}">
       <td>
         <!-- La foto es un botón: al hacer clic abre el producto para cambiar su imagen -->
-        <button type="button" class="btn-foto" data-id="${p.id}" title="Cambiar imagen">
-          ${p.imagen_url
-            ? `<img class="miniatura" src="${p.imagen_url}" alt="${p.nombre.trim()}" loading="lazy">`
-            : fotoSinImagen(p.nombre)}
-        </button>
+        ${fotoProducto(p)}
       </td>
       <td>
         <span class="nombre-producto">${p.nombre.trim()}</span>
@@ -488,8 +553,9 @@ document.getElementById("resultados-busqueda").addEventListener("click", async (
   const botonEliminar = evento.target.closest(".btn-eliminar");
   if (botonEliminar) {
     const id = Number(botonEliminar.dataset.id);
-    // closest("tr") = la fila del botón; de ahí sacamos el nombre del producto
-    const nombre = botonEliminar.closest("tr").querySelector(".nombre-producto").innerText;
+    // closest("[data-producto]") = la fila O la tarjeta del botón (las dos
+    // tienen ese atributo); de ahí sacamos el nombre del producto
+    const nombre = botonEliminar.closest("[data-producto]").querySelector(".nombre-producto").innerText;
 
     // Borrar NO se puede deshacer, así que pedimos confirmación.
     // confirm() muestra una ventanita con "Aceptar" (true) y "Cancelar" (false)

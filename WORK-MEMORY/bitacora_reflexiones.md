@@ -194,3 +194,23 @@ layout) tiene más sentido para el proyecto.
 
 **Reflexión**
 - _(pendiente: la escribe el estudiante)_
+
+
+## 2026-11-05
+
+> _Entrada redactada por el agente a pedido del estudiante, a partir de lo trabajado en la sesión. Pendiente de revisión del estudiante para que quede en sus propias palabras._
+
+**Cambios**
+- En `prueba2.html` + `prueba2.js` agregué una vista en tarjetas para el recuadro "Productos", con un botón que alterna entre tabla y tarjetas; la elección se guarda en `localStorage`, igual que el tema. Saqué el HTML de la foto a una función `fotoProducto()` que usan las dos vistas.
+- Ajusté el ancho de las dos columnas del layout (formulario más angosto, panel de productos más ancho) y arreglé que los campos del formulario se salieran y se recortaran.
+- Creé `sql/politicas_update_delete.sql` con las políticas RLS de `update` y `delete` para `products_practice`.
+- Revisé la seguridad de `clientes_practica`: comprobé desde `curl`, con la anon key pública, que la tabla aceptaba escrituras anónimas (RLS sin activar).
+
+**Hallazgos**
+- Para que algo no se salga de una grid/flex aunque uses `fr` o `flex:1`, casi siempre falta `minmax(0, …)` o `min-width: 0`: un `1fr` es en realidad `minmax(auto, 1fr)`, y ese `auto` no deja que la columna sea más angosta que su contenido.
+- La delegación de eventos hizo que Editar/Eliminar/foto funcionaran en las tarjetas sin tocar el listener; solo cambié `closest("tr")` por `closest("[data-producto]")` para que sirva en las dos vistas.
+- La **anon key es pública por diseño**: viaja en el navegador y se ve en el inspector (`supabaseClient.js`, cabecera `apikey` en Network). Esconderla no protege nada; lo único que protege es RLS.
+- `error === null` **no** significa "se hizo" ni "estoy protegido". En el `curl` de prueba la respuesta no fue un `401/403` de permisos sino un error de constraint (`id` not-null): eso probó que RLS **no** estaba frenando la escritura, solo faltaba el `id`.
+
+**Errores**
+- `No se modificó nada: revisa el id o la política RLS de update` (RLS sin política de `update`): el update devolvía `[]` sin error. Se resuelve ejecutando `politicas_update_delete.sql`. Es el 3er caso Supabase con la misma raíz (`.sql` local ≠ base de datos real) → repasar RLS y políticas por operación.
