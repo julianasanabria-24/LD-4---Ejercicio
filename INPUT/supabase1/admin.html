@@ -953,7 +953,46 @@
 </head>
 <body>
 
+  <section id="zona-acceso-admin">
+  <p id="estado-sesion-admin" role="status">No has iniciado sesión.</p>
+
+  <form id="form-registro-admin">
+    <h3>Registrar administrador</h3>
+    <label for="admin-registro-nombre">Nombre</label>
+    <input id="admin-registro-nombre" type="text" required>
+
+    <label for="admin-registro-correo">Correo</label>
+    <input id="admin-registro-correo" type="email" required>
+
+    <label for="admin-registro-password">Contraseña</label>
+    <input id="admin-registro-password" type="password" minlength="6" required>
+
+    <button type="submit">Crear cuenta de administrador</button>
+  </form>
+
+  <form id="form-login-admin">
+    <h3>Iniciar sesión</h3>
+    <label for="admin-login-correo">Correo</label>
+    <input id="admin-login-correo" type="email" required>
+
+    <label for="admin-login-password">Contraseña</label>
+    <input id="admin-login-password" type="password" required>
+
+    <button type="submit">Iniciar sesión</button>
+  </form>
+</section>
+
+<button id="btn-logout-admin" type="button" hidden>Cerrar sesión</button>
+
+  <!-- El botón del tema queda FUERA del panel, para poder usarlo
+       también en la pantalla de login -->
   <button type="button" id="btn-tema">🌙 Modo oscuro</button>
+
+  <!-- PANEL DE ADMINISTRADOR: empieza oculto ("hidden"). admin.js lo
+       muestra solo si hay sesión iniciada Y existe fila en admins_practica.
+       OJO: esto solo oculta lo que se VE. Lo que de verdad protege los
+       datos son las políticas RLS en Supabase. -->
+  <main id="panel-admin" hidden>
 
   <!-- ENCABEZADO: título y estadísticas (los números los llena admin.js) -->
   <header class="encabezado">
@@ -1081,6 +1120,7 @@
   </aside>
 
   </div>
+  </main>
 
   <!-- supabaseClient.js crea "db" (sección 4.3): el cliente ya
        conectado a tu proyecto de Supabase. Lo vamos a usar en
@@ -1089,4 +1129,5 @@
   <!-- admin.js: lógica del panel (listar, agregar, buscar, editar, eliminar) -->
   <script src="js/admin.js"></script>
 </body>
+
 </html>

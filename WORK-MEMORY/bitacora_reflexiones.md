@@ -225,9 +225,14 @@ layout) tiene más sentido para el proyecto.
 - Actualicé `<script src="js/admin.js">` en `admin.html` y los comentarios que nombraban `prueba2` en `admin.html`, `cliente.html`, `css/cuenta.css` y `js/tema.js`. Corregí también los comentarios del final de `admin.html` que aún decían `prueba.js`.
 - Agregué `<title>Panel de productos</title>` a `admin.html`, que no tenía título.
 - Las entradas anteriores de esta bitácora y de `OUTPUT/` siguen diciendo `prueba2`: son registros de su fecha y no se reescriben.
+- Agregué en `admin.html` los formularios para registrar administrador e iniciar sesión (`#zona-acceso-admin`), con su lógica en `admin.js` (`signUp` + insert en `admins_practica`, `signInWithPassword`, `signOut`).
+- El panel CRUD (encabezado + formulario + productos) quedó dentro de `<main id="panel-admin" hidden>`. `mostrarEstadoSesionAdmin()` lo muestra solo si hay sesión **y** fila en `admins_practica`; además oculta los formularios de acceso, muestra "Cerrar sesión" y recién ahí carga los productos (antes se cargaban al abrir la página, aunque nadie hubiera entrado).
+- Cambié `.single()` por `.maybeSingle()` al leer `admins_practica` y borré una `eliminarProducto` duplicada que estaba metida dentro del listener del tema (usaba la tabla `productos_practica`, que no existe).
 
 **Hallazgos**
 - Renombrar un archivo rompe todo lo que lo carga por ruta (`src`, `href`); el navegador no avisa con error de JS, solo con un `404` en la pestaña Network.
+- Ocultar el panel con `hidden` es solo **interfaz**: con F12 se puede quitar el atributo o llamar a `db.from(...).delete()` desde la consola. La protección real de `products_practice` tiene que venir de políticas RLS que revisen `admins_practica` (pendiente).
+- El orden importa: `mostrarEstadoSesionAdmin()` se llama al final de `admin.js` porque usa `requestSubmit()` sobre `form-busqueda`, y el listener de ese formulario tiene que existir antes.
 
 **Reflexión**
 - _(pendiente: la escribe el estudiante)_

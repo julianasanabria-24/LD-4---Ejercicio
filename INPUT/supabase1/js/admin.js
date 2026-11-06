@@ -1,3 +1,101 @@
+document.getElementById('form-registro-admin').addEventListener('submit', async (evento) => {
+  evento.preventDefault();
+  const form = evento.target;
+
+  const { data, error } = await db.auth.signUp({
+    email: form.elements['admin-registro-correo'].value,
+    password: form.elements['admin-registro-password'].value,
+  });
+
+  if (error) {
+    document.getElementById('estado-sesion-admin').innerText = 'Error al registrar: ' + error.message;
+    return;
+  }
+
+  const { error: errorPerfil } = await db.from('admins_practica').insert([{
+    id: data.user.id,
+    nombre: form.elements['admin-registro-nombre'].value.trim(),
+    correo: form.elements['admin-registro-correo'].value.trim(),
+  }]);
+
+  if (errorPerfil) {
+    document.getElementById('estado-sesion-admin').innerText = 'Cuenta creada, pero falló el perfil: ' + errorPerfil.message;
+    return;
+  }
+
+  document.getElementById('estado-sesion-admin').innerText = 'Cuenta de administrador creada. Ya puedes iniciar sesión.';
+  form.reset();
+});
+
+document.getElementById('form-login-admin').addEventListener('submit', async (evento) => {
+  evento.preventDefault();
+  const form = evento.target;
+
+  const { error } = await db.auth.signInWithPassword({
+    email: form.elements['admin-login-correo'].value,
+    password: form.elements['admin-login-password'].value,
+  });
+
+  if (error) {
+    document.getElementById('estado-sesion-admin').innerText = 'Error al iniciar sesión: ' + error.message;
+    return;
+  }
+
+  form.reset();   // no dejamos la contraseña escrita en el campo
+  mostrarEstadoSesionAdmin();
+});
+
+// Muestra el panel CRUD o los formularios de acceso. Se llama al cargar
+// la página, después del login y después de cerrar sesión.
+async function mostrarEstadoSesionAdmin() {
+  const { data } = await db.auth.getUser();
+  const estado = document.getElementById('estado-sesion-admin');
+
+  // Importante: tener sesión no basta — confirmamos que además exista
+  // su fila en admins_practica. .maybeSingle() devuelve null (sin error)
+  // si no hay fila; .single() lo trataría como error.
+  let perfil = null;
+  if (data.user) {
+    const { data: fila, error } = await db
+      .from('admins_practica')
+      .select('nombre')
+      .eq('id', data.user.id)
+      .maybeSingle();
+    if (error) console.log('Error al leer admins_practica:', error);
+    perfil = fila;
+  }
+
+  const esAdmin = Boolean(perfil);
+
+  // hidden = true oculta el elemento; hidden = false lo muestra
+  document.getElementById('panel-admin').hidden = !esAdmin;
+  document.getElementById('zona-acceso-admin').hidden = esAdmin;
+  // El botón de salir aparece con CUALQUIER sesión, para que alguien
+  // sin perfil de admin también pueda cerrarla
+  document.getElementById('btn-logout-admin').hidden = !data.user;
+
+  if (!data.user) {
+    estado.innerText = 'No has iniciado sesión.';
+    return;
+  }
+
+  if (!esAdmin) {
+    estado.innerText = 'Sesión iniciada, pero sin perfil de administrador.';
+    return;
+  }
+
+  estado.innerText = 'Sesión iniciada como ' + perfil.nombre + ' (admin).';
+
+  // Solo ahora cargamos los datos: requestSubmit() "envía" el buscador
+  // vacío por código → trae todos los productos y las estadísticas
+  document.getElementById('form-busqueda').requestSubmit();
+}
+
+document.getElementById('btn-logout-admin').addEventListener('click', async () => {
+  await db.auth.signOut();
+  mostrarEstadoSesionAdmin();
+});
+
 document.getElementById('btn-traer').addEventListener('click', async () => {
 
   // "async" convierte esta función (el listener del clic) en una función
@@ -637,17 +735,6 @@ function aplicarTema(tema) {
 btnTema.addEventListener("click", () => {
   const actual = document.documentElement.dataset.tema;
   aplicarTema(actual === "oscuro" ? "claro" : "oscuro");
-
-  async function eliminarProducto(id) {
-
-  const { error } = await db
-    .from('productos_practica')
-    .delete()
-    .eq('id', id);
-
-  return !error;   // true si NO hubo error (se borró bien), false si falló
-}
-
 });
 
 aplicarTema(document.documentElement.dataset.tema);
@@ -669,6 +756,7 @@ async function actualizarEstadisticas() {
   document.getElementById("stat-unidades").innerText = unidades.toLocaleString('es-CO');
 }
 
-// Al abrir la página, el recuadro de productos se llena con todos:
-// requestSubmit() "envía" el buscador vacío por código
-document.getElementById("form-busqueda").requestSubmit();
+// Al abrir la página, revisamos si ya había una sesión de admin activa.
+// Va AL FINAL a propósito: mostrarEstadoSesionAdmin() usa el buscador
+// (form-busqueda) y su listener tiene que estar registrado antes.
+mostrarEstadoSesionAdmin();
