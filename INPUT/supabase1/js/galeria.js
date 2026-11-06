@@ -1,106 +1,14 @@
 // =================================================================
 // GALERÍA DE PRODUCTOS (galeria.html)
-// Por ahora SIN Supabase: los productos viven en un array de prueba.
-// Tienen la MISMA forma que las filas de products_practice, así que
-// cuando conectemos Supabase solo cambia de dónde vienen (ver
-// cargarProductos() más abajo).
+// Los productos vienen de la tabla products_practice de Supabase (la
+// misma que administras en admin.html). Ver cargarProductos() al final.
 // =================================================================
-
-const productosPrueba = [
-  {
-    id: 1,
-    nombre: "Audífonos Bluetooth X200",
-    description: "Cancelación de ruido, 30 horas de batería y estuche de carga rápida.",
-    precio: 189000,
-    unidades: 12,
-    descuento: 0.15,
-    disponible: true,
-    categorias: ["tecnologia", "audio"],
-    imagen_url: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=600&q=80&auto=format&fit=crop",
-  },
-  {
-    id: 2,
-    nombre: "Camiseta Básica Algodón",
-    description: "100% algodón peinado, corte recto. Disponible en tallas S a XL.",
-    precio: 45000,
-    unidades: 40,
-    descuento: 0,
-    disponible: true,
-    categorias: ["ropa"],
-    imagen_url: "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=600&q=80&auto=format&fit=crop",
-  },
-  {
-    id: 3,
-    nombre: "Silla Gamer ProMax",
-    description: "Reclinable 180°, cojín lumbar y apoyabrazos 4D. Soporta hasta 150 kg.",
-    precio: 890000,
-    unidades: 3,
-    descuento: 0.1,
-    disponible: true,
-    categorias: ["gaming", "hogar"],
-    imagen_url: null,   // sin foto a propósito: así ves el cuadrito con la inicial
-  },
-  {
-    id: 4,
-    nombre: "Reloj Minimalista",
-    description: "Caja de acero de 40 mm, correa de cuero y resistencia al agua 5 ATM.",
-    precio: 320000,
-    unidades: 0,
-    descuento: 0,
-    disponible: false,   // agotado: se ve en gris y no se puede agregar
-    categorias: ["accesorios"],
-    imagen_url: "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=600&q=80&auto=format&fit=crop",
-  },
-  {
-    id: 5,
-    nombre: "Tenis Urbanos Rojos",
-    description: "Suela de caucho, plantilla acolchada y malla transpirable.",
-    precio: 260000,
-    unidades: 8,
-    descuento: 0.2,
-    disponible: true,
-    categorias: ["ropa", "calzado"],
-    imagen_url: "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=600&q=80&auto=format&fit=crop",
-  },
-  {
-    id: 6,
-    nombre: "Cámara Instantánea",
-    description: "Imprime tus fotos al momento. Incluye 10 hojas de papel fotográfico.",
-    precio: 410000,
-    unidades: 5,
-    descuento: 0,
-    disponible: true,
-    categorias: ["tecnologia", "fotografia"],
-    imagen_url: "https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f?w=600&q=80&auto=format&fit=crop",
-  },
-  {
-    id: 7,
-    nombre: "Gafas de Sol Clásicas",
-    description: "Lentes polarizados con protección UV400 y marco de acetato.",
-    precio: 120000,
-    unidades: 20,
-    descuento: 0,
-    disponible: true,
-    categorias: ["accesorios"],
-    imagen_url: "https://images.unsplash.com/photo-1572635196237-14b3f281503f?w=600&q=80&auto=format&fit=crop",
-  },
-  {
-    id: 8,
-    nombre: "Morral Explorador",
-    description: "Compartimento acolchado para portátil de 15\", tela impermeable.",
-    precio: 175000,
-    unidades: 2,
-    descuento: 0.1,
-    disponible: true,
-    categorias: ["accesorios", "viaje"],
-    imagen_url: "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=600&q=80&auto=format&fit=crop",
-  },
-];
 
 // Todos los productos (se llena en cargarProductos)
 let productos = [];
 
-// Filtros actuales: lo que se escribió en el buscador y el chip activo
+// Filtros actuales: lo que se escribió en el buscador y el chip activo.
+// categoriaActiva se guarda NORMALIZADA ("tecnologia", sin tilde).
 let textoBusqueda = "";
 let categoriaActiva = "todas";
 
@@ -258,8 +166,10 @@ function mostrarProductos() {
     const coincideTexto =
       normalizar(p.nombre).includes(buscado) ||
       (p.categorias || []).some((c) => normalizar(c).includes(buscado));
+    // Comparamos normalizado: "tecnología" y "tecnologia" cuentan igual
     const coincideCategoria =
-      categoriaActiva === "todas" || (p.categorias || []).includes(categoriaActiva);
+      categoriaActiva === "todas" ||
+      (p.categorias || []).some((c) => normalizar(c) === categoriaActiva);
     return coincideTexto && coincideCategoria;
   });
 
@@ -275,15 +185,27 @@ function mostrarProductos() {
 
 // ===================== CHIPS DE CATEGORÍA =====================
 // Sacamos las categorías de los mismos productos: si agregas uno con
-// una categoría nueva, su chip aparece solo.
+// una categoría nueva en admin.html, su chip aparece solo.
 function mostrarChips() {
-  // flatMap junta todos los arrays en uno; new Set quita los repetidos
-  const categorias = [...new Set(productos.flatMap((p) => p.categorias || []))].sort();
+  // En la base hay "tecnología" (con tilde) y "tecnologia" (sin tilde).
+  // Un Set las vería distintas y saldrían DOS chips. Por eso usamos un
+  // Map: la clave es la versión normalizada ("tecnologia") y el valor es
+  // el texto que se muestra (el primero que aparezca).
+  const categorias = new Map();
+  productos
+    .flatMap((p) => p.categorias || [])   // flatMap junta todos los arrays en uno
+    .forEach((c) => {
+      const clave = normalizar(c.trim());
+      if (clave && !categorias.has(clave)) categorias.set(clave, c.trim());
+    });
 
-  document.getElementById("chips-categorias").innerHTML = ["todas", ...categorias]
-    .map((c) => `
-      <button type="button" class="chip" data-categoria="${c}"
-        aria-pressed="${c === categoriaActiva}">${c}</button>`)
+  // Ordenamos por la clave, y "todas" siempre va primero
+  const chips = [["todas", "todas"], ...[...categorias].sort(([a], [b]) => a.localeCompare(b))];
+
+  document.getElementById("chips-categorias").innerHTML = chips
+    .map(([clave, texto]) => `
+      <button type="button" class="chip" data-categoria="${clave}"
+        aria-pressed="${clave === categoriaActiva}">${texto}</button>`)
     .join("");
 }
 
@@ -445,17 +367,48 @@ function mostrarAviso(mensaje) {
 
 
 // ===================== ARRANQUE =====================
-// async aunque hoy no espera nada: cuando conectemos Supabase, solo
-// cambia la línea marcada y el resto del código sigue igual.
+// Igual que en admin.js: la consulta viaja a Supabase y vuelve, por eso
+// "await" (y por eso la función es async).
 async function cargarProductos() {
-  productos = productosPrueba;
-  // CON SUPABASE (más adelante):
-  // const { data, error } = await db.from('products_practice').select('*').order('id');
-  // productos = error ? [] : data;
+  const { data, error } = await db
+    .from('products_practice')
+    .select('*')
+    .order('id');
 
+  if (error) {
+    console.log("Error al traer productos:", error);
+    document.getElementById("grilla-productos").innerHTML =
+      `<p class="sin-resultados">No pudimos cargar los productos 😕<br>Revisa la consola (F12).</p>`;
+    document.getElementById("conteo-resultados").innerText = "";
+    return;
+  }
+
+  // Limpiamos lo que escribieron a mano en admin: nombres con espacios
+  // de más, y números que pueden llegar en null
+  productos = data.map((p) => ({
+    ...p,   // "..." copia todas las columnas tal cual; abajo pisamos algunas
+    nombre: (p.nombre || "Sin nombre").trim(),
+    precio: Number(p.precio) || 0,
+    unidades: Number(p.unidades) || 0,
+    descuento: Number(p.descuento) || 0,
+  }));
+
+  limpiarCarrito();
   mostrarChips();
   mostrarProductos();
   pintarCarrito();
+}
+
+// El carrito guardado en localStorage puede estar desactualizado: el
+// admin pudo borrar un producto, marcarlo agotado o bajarle el stock.
+// Antes de mostrarlo lo "sincronizamos" con lo que dice la base de datos.
+function limpiarCarrito() {
+  for (const id of Object.keys(carrito)) {
+    const p = buscarProducto(Number(id));
+    if (!p || !sePuedeComprar(p)) delete carrito[id];               // ya no se puede comprar
+    else carrito[id] = Math.min(carrito[id], p.unidades);           // no más que el stock
+  }
+  guardarCarrito();
 }
 
 cargarProductos();

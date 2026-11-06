@@ -241,7 +241,11 @@ layout) tiene más sentido para el proyecto.
   - Carrito como panel lateral (mismo patrón que `#sidebar-perfil`), con subtotal, ahorro y total; se guarda en `localStorage` como `{ id: cantidad }`.
   - Datos de prueba con la misma forma que `products_practice`: para conectar Supabase solo cambia `cargarProductos()`.
 
+- Conecté la galería a Supabase: borré los productos de prueba y `cargarProductos()` ahora trae `products_practice` (la tabla `products` no existe en el proyecto: la API responde `404 PGRST205`). Muestra "Cargando productos…" mientras llega la respuesta y un mensaje si falla.
+- `limpiarCarrito()` sincroniza el carrito de `localStorage` con la base al cargar: quita productos borrados o agotados y baja la cantidad si el stock bajó.
+
 **Hallazgos de la galería**
+- En la base hay `"tecnología"` y `"tecnologia"` (escritas a mano en admin): un `Set` las toma como distintas y salían dos chips. Uso un `Map` con la clave normalizada (`normalizar()`), y el filtro también compara normalizado. Sería mejor limpiar el dato en la base, pero el código no debería depender de eso.
 - En el ejemplo, al hacer clic rápido en `+` el texto del botón quedaba seleccionado (el navegador lo toma como doble clic). Se evita con `user-select: none` en los botones.
 - `animation: ... both` deja aplicado el `transform` final de la animación y le gana al `transform` del `:hover` (las animaciones pesan más que las reglas normales). Por eso las tarjetas usan `backwards`.
 - En el carrito guardo solo `{ id: cantidad }` y no el producto entero: el nombre y el precio se buscan cada vez, así no quedan precios viejos guardados.

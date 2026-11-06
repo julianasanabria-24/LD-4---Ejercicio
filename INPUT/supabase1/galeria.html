@@ -53,7 +53,10 @@
     <p id="conteo-resultados" role="status"></p>
 
     <!-- GRILLA: galeria.js dibuja aquí una tarjeta por producto -->
-    <main id="grilla-productos"></main>
+    <main id="grilla-productos">
+      <!-- Se ve mientras llega la respuesta de Supabase; galeria.js lo reemplaza -->
+      <p class="sin-resultados">Cargando productos…</p>
+    </main>
 
     <!-- Capa oscura detrás del carrito: al hacer clic, se cierra -->
     <div id="fondo-carrito"></div>
@@ -84,6 +87,12 @@
     <!-- AVISO (toast): mensaje corto que aparece abajo y se va solo -->
     <div id="aviso" role="status" aria-live="polite"></div>
 
+    <!-- Orden importante (igual que en admin.html):
+         1° la librería de Supabase (crea el objeto global "supabase")
+         2° supabaseClient.js (usa ese objeto para crear "db")
+         3° galeria.js (usa "db" para traer los productos) -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/supabaseClient.js"></script>
     <script src="js/tema.js"></script>
     <script src="js/galeria.js"></script>
   </body>
