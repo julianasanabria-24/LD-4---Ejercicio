@@ -258,4 +258,9 @@ layout) tiene más sentido para el proyecto.
 - Probar en el navegador `admin.html` (con y sin sesión) y `galeria.html` (carrito, chips, modo oscuro).
 
 **Reflexión**
-- _(pendiente: la escribe el estudiante)_
+> _Borrador redactado por el agente a pedido del estudiante, a partir de lo que pasó en la sesión. Pendiente de que el estudiante lo revise y lo reescriba con sus propias palabras._
+
+- **Lo que aprendí:** que esconder algo en la página no es lo mismo que protegerlo. Con `hidden` el panel no se ve, pero cualquiera puede abrir F12 y llamar a Supabase directo. Lo que de verdad cuida los datos es RLS. Ahora lo veo como dos capas: la interfaz decide qué se *ve* y la base de datos decide qué se *puede hacer*.
+- **Lo que me costó:** entender por qué el orden del código importa. `mostrarEstadoSesionAdmin()` tenía que ir al final porque usa el buscador, y el listener del buscador tiene que existir antes. También me sorprendió que una animación con `both` le ganara al `:hover`.
+- **Lo que me sirvió:** construir la galería primero con datos de prueba que tenían la misma forma que la tabla. Al conectar Supabase solo cambió una función. También vi que los datos reales vienen "sucios" (`tecnología` y `tecnologia`), y el código tiene que aguantar eso.
+- **Para la próxima:** hacer las políticas RLS de admin y probar las páginas en el navegador antes de seguir agregando cosas.
