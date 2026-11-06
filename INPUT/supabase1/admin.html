@@ -2,6 +2,7 @@
 <html>
 <head>
   <meta charset="UTF-8">
+  <title>Panel de productos</title>
   <!-- CDN: trae la librería de Supabase ANTES que nuestros propios
        scripts — sin esta línea, "supabase.createClient" no existiría
        todavía cuando supabaseClient.js intente usarlo -->
@@ -954,7 +955,7 @@
 
   <button type="button" id="btn-tema">🌙 Modo oscuro</button>
 
-  <!-- ENCABEZADO: título y estadísticas (los números los llena prueba2.js) -->
+  <!-- ENCABEZADO: título y estadísticas (los números los llena admin.js) -->
   <header class="encabezado">
     <div>
       <span class="etiqueta-superior">Conectado a Supabase</span>
@@ -976,7 +977,7 @@
   <div class="columna-form">
   <!-- FORMULARIO: cada campo corresponde a una propiedad del objeto
        productoPrueba (y a una columna de la tabla en Supabase).
-       El atributo "name" de cada input es el que usamos en prueba2.js
+       El atributo "name" de cada input es el que usamos en admin.js
        para leer su valor. "required" hace que el navegador no deje
        enviar el formulario si ese campo está vacío. -->
   <form id="form-producto">
@@ -1083,9 +1084,9 @@
 
   <!-- supabaseClient.js crea "db" (sección 4.3): el cliente ya
        conectado a tu proyecto de Supabase. Lo vamos a usar en
-       prueba.js, por eso tiene que cargarse ANTES que ese archivo -->
+       admin.js, por eso tiene que cargarse ANTES que ese archivo -->
   <script src="js/supabaseClient.js"></script>
-  <!-- prueba.js: aquí escribes el código de los Pasos 2, 3 y 4 -->
-  <script src="js/prueba2.js"></script>
+  <!-- admin.js: lógica del panel (listar, agregar, buscar, editar, eliminar) -->
+  <script src="js/admin.js"></script>
 </body>
 </html>

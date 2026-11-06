@@ -1,5 +1,5 @@
 // ===================== MODO CLARO / OSCURO =====================
-// Mismo código que en prueba2.js: el tema se guarda como atributo en
+// Mismo código que en admin.js: el tema se guarda como atributo en
 // <html data-tema="oscuro">, y el CSS cambia las variables de color
 // según ese atributo. El script pequeño del <head> ya puso el tema
 // guardado al cargar; aquí solo lo cambiamos.

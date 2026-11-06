@@ -214,3 +214,20 @@ layout) tiene más sentido para el proyecto.
 
 **Errores**
 - `No se modificó nada: revisa el id o la política RLS de update` (RLS sin política de `update`): el update devolvía `[]` sin error. Se resuelve ejecutando `politicas_update_delete.sql`. Es el 3er caso Supabase con la misma raíz (`.sql` local ≠ base de datos real) → repasar RLS y políticas por operación.
+
+
+## 2026-11-06
+
+> _Entrada redactada por el agente a pedido del estudiante. Pendiente de revisión del estudiante para que quede en sus propias palabras._
+
+**Cambios**
+- Renombré `prueba2.html` → `admin.html` y `js/prueba2.js` → `js/admin.js` con `git mv` (git lo registra como renombre y conserva el historial).
+- Actualicé `<script src="js/admin.js">` en `admin.html` y los comentarios que nombraban `prueba2` en `admin.html`, `cliente.html`, `css/cuenta.css` y `js/tema.js`. Corregí también los comentarios del final de `admin.html` que aún decían `prueba.js`.
+- Agregué `<title>Panel de productos</title>` a `admin.html`, que no tenía título.
+- Las entradas anteriores de esta bitácora y de `OUTPUT/` siguen diciendo `prueba2`: son registros de su fecha y no se reescriben.
+
+**Hallazgos**
+- Renombrar un archivo rompe todo lo que lo carga por ruta (`src`, `href`); el navegador no avisa con error de JS, solo con un `404` en la pestaña Network.
+
+**Reflexión**
+- _(pendiente: la escribe el estudiante)_
