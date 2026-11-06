@@ -992,16 +992,11 @@
       font-weight: 600;
     }
 
-    /* DOS COLUMNAS. minmax(0, 1fr) evita que un contenido largo
-       ensanche la columna (lo mismo que arreglamos en .layout) */
+    /* UNA COLUMNA centrada: solo se ve una tarjeta a la vez.
+       min(440px, 100%) = 440px, o todo el ancho si la pantalla es más angosta */
     .tarjetas-acceso {
-      display: grid;
-      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-      gap: 24px;
-      align-items: start;
-    }
-    @media (max-width: 760px) {
-      .tarjetas-acceso { grid-template-columns: minmax(0, 1fr); }
+      width: min(440px, 100%);
+      margin: 0 auto;
     }
 
     /* VIDRIO: igual que #form-producto y #panel-productos */
@@ -1021,7 +1016,6 @@
       box-shadow: 0 30px 60px -30px var(--sombra-color), inset 0 1px 0 var(--borde-vidrio);
       animation: aparecer 0.6s ease both;
     }
-    #form-login-admin { animation-delay: 0.1s; }
 
     /* Franja de color arriba de cada tarjeta */
     #form-registro-admin::before,
@@ -1093,6 +1087,39 @@
       font-size: 1rem;
     }
 
+    /* "¿Aún no tienes cuenta?" con una línea a cada lado */
+    .separador-acceso {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin: 16px 0 0;
+      font-size: 0.8rem;
+      color: var(--texto-suave);
+    }
+    .separador-acceso::before,
+    .separador-acceso::after {
+      content: "";
+      flex: 1;
+      height: 1px;
+      background: var(--linea);
+    }
+
+    /* Botones secundarios (Registrar / Volver): de contorno, sin
+       degradado, para que no compitan con el botón principal */
+    #zona-acceso-admin button.secundario {
+      margin-top: 8px;
+      padding: 12px 20px;
+      font-size: 0.92rem;
+      background: transparent;
+      color: var(--rosa-fuerte);
+      border: 1px solid var(--linea);
+      box-shadow: none;
+    }
+    #zona-acceso-admin button.secundario:hover {
+      background: var(--campo-vidrio);
+      border-color: var(--rosa-medio);
+    }
+
     /* CERRAR SESIÓN: botón "de contorno" de vidrio, fijo arriba a la
        izquierda (espejo del botón de tema). Al pasar el mouse se pone
        rojo, para que se note que es "salir" */
@@ -1147,9 +1174,27 @@
     <p>Inicia sesión con tu cuenta de administrador para gestionar los productos.</p>
   </header>
 
-  <!-- DOS COLUMNAS: Registrar | Iniciar sesión (como en cliente.html) -->
+  <!-- UNA SOLA TARJETA A LA VEZ: se ve el login, y el botón
+       "Registrar cuenta de administrador" lo cambia por el registro.
+       admin.js alterna el "hidden" de los dos formularios. -->
   <div class="tarjetas-acceso">
-  <form id="form-registro-admin">
+  <form id="form-login-admin">
+    <h3>Iniciar sesión</h3>
+    <label for="admin-login-correo">Correo</label>
+    <input id="admin-login-correo" type="email" required>
+
+    <label for="admin-login-password">Contraseña</label>
+    <input id="admin-login-password" type="password" required>
+
+    <button type="submit">Iniciar sesión</button>
+
+    <!-- type="button": si no, al estar dentro del <form> sería "submit"
+         e intentaría iniciar sesión en vez de mostrar el registro -->
+    <p class="separador-acceso">¿Aún no tienes cuenta?</p>
+    <button type="button" id="btn-mostrar-registro" class="secundario">Registrar cuenta de administrador</button>
+  </form>
+
+  <form id="form-registro-admin" hidden>
     <h3>Registrar administrador</h3>
     <label for="admin-registro-nombre">Nombre</label>
     <input id="admin-registro-nombre" type="text" required>
@@ -1161,17 +1206,7 @@
     <input id="admin-registro-password" type="password" minlength="6" required>
 
     <button type="submit">Crear cuenta de administrador</button>
-  </form>
-
-  <form id="form-login-admin">
-    <h3>Iniciar sesión</h3>
-    <label for="admin-login-correo">Correo</label>
-    <input id="admin-login-correo" type="email" required>
-
-    <label for="admin-login-password">Contraseña</label>
-    <input id="admin-login-password" type="password" required>
-
-    <button type="submit">Iniciar sesión</button>
+    <button type="button" id="btn-volver-login" class="secundario">← Volver a iniciar sesión</button>
   </form>
   </div>
   </section>

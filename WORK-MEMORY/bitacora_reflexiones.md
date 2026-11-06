@@ -230,6 +230,10 @@ layout) tiene más sentido para el proyecto.
 - Cambié `.single()` por `.maybeSingle()` al leer `admins_practica` y borré una `eliminarProducto` duplicada que estaba metida dentro del listener del tema (usaba la tabla `productos_practica`, que no existe).
 - Estilos del acceso de admin con la misma estética de `cliente.html`: encabezado centrado ("Panel de *administración*" con degradado y pastilla "Acceso restringido"), registro y login como tarjetas de vidrio lado a lado (`.tarjetas-acceso`, una debajo de la otra en celular), campos con halo al escribir. El CSS quedó en el `<style>` de `admin.html` y no en `cuenta.css`, porque ese archivo redefine `body`, `button` y `#btn-tema`.
 - Saqué `#estado-sesion-admin` de `#zona-acceso-admin`: al ocultar la zona también se ocultaba el mensaje "Sesión iniciada como…". "Cerrar sesión" quedó como botón de contorno fijo arriba a la izquierda, espejo del botón de tema.
+- Quité la tarjeta de registro siempre visible: ahora solo se ve "Iniciar sesión" (centrada, 440px) con un botón de contorno "Registrar cuenta de administrador" que la cambia por el formulario de registro (`hidden`), y este trae "← Volver a iniciar sesión". La función `mostrarFormularioAcceso("login" | "registro")` en `admin.js` alterna las dos; tras un registro exitoso vuelve sola al login.
+
+**Pendiente de seguridad**
+- Ocultar el registro tras un botón **no** lo hace privado: cualquiera que abra `admin.html` puede crear una cuenta y quedar en `admins_practica`. Lo seguro sería crear los admins a mano desde el dashboard de Supabase y que RLS no permita `insert` en `admins_practica` desde la página.
 
 **Hallazgos**
 - Renombrar un archivo rompe todo lo que lo carga por ruta (`src`, `href`); el navegador no avisa con error de JS, solo con un `404` en la pestaña Network.

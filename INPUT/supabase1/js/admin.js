@@ -1,3 +1,19 @@
+// ===================== LOGIN ⇄ REGISTRO =====================
+// Solo se ve una tarjeta a la vez. "cual" es "login" o "registro".
+// Cada vez que una se vuelve visible, la animación "aparecer" del CSS
+// se repite sola (un elemento que pasa de hidden a visible la reinicia).
+function mostrarFormularioAcceso(cual) {
+  document.getElementById('form-login-admin').hidden = cual !== 'login';
+  document.getElementById('form-registro-admin').hidden = cual !== 'registro';
+
+  // Deja el cursor listo en el primer campo del formulario que se ve
+  const primerCampo = cual === 'login' ? 'admin-login-correo' : 'admin-registro-nombre';
+  document.getElementById(primerCampo).focus();
+}
+
+document.getElementById('btn-mostrar-registro').addEventListener('click', () => mostrarFormularioAcceso('registro'));
+document.getElementById('btn-volver-login').addEventListener('click', () => mostrarFormularioAcceso('login'));
+
 document.getElementById('form-registro-admin').addEventListener('submit', async (evento) => {
   evento.preventDefault();
   const form = evento.target;
@@ -25,6 +41,7 @@ document.getElementById('form-registro-admin').addEventListener('submit', async 
 
   document.getElementById('estado-sesion-admin').innerText = 'Cuenta de administrador creada. Ya puedes iniciar sesión.';
   form.reset();
+  mostrarFormularioAcceso('login');   // volvemos al login para que entre
 });
 
 document.getElementById('form-login-admin').addEventListener('submit', async (evento) => {
