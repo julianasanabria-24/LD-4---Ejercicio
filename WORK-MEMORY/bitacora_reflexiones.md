@@ -232,6 +232,20 @@ layout) tiene más sentido para el proyecto.
 - Saqué `#estado-sesion-admin` de `#zona-acceso-admin`: al ocultar la zona también se ocultaba el mensaje "Sesión iniciada como…". "Cerrar sesión" quedó como botón de contorno fijo arriba a la izquierda, espejo del botón de tema.
 - Quité la tarjeta de registro siempre visible: ahora solo se ve "Iniciar sesión" (centrada, 440px) con un botón de contorno "Registrar cuenta de administrador" que la cambia por el formulario de registro (`hidden`), y este trae "← Volver a iniciar sesión". La función `mostrarFormularioAcceso("login" | "registro")` en `admin.js` alterna las dos; tras un registro exitoso vuelve sola al login.
 
+- Empecé la **galería de productos** para clientes (`galeria.html` + `css/galeria.css` + `js/galeria.js`), sin Supabase por ahora. Tomé como referencia un CodePen de tienda (header con carrito y contador, grilla de tarjetas con foto, nombre, descripción, precio y selector de cantidad), pero con la estética de vidrio rosa del proyecto:
+  - Barra pegada arriba (`sticky`) con logo, tema y botón de carrito con contador que "rebota" al agregar.
+  - Buscador + chips de categoría generados a partir de los productos (`flatMap` + `new Set`).
+  - Grilla `repeat(auto-fill, minmax(240px, 1fr))`: se adapta sola sin `@media`.
+  - Tarjeta: foto `aspect-ratio: 4/3` con zoom al pasar el mouse, etiquetas de descuento y "Agotado", precio tachado si hay descuento, aviso "¡Quedan solo N!" con stock bajo.
+  - "Agregar al carrito" se convierte en el selector `− n +` (no pasa del stock). Solo se redibuja el pie de esa tarjeta, no toda la grilla.
+  - Carrito como panel lateral (mismo patrón que `#sidebar-perfil`), con subtotal, ahorro y total; se guarda en `localStorage` como `{ id: cantidad }`.
+  - Datos de prueba con la misma forma que `products_practice`: para conectar Supabase solo cambia `cargarProductos()`.
+
+**Hallazgos de la galería**
+- En el ejemplo, al hacer clic rápido en `+` el texto del botón quedaba seleccionado (el navegador lo toma como doble clic). Se evita con `user-select: none` en los botones.
+- `animation: ... both` deja aplicado el `transform` final de la animación y le gana al `transform` del `:hover` (las animaciones pesan más que las reglas normales). Por eso las tarjetas usan `backwards`.
+- En el carrito guardo solo `{ id: cantidad }` y no el producto entero: el nombre y el precio se buscan cada vez, así no quedan precios viejos guardados.
+
 **Pendiente de seguridad**
 - Ocultar el registro tras un botón **no** lo hace privado: cualquiera que abra `admin.html` puede crear una cuenta y quedar en `admins_practica`. Lo seguro sería crear los admins a mano desde el dashboard de Supabase y que RLS no permita `insert` en `admins_practica` desde la página.
 

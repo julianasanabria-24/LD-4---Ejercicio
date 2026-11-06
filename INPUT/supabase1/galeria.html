@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Mi Tienda</title>
+
+    <!-- Misma tipografía que admin.html y cliente.html -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet" />
+
+    <!-- Pone el tema ANTES de dibujar la página (así no "parpadea" en claro) -->
+    <script>
+      let temaGuardado = null;
+      try { temaGuardado = localStorage.getItem("tema"); } catch (e) {}
+      document.documentElement.dataset.tema = temaGuardado ||
+        (matchMedia("(prefers-color-scheme: dark)").matches ? "oscuro" : "claro");
+    </script>
+
+    <link rel="stylesheet" href="css/galeria.css" />
+  </head>
+  <body>
+
+    <!-- BARRA SUPERIOR: queda pegada arriba al bajar (position: sticky) -->
+    <nav class="barra">
+      <a href="galeria.html" class="logo">🛍️ <span class="texto-degradado">Mi Tienda</span></a>
+
+      <div class="barra-acciones">
+        <button type="button" id="btn-tema">🌙 Modo oscuro</button>
+
+        <!-- aria-label: lo que lee un lector de pantalla, porque el
+             botón muestra un ícono y un número, no una frase -->
+        <button type="button" id="btn-carrito" aria-label="Abrir carrito">
+          🛒 Carrito <span id="contador-carrito">0</span>
+        </button>
+      </div>
+    </nav>
+
+    <header class="encabezado">
+      <span class="etiqueta-superior">Catálogo</span>
+      <h1>Encuentra lo que <span class="texto-degradado">buscas</span></h1>
+      <p>Agrega productos a tu carrito; se guarda aunque recargues la página.</p>
+    </header>
+
+    <!-- FILTROS: buscador + "chips" de categoría (galeria.js los crea
+         a partir de las categorías que existen en los productos) -->
+    <section class="filtros">
+      <input type="search" id="input-busqueda" placeholder="Buscar productos..." />
+      <div id="chips-categorias" role="group" aria-label="Filtrar por categoría"></div>
+    </section>
+
+    <p id="conteo-resultados" role="status"></p>
+
+    <!-- GRILLA: galeria.js dibuja aquí una tarjeta por producto -->
+    <main id="grilla-productos"></main>
+
+    <!-- Capa oscura detrás del carrito: al hacer clic, se cierra -->
+    <div id="fondo-carrito"></div>
+
+    <!-- CARRITO: panel que entra desde la derecha (mismo patrón que
+         #sidebar-perfil de cliente.html). inert = cerrado, no se puede
+         llegar a sus botones con Tab ni con clic. -->
+    <aside id="panel-carrito" inert aria-label="Carrito de compras">
+      <div class="carrito-cabecera">
+        <h2>Tu carrito</h2>
+        <button type="button" id="btn-cerrar-carrito" aria-label="Cerrar carrito">✕</button>
+      </div>
+
+      <div id="lista-carrito"></div>
+
+      <!-- Resumen: solo se ve si hay algo en el carrito -->
+      <div id="resumen-carrito" hidden>
+        <dl class="totales">
+          <dt>Subtotal</dt>    <dd id="carrito-subtotal">$0</dd>
+          <dt>Ahorras</dt>     <dd id="carrito-ahorro">$0</dd>
+          <dt class="total">Total</dt> <dd id="carrito-total" class="total">$0</dd>
+        </dl>
+        <button type="button" id="btn-finalizar">Finalizar compra</button>
+        <button type="button" id="btn-vaciar" class="secundario">Vaciar carrito</button>
+      </div>
+    </aside>
+
+    <!-- AVISO (toast): mensaje corto que aparece abajo y se va solo -->
+    <div id="aviso" role="status" aria-live="polite"></div>
+
+    <script src="js/tema.js"></script>
+    <script src="js/galeria.js"></script>
+  </body>
+</html>

@@ -1,0 +1,751 @@
+/* =================================================================
+   ESTILOS DE LA GALERÍA (galeria.html)
+   Misma estética que admin.html y cliente.html: variables de color,
+   vidrio, degradados, manchas animadas y granulado.
+   ================================================================= */
+
+/* Variables de color: si quieres cambiar un tono, cámbialo solo aquí */
+:root {
+  --rosa-fondo: #fff0f5;
+  --rosa-borde: #f8bbd0;
+  --rosa-medio: #f06292;
+  --rosa-fuerte: #d81b60;
+  --texto: #4a1530;
+  --texto-suave: #8a5a70;
+  --superficie: #fff;
+  --linea: #f3d9e3;
+  --peligro: #c62828;
+  --exito: #16a34a;
+  --anillo: rgba(240, 98, 146, 0.18);
+  --grano-opacidad: 0.09;
+  --degradado: linear-gradient(135deg, #ff3d7f 0%, #ff7a59 55%, #ffb547 100%);
+  --vidrio: rgba(255, 255, 255, 0.62);
+  --borde-vidrio: rgba(255, 255, 255, 0.85);
+  --campo-vidrio: rgba(255, 255, 255, 0.7);
+  --sombra-color: rgba(216, 27, 96, 0.35);
+  --mancha-1: rgba(255, 61, 127, 0.38);
+  --mancha-2: rgba(255, 181, 71, 0.32);
+  --mancha-3: rgba(167, 112, 255, 0.28);
+}
+
+/* MODO OSCURO: solo cambiamos las variables */
+:root[data-tema="oscuro"] {
+  --rosa-fondo: #1c1016;
+  --rosa-borde: #5c2c42;
+  --rosa-medio: #e0557f;
+  --rosa-fuerte: #ff8fb5;
+  --texto: #fbe6ee;
+  --texto-suave: #c9a3b4;
+  --superficie: #241319;
+  --linea: #3a2029;
+  --peligro: #ef5350;
+  --exito: #4ade80;
+  --anillo: rgba(224, 85, 127, 0.25);
+  --grano-opacidad: 0.13;
+  --degradado: linear-gradient(135deg, #ff4d8d 0%, #c55cff 55%, #6b7bff 100%);
+  --vidrio: rgba(30, 16, 24, 0.55);
+  --borde-vidrio: rgba(255, 255, 255, 0.08);
+  --campo-vidrio: rgba(255, 255, 255, 0.04);
+  --sombra-color: rgba(0, 0, 0, 0.6);
+  --mancha-1: rgba(255, 77, 141, 0.30);
+  --mancha-2: rgba(107, 123, 255, 0.26);
+  --mancha-3: rgba(197, 92, 255, 0.22);
+  color-scheme: dark;
+}
+
+/* hidden deja de funcionar si otra regla le pone display (grid, flex);
+   esta regla le devuelve la prioridad */
+[hidden] { display: none !important; }
+
+body {
+  font-family: "Plus Jakarta Sans", system-ui, sans-serif;
+  color: var(--texto);
+  background: var(--rosa-fondo);
+  margin: 0;
+  min-height: 100vh;
+  transition: background 0.2s, color 0.2s;
+}
+
+/* GRANULADO: capa de "ruido" encima del fondo (SVG dentro del CSS) */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  opacity: var(--grano-opacidad);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* MANCHAS DE COLOR ANIMADAS detrás de todo */
+body::after {
+  content: "";
+  position: fixed;
+  inset: -20%;
+  z-index: -2;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at 15% 20%, var(--mancha-1), transparent 32%),
+    radial-gradient(circle at 85% 15%, var(--mancha-2), transparent 30%),
+    radial-gradient(circle at 70% 85%, var(--mancha-3), transparent 34%);
+  filter: blur(40px);
+  animation: flotar 22s ease-in-out infinite alternate;
+}
+
+@keyframes flotar {
+  from { transform: translate(0, 0) rotate(0deg); }
+  to   { transform: translate(4%, -3%) rotate(8deg); }
+}
+
+/* ===================== BOTONES (base) ===================== */
+button {
+  background: var(--degradado);
+  color: #fff;
+  border: none;
+  padding: 12px 20px;
+  border-radius: 999px;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 10px 24px -12px var(--rosa-medio);
+  transition: transform 0.15s, box-shadow 0.15s, filter 0.15s, background 0.15s;
+  /* Sin esto, al hacer clic rápido en "+" el navegador lo toma como
+     doble clic y SELECCIONA el texto del botón (pasaba en el ejemplo) */
+  user-select: none;
+  -webkit-user-select: none;
+}
+button:hover {
+  filter: brightness(1.08);
+  transform: translateY(-2px);
+  box-shadow: 0 16px 30px -12px var(--rosa-medio);
+}
+button:active { transform: translateY(0) scale(0.98); }
+
+/* disabled = el botón no se puede usar (ej: producto agotado) */
+button:disabled,
+button:disabled:hover {
+  cursor: not-allowed;
+  filter: grayscale(1);
+  opacity: 0.5;
+  transform: none;
+  box-shadow: none;
+}
+
+/* Botones "de contorno": sin degradado ni sombra */
+button.secundario,
+#btn-tema,
+#btn-cerrar-carrito {
+  background: var(--campo-vidrio);
+  color: var(--texto);
+  border: 1px solid var(--borde-vidrio);
+  box-shadow: none;
+}
+button.secundario:hover,
+#btn-tema:hover,
+#btn-cerrar-carrito:hover { background: var(--superficie); }
+
+/* ===================== BARRA SUPERIOR ===================== */
+/* sticky = se comporta normal hasta que llega arriba, y ahí se queda pegada */
+.barra {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 12px clamp(16px, 4vw, 40px);
+  background: var(--vidrio);
+  backdrop-filter: blur(20px) saturate(150%);
+  -webkit-backdrop-filter: blur(20px) saturate(150%);
+  border-bottom: 1px solid var(--borde-vidrio);
+}
+
+.logo {
+  font-size: 1.4rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  text-decoration: none;
+  color: var(--texto);
+  white-space: nowrap;
+}
+
+.barra-acciones { display: flex; align-items: center; gap: 10px; }
+#btn-tema { padding: 8px 14px; }
+
+#btn-carrito {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  white-space: nowrap;
+}
+
+/* El numerito blanco dentro del botón */
+#contador-carrito {
+  display: grid;
+  place-items: center;
+  min-width: 22px;
+  height: 22px;
+  padding: 0 6px;
+  box-sizing: border-box;
+  border-radius: 999px;
+  background: #fff;
+  color: var(--rosa-fuerte);
+  font-size: 0.78rem;
+  font-weight: 800;
+}
+
+/* REBOTE al agregar: galeria.js le pone la clase "rebote" un momento */
+#contador-carrito.rebote { animation: rebote 0.45s ease; }
+@keyframes rebote {
+  0%   { transform: scale(1); }
+  35%  { transform: scale(1.45); }
+  70%  { transform: scale(0.9); }
+  100% { transform: scale(1); }
+}
+
+/* En celular: el botón de tema solo muestra el ícono */
+@media (max-width: 560px) {
+  #btn-tema { font-size: 0; padding: 8px 10px; }
+  #btn-tema::first-letter { font-size: 1rem; }
+}
+
+/* ===================== ENCABEZADO ===================== */
+.encabezado {
+  max-width: 1200px;
+  margin: 40px auto 24px;
+  padding: 0 16px;
+  text-align: center;
+  animation: aparecer 0.6s ease both;
+}
+
+.etiqueta-superior {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: var(--vidrio);
+  border: 1px solid var(--linea);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--texto-suave);
+}
+.etiqueta-superior::before {
+  content: "";
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--rosa-medio);
+}
+
+.encabezado h1 {
+  margin: 12px 0 6px;
+  font-size: clamp(2rem, 4vw, 3rem);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1.05;
+}
+.encabezado p { margin: 0; color: var(--texto-suave); }
+
+/* Texto con degradado: el fondo se "recorta" a las letras */
+.texto-degradado {
+  background: var(--degradado);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* ===================== FILTROS ===================== */
+.filtros {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+}
+
+#input-busqueda {
+  width: min(480px, 100%);
+  box-sizing: border-box;
+  padding: 12px 18px;
+  border: 1px solid var(--borde-vidrio);
+  border-radius: 999px;
+  background: var(--campo-vidrio);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  color: var(--texto);
+  font: inherit;
+  transition: border-color 0.15s, box-shadow 0.15s, background 0.15s;
+}
+#input-busqueda:focus {
+  outline: none;
+  background: var(--superficie);
+  border-color: var(--rosa-medio);
+  box-shadow: 0 0 0 4px var(--anillo), 0 8px 24px -12px var(--rosa-medio);
+}
+
+/* CHIPS: pastillas de categoría. flex-wrap = si no caben, bajan a otra fila */
+#chips-categorias {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+}
+
+.chip {
+  padding: 7px 14px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-transform: capitalize;
+  background: var(--vidrio);
+  color: var(--texto-suave);
+  border: 1px solid var(--borde-vidrio);
+  box-shadow: none;
+}
+.chip:hover { color: var(--texto); background: var(--superficie); }
+
+/* aria-pressed="true" = el chip activo (galeria.js lo cambia) */
+.chip[aria-pressed="true"] {
+  background: var(--degradado);
+  color: #fff;
+  border-color: transparent;
+  box-shadow: 0 10px 24px -12px var(--rosa-medio);
+}
+
+#conteo-resultados {
+  max-width: 1200px;
+  margin: 20px auto 0;
+  padding: 0 16px;
+  font-size: 0.85rem;
+  color: var(--texto-suave);
+  text-align: center;
+}
+
+/* ===================== GRILLA DE PRODUCTOS ===================== */
+/* auto-fill mete tantas columnas como quepan (de mínimo 240px). En una
+   pantalla grande salen 4, en tablet 2-3 y en celular 1, sin @media. */
+#grilla-productos {
+  max-width: 1200px;
+  margin: 16px auto 64px;
+  padding: 0 16px;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 22px;
+}
+
+.sin-resultados {
+  grid-column: 1 / -1;   /* ocupa toda la fila */
+  text-align: center;
+  padding: 48px 16px;
+  color: var(--texto-suave);
+}
+
+/* TARJETA DE VIDRIO */
+.producto {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: var(--vidrio);
+  backdrop-filter: blur(20px) saturate(150%);
+  -webkit-backdrop-filter: blur(20px) saturate(150%);
+  border: 1px solid var(--borde-vidrio);
+  border-radius: 24px;
+  box-shadow: 0 30px 60px -34px var(--sombra-color), inset 0 1px 0 var(--borde-vidrio);
+  transition: transform 0.2s, box-shadow 0.2s;
+  /* "backwards" y no "both": con both, al terminar la animación su
+     transform final se queda "pegado" y le GANA al transform del :hover
+     (las animaciones pesan más que las reglas normales), así que la
+     tarjeta nunca se levantaría. backwards solo aplica el estado inicial
+     durante el retraso, y al terminar suelta el transform. */
+  animation: aparecer 0.5s ease backwards;
+  animation-delay: calc(var(--i, 0) * 50ms);   /* cada tarjeta un poco después */
+}
+.producto:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 36px 60px -30px var(--sombra-color), inset 0 1px 0 var(--borde-vidrio);
+}
+
+/* FOTO: aspect-ratio deja todas del mismo tamaño aunque las imágenes
+   originales midan distinto; object-fit: cover recorta sin deformar */
+.producto-foto {
+  position: relative;
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+  background: var(--campo-vidrio);
+}
+.producto-foto img,
+.producto-foto .sin-foto {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.5s ease;
+}
+/* Zoom suave de la foto al pasar el mouse por la tarjeta */
+.producto:hover .producto-foto img { transform: scale(1.06); }
+
+/* Producto sin foto (o con foto rota): la inicial sobre el degradado */
+.sin-foto {
+  display: grid !important;
+  place-items: center;
+  background: var(--degradado);
+  color: #fff;
+  font-size: 3rem;
+  font-weight: 800;
+}
+
+/* ETIQUETAS sobre la foto: descuento y agotado */
+.etiquetas {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  display: flex;
+  gap: 6px;
+}
+.etiqueta {
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  color: #fff;
+  background: var(--degradado);
+  box-shadow: 0 6px 14px -6px var(--sombra-color);
+}
+.etiqueta.agotado { background: rgba(0, 0, 0, 0.65); }
+
+/* AGOTADO: foto en gris y tarjeta un poco apagada */
+.producto.esta-agotado .producto-foto img,
+.producto.esta-agotado .producto-foto .sin-foto { filter: grayscale(1); opacity: 0.7; }
+.producto.esta-agotado:hover { transform: none; }
+.producto.esta-agotado:hover .producto-foto img { transform: none; }
+
+/* CUERPO: textos */
+.producto-cuerpo {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 16px 18px 0;
+  flex: 1;   /* empuja el pie hacia abajo: todas las tarjetas alinean su pie */
+}
+
+.producto-categorias {
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--rosa-medio);
+}
+
+.producto-nombre {
+  margin: 0;
+  font-size: 1.05rem;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  line-height: 1.25;
+}
+
+/* line-clamp: corta la descripción a 2 líneas con "..." */
+.producto-descripcion {
+  margin: 0;
+  font-size: 0.85rem;
+  color: var(--texto-suave);
+  line-height: 1.45;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.producto-precios {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: auto;
+  padding-top: 6px;
+}
+.precio-final {
+  font-size: 1.35rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: var(--rosa-fuerte);
+}
+.precio-antes {
+  font-size: 0.85rem;
+  color: var(--texto-suave);
+  text-decoration: line-through;
+}
+
+.stock-bajo {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--peligro);
+}
+
+/* PIE: botón Agregar o el selector − n + */
+.producto-pie {
+  margin-top: 14px;
+  padding: 14px 18px 18px;
+  border-top: 1px solid var(--linea);
+  min-height: 46px;   /* mismo alto con "Agregar" o con el selector: nada "salta" */
+}
+.producto-pie .btn-agregar {
+  width: 100%;
+  border-radius: 12px;
+}
+
+/* ===================== SELECTOR DE CANTIDAD ===================== */
+.cantidad {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 4px;
+  border-radius: 999px;
+  background: var(--campo-vidrio);
+  border: 1px solid var(--borde-vidrio);
+  animation: aparecer 0.25s ease both;
+}
+.cantidad button {
+  width: 38px;
+  height: 38px;
+  padding: 0;
+  font-size: 1.1rem;
+  line-height: 1;
+  flex-shrink: 0;
+}
+.cantidad output {
+  min-width: 2ch;
+  text-align: center;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;   /* los números no "bailan" de ancho */
+}
+.cantidad .en-carrito {
+  flex: 1;
+  text-align: center;
+  font-size: 0.78rem;
+  color: var(--texto-suave);
+}
+
+/* Selector pequeño dentro del carrito */
+.cantidad.pequena { padding: 2px; gap: 4px; }
+.cantidad.pequena button { width: 28px; height: 28px; font-size: 0.95rem; }
+
+/* ===================== CARRITO (panel lateral) ===================== */
+/* Cerrado: translateX(100%) lo corre su propio ancho a la derecha,
+   o sea, justo afuera de la pantalla. Abierto: vuelve a su lugar. */
+#panel-carrito {
+  position: fixed;
+  top: 0;
+  right: 0;
+  z-index: 40;
+  width: min(420px, 100%);
+  height: 100dvh;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  padding: 24px;
+  background: var(--vidrio);
+  backdrop-filter: blur(24px) saturate(150%);
+  -webkit-backdrop-filter: blur(24px) saturate(150%);
+  border-left: 1px solid var(--borde-vidrio);
+  box-shadow: -30px 0 60px -30px var(--sombra-color);
+  transform: translateX(100%);
+  transition: transform 0.35s ease;
+}
+#panel-carrito.abierto { transform: none; }
+
+/* Franja de degradado en el borde izquierdo */
+#panel-carrito::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 4px;
+  background: var(--degradado);
+}
+
+.carrito-cabecera {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--linea);
+}
+.carrito-cabecera h2 {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 0;
+  font-size: 1.4rem;
+  font-weight: 800;
+}
+.carrito-cabecera h2::before {
+  content: "";
+  width: 12px;
+  height: 12px;
+  border-radius: 4px;
+  background: var(--degradado);
+  box-shadow: 0 0 16px var(--rosa-medio);
+}
+#btn-cerrar-carrito { width: 36px; height: 36px; padding: 0; }
+
+/* La lista crece y hace scroll por dentro; el resumen queda abajo */
+#lista-carrito {
+  flex: 1;
+  overflow-y: auto;
+  padding: 8px 0;
+}
+
+.item-carrito {
+  display: grid;
+  grid-template-columns: 56px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--linea);
+  animation: aparecer 0.3s ease both;
+}
+.item-carrito img,
+.item-carrito .sin-foto {
+  width: 56px;
+  height: 56px;
+  border-radius: 14px;
+  object-fit: cover;
+  font-size: 1.3rem;
+}
+.item-nombre {
+  display: block;
+  font-weight: 700;
+  font-size: 0.92rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;   /* nombre largo → "Silla Gamer Pro..." */
+}
+.item-precio {
+  display: block;
+  margin-bottom: 6px;
+  font-size: 0.8rem;
+  color: var(--texto-suave);
+}
+/* fit-content: el selector mide lo que miden sus botones, no toda la columna */
+.item-carrito .cantidad { width: fit-content; }
+.item-derecha {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 6px;
+}
+.item-subtotal { font-weight: 800; font-size: 0.92rem; }
+
+/* Botón "quitar" del ítem: solo texto, se pone rojo al pasar el mouse */
+.btn-quitar,
+.btn-quitar:hover {
+  padding: 0;
+  background: none;
+  box-shadow: none;
+  transform: none;
+  filter: none;
+  color: var(--texto-suave);
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-decoration: underline;
+}
+.btn-quitar:hover { color: var(--peligro); }
+
+/* Carrito vacío */
+.carrito-vacio {
+  text-align: center;
+  padding: 48px 8px;
+  color: var(--texto-suave);
+}
+.carrito-vacio span { display: block; font-size: 2.5rem; margin-bottom: 8px; }
+
+/* Totales: término a la izquierda, valor a la derecha */
+#resumen-carrito {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding-top: 16px;
+  border-top: 1px solid var(--linea);
+}
+.totales {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 6px 12px;
+  margin: 0 0 8px;
+}
+.totales dt { color: var(--texto-suave); font-size: 0.9rem; }
+.totales dd { margin: 0; text-align: right; font-weight: 700; }
+#carrito-ahorro { color: var(--exito); }
+.totales .total {
+  padding-top: 8px;
+  border-top: 1px dashed var(--linea);
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: var(--texto);
+}
+#resumen-carrito button { width: 100%; border-radius: 12px; }
+#btn-finalizar { padding: 15px 20px; font-size: 1rem; }
+
+/* Capa detrás del carrito: invisible y "transparente a los clics"
+   (pointer-events: none) hasta que se abre */
+#fondo-carrito {
+  position: fixed;
+  inset: 0;
+  z-index: 30;
+  background: rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.35s ease;
+}
+#fondo-carrito.visible { opacity: 1; pointer-events: auto; }
+
+/* ===================== AVISO (toast) ===================== */
+/* Escondido abajo (translateY) y transparente; con la clase
+   "visible" sube y aparece */
+#aviso {
+  position: fixed;
+  left: 50%;
+  bottom: 24px;
+  z-index: 50;
+  max-width: calc(100% - 32px);
+  box-sizing: border-box;
+  padding: 12px 20px;
+  border-radius: 14px;
+  background: var(--vidrio);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--borde-vidrio);
+  box-shadow: 0 20px 40px -20px var(--sombra-color);
+  font-weight: 600;
+  color: var(--texto);
+  opacity: 0;
+  transform: translate(-50%, 20px);
+  transition: opacity 0.25s, transform 0.25s;
+  pointer-events: none;
+}
+#aviso.visible { opacity: 1; transform: translate(-50%, 0); }
+
+/* Aparecer: sube un poco mientras se hace visible */
+@keyframes aparecer {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: none; }
+}
+
+/* Si la persona tiene activado "reducir movimiento", apagamos animaciones */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; }
+}
