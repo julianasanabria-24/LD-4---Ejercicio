@@ -220,43 +220,42 @@ layout) tiene más sentido para el proyecto.
 
 > _Entrada redactada por el agente a pedido del estudiante. Pendiente de revisión del estudiante para que quede en sus propias palabras._
 
-**Cambios**
+**Cambios — renombre**
 - Renombré `prueba2.html` → `admin.html` y `js/prueba2.js` → `js/admin.js` con `git mv` (git lo registra como renombre y conserva el historial).
-- Actualicé `<script src="js/admin.js">` en `admin.html` y los comentarios que nombraban `prueba2` en `admin.html`, `cliente.html`, `css/cuenta.css` y `js/tema.js`. Corregí también los comentarios del final de `admin.html` que aún decían `prueba.js`.
-- Agregué `<title>Panel de productos</title>` a `admin.html`, que no tenía título.
+- Actualicé `<script src="js/admin.js">` y los comentarios que nombraban `prueba2` en `admin.html`, `cliente.html`, `css/cuenta.css` y `js/tema.js`; corregí también los que aún decían `prueba.js`. Agregué `<title>Panel de productos</title>`.
 - Las entradas anteriores de esta bitácora y de `OUTPUT/` siguen diciendo `prueba2`: son registros de su fecha y no se reescriben.
-- Agregué en `admin.html` los formularios para registrar administrador e iniciar sesión (`#zona-acceso-admin`), con su lógica en `admin.js` (`signUp` + insert en `admins_practica`, `signInWithPassword`, `signOut`).
-- El panel CRUD (encabezado + formulario + productos) quedó dentro de `<main id="panel-admin" hidden>`. `mostrarEstadoSesionAdmin()` lo muestra solo si hay sesión **y** fila en `admins_practica`; además oculta los formularios de acceso, muestra "Cerrar sesión" y recién ahí carga los productos (antes se cargaban al abrir la página, aunque nadie hubiera entrado).
-- Cambié `.single()` por `.maybeSingle()` al leer `admins_practica` y borré una `eliminarProducto` duplicada que estaba metida dentro del listener del tema (usaba la tabla `productos_practica`, que no existe).
-- Estilos del acceso de admin con la misma estética de `cliente.html`: encabezado centrado ("Panel de *administración*" con degradado y pastilla "Acceso restringido"), registro y login como tarjetas de vidrio lado a lado (`.tarjetas-acceso`, una debajo de la otra en celular), campos con halo al escribir. El CSS quedó en el `<style>` de `admin.html` y no en `cuenta.css`, porque ese archivo redefine `body`, `button` y `#btn-tema`.
-- Saqué `#estado-sesion-admin` de `#zona-acceso-admin`: al ocultar la zona también se ocultaba el mensaje "Sesión iniciada como…". "Cerrar sesión" quedó como botón de contorno fijo arriba a la izquierda, espejo del botón de tema.
-- Quité la tarjeta de registro siempre visible: ahora solo se ve "Iniciar sesión" (centrada, 440px) con un botón de contorno "Registrar cuenta de administrador" que la cambia por el formulario de registro (`hidden`), y este trae "← Volver a iniciar sesión". La función `mostrarFormularioAcceso("login" | "registro")` en `admin.js` alterna las dos; tras un registro exitoso vuelve sola al login.
 
-- Empecé la **galería de productos** para clientes (`galeria.html` + `css/galeria.css` + `js/galeria.js`), sin Supabase por ahora. Tomé como referencia un CodePen de tienda (header con carrito y contador, grilla de tarjetas con foto, nombre, descripción, precio y selector de cantidad), pero con la estética de vidrio rosa del proyecto:
-  - Barra pegada arriba (`sticky`) con logo, tema y botón de carrito con contador que "rebota" al agregar.
-  - Buscador + chips de categoría generados a partir de los productos (`flatMap` + `new Set`).
-  - Grilla `repeat(auto-fill, minmax(240px, 1fr))`: se adapta sola sin `@media`.
-  - Tarjeta: foto `aspect-ratio: 4/3` con zoom al pasar el mouse, etiquetas de descuento y "Agotado", precio tachado si hay descuento, aviso "¡Quedan solo N!" con stock bajo.
-  - "Agregar al carrito" se convierte en el selector `− n +` (no pasa del stock). Solo se redibuja el pie de esa tarjeta, no toda la grilla.
-  - Carrito como panel lateral (mismo patrón que `#sidebar-perfil`), con subtotal, ahorro y total; se guarda en `localStorage` como `{ id: cantidad }`.
-  - Datos de prueba con la misma forma que `products_practice`: para conectar Supabase solo cambia `cargarProductos()`.
+**Cambios — acceso de administrador (`admin.html` + `admin.js`)**
+- Formularios para registrar administrador e iniciar sesión (`#zona-acceso-admin`): `signUp` + insert en `admins_practica`, `signInWithPassword`, `signOut`.
+- El panel CRUD quedó dentro de `<main id="panel-admin" hidden>`. `mostrarEstadoSesionAdmin()` lo muestra solo si hay sesión **y** fila en `admins_practica`; oculta los formularios, muestra "Cerrar sesión" y recién ahí carga los productos (antes se cargaban aunque nadie hubiera entrado).
+- `.single()` → `.maybeSingle()` al leer `admins_practica`; borré una `eliminarProducto` duplicada dentro del listener del tema (usaba `productos_practica`, que no existe).
+- Estilos con la estética de `cliente.html`: encabezado centrado "Panel de *administración*" con pastilla "Acceso restringido", tarjetas de vidrio, campos con halo. El CSS va en el `<style>` de `admin.html` (no en `cuenta.css`, que redefine `body`, `button` y `#btn-tema`).
+- `#estado-sesion-admin` salió de la zona de acceso para seguir visible con sesión iniciada. "Cerrar sesión" es un botón de contorno fijo arriba a la izquierda.
+- Solo se ve la tarjeta "Iniciar sesión" (440px, centrada); el botón "Registrar cuenta de administrador" la cambia por el registro y "← Volver a iniciar sesión" regresa (`mostrarFormularioAcceso()`). Tras registrarse vuelve sola al login.
 
-- Conecté la galería a Supabase: borré los productos de prueba y `cargarProductos()` ahora trae `products_practice` (la tabla `products` no existe en el proyecto: la API responde `404 PGRST205`). Muestra "Cargando productos…" mientras llega la respuesta y un mensaje si falla.
-- `limpiarCarrito()` sincroniza el carrito de `localStorage` con la base al cargar: quita productos borrados o agotados y baja la cantidad si el stock bajó.
-
-**Hallazgos de la galería**
-- En la base hay `"tecnología"` y `"tecnologia"` (escritas a mano en admin): un `Set` las toma como distintas y salían dos chips. Uso un `Map` con la clave normalizada (`normalizar()`), y el filtro también compara normalizado. Sería mejor limpiar el dato en la base, pero el código no debería depender de eso.
-- En el ejemplo, al hacer clic rápido en `+` el texto del botón quedaba seleccionado (el navegador lo toma como doble clic). Se evita con `user-select: none` en los botones.
-- `animation: ... both` deja aplicado el `transform` final de la animación y le gana al `transform` del `:hover` (las animaciones pesan más que las reglas normales). Por eso las tarjetas usan `backwards`.
-- En el carrito guardo solo `{ id: cantidad }` y no el producto entero: el nombre y el precio se buscan cada vez, así no quedan precios viejos guardados.
-
-**Pendiente de seguridad**
-- Ocultar el registro tras un botón **no** lo hace privado: cualquiera que abra `admin.html` puede crear una cuenta y quedar en `admins_practica`. Lo seguro sería crear los admins a mano desde el dashboard de Supabase y que RLS no permita `insert` en `admins_practica` desde la página.
+**Cambios — galería de productos (`galeria.html` + `css/galeria.css` + `js/galeria.js`)**
+- Referencia: un CodePen de tienda (header con carrito y contador, grilla de tarjetas con selector de cantidad), adaptado a la estética de vidrio rosa del proyecto.
+- Productos reales desde `products_practice` (la tabla `products` no existe: la API responde `404 PGRST205`). Estados "Cargando productos…" y de error.
+- Barra `sticky` con logo, tema y carrito con contador que "rebota" al agregar.
+- Buscador + chips de categoría generados desde los productos.
+- Grilla `repeat(auto-fill, minmax(240px, 1fr))`: se adapta sola sin `@media`.
+- Tarjeta: foto `aspect-ratio: 4/3` con zoom al pasar el mouse, etiquetas de descuento y "Agotado", precio tachado, "¡Quedan solo N!" con stock bajo.
+- "Agregar al carrito" se convierte en el selector `− n +` (tope = stock). Solo se redibuja el pie de esa tarjeta.
+- Carrito en panel lateral (patrón de `#sidebar-perfil`) con subtotal, ahorro y total; guardado en `localStorage` como `{ id: cantidad }`. `limpiarCarrito()` lo sincroniza con la base al cargar (quita borrados o agotados, ajusta al stock).
 
 **Hallazgos**
 - Renombrar un archivo rompe todo lo que lo carga por ruta (`src`, `href`); el navegador no avisa con error de JS, solo con un `404` en la pestaña Network.
-- Ocultar el panel con `hidden` es solo **interfaz**: con F12 se puede quitar el atributo o llamar a `db.from(...).delete()` desde la consola. La protección real de `products_practice` tiene que venir de políticas RLS que revisen `admins_practica` (pendiente).
-- El orden importa: `mostrarEstadoSesionAdmin()` se llama al final de `admin.js` porque usa `requestSubmit()` sobre `form-busqueda`, y el listener de ese formulario tiene que existir antes.
+- Ocultar el panel con `hidden` es solo **interfaz**: con F12 se puede quitar el atributo o llamar a `db.from(...).delete()` desde la consola. Lo que protege es RLS.
+- El orden importa: `mostrarEstadoSesionAdmin()` va al final de `admin.js` porque usa `requestSubmit()` sobre `form-busqueda`, y ese listener tiene que existir antes.
+- Al hacer clic rápido en un botón, el navegador lo toma como doble clic y selecciona su texto (pasaba en el ejemplo). Se evita con `user-select: none`.
+- `animation: ... both` deja "pegado" el `transform` final y le gana al del `:hover` (las animaciones pesan más que las reglas normales). Las tarjetas usan `backwards`.
+- En la base hay `"tecnología"` y `"tecnologia"`: un `Set` las ve distintas y salían dos chips. Uso un `Map` con la clave normalizada; el filtro también compara normalizado.
+- En el carrito guardo solo `{ id: cantidad }`, no el producto entero: nombre y precio se buscan cada vez, así no quedan precios viejos.
+
+**Pendientes**
+- Seguridad: el registro de admin es público (cualquiera puede crearse una cuenta y quedar en `admins_practica`). Lo seguro: crear admins a mano en el dashboard y que RLS no permita `insert` en `admins_practica` desde la página.
+- `sql/politicas_admin.sql`: que solo los admins puedan `insert/update/delete` en `products_practice`, dejando `select` abierto para que la galería funcione.
+- Probar en el navegador `admin.html` (con y sin sesión) y `galeria.html` (carrito, chips, modo oscuro).
 
 **Reflexión**
 - _(pendiente: la escribe el estudiante)_
