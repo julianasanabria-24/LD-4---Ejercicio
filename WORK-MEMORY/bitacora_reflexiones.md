@@ -228,6 +228,8 @@ layout) tiene más sentido para el proyecto.
 - Agregué en `admin.html` los formularios para registrar administrador e iniciar sesión (`#zona-acceso-admin`), con su lógica en `admin.js` (`signUp` + insert en `admins_practica`, `signInWithPassword`, `signOut`).
 - El panel CRUD (encabezado + formulario + productos) quedó dentro de `<main id="panel-admin" hidden>`. `mostrarEstadoSesionAdmin()` lo muestra solo si hay sesión **y** fila en `admins_practica`; además oculta los formularios de acceso, muestra "Cerrar sesión" y recién ahí carga los productos (antes se cargaban al abrir la página, aunque nadie hubiera entrado).
 - Cambié `.single()` por `.maybeSingle()` al leer `admins_practica` y borré una `eliminarProducto` duplicada que estaba metida dentro del listener del tema (usaba la tabla `productos_practica`, que no existe).
+- Estilos del acceso de admin con la misma estética de `cliente.html`: encabezado centrado ("Panel de *administración*" con degradado y pastilla "Acceso restringido"), registro y login como tarjetas de vidrio lado a lado (`.tarjetas-acceso`, una debajo de la otra en celular), campos con halo al escribir. El CSS quedó en el `<style>` de `admin.html` y no en `cuenta.css`, porque ese archivo redefine `body`, `button` y `#btn-tema`.
+- Saqué `#estado-sesion-admin` de `#zona-acceso-admin`: al ocultar la zona también se ocultaba el mensaje "Sesión iniciada como…". "Cerrar sesión" quedó como botón de contorno fijo arriba a la izquierda, espejo del botón de tema.
 
 **Hallazgos**
 - Renombrar un archivo rompe todo lo que lo carga por ruta (`src`, `href`); el navegador no avisa con error de JS, solo con un `404` en la pestaña Network.

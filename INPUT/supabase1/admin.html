@@ -937,6 +937,184 @@
     .tarjeta .acciones-fila { margin-top: auto; }
     .tarjeta .acciones-fila button { flex: 1; }
 
+    /* =================================================================
+       ACCESO DE ADMINISTRADOR (registro + login)
+       Misma estética que cliente.html (css/cuenta.css): tarjetas de
+       vidrio, franja de degradado arriba y título con cuadrito.
+       ================================================================= */
+
+    /* hidden deja de funcionar si otra regla le pone display (grid, flex)
+       al mismo elemento; esta regla le devuelve la prioridad */
+    [hidden] { display: none !important; }
+
+    #zona-acceso-admin {
+      max-width: 960px;
+      margin: 0 auto;
+    }
+
+    /* Encabezado centrado (el del panel va a dos lados, este no) */
+    .encabezado-acceso {
+      margin: 8px auto 28px;
+      text-align: center;
+      animation: aparecer 0.6s ease both;
+    }
+    .encabezado-acceso h1 {
+      margin: 12px 0 6px;
+      font-size: clamp(2rem, 4vw, 3rem);
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      line-height: 1.05;
+    }
+    .encabezado-acceso p { margin: 0; color: var(--texto-suave); }
+
+    /* En la pastilla de acceso el puntito es rosa y quieto: todavía no
+       estamos "conectados" como admin */
+    .etiqueta-superior.candado::before {
+      background: var(--rosa-medio);
+      animation: none;
+    }
+
+    /* ESTADO DE SESIÓN como "pastilla" de vidrio, centrada.
+       fit-content = mide lo que mide el texto, no todo el ancho */
+    #estado-sesion-admin {
+      width: fit-content;
+      max-width: 100%;
+      box-sizing: border-box;
+      margin: 40px auto 20px;   /* deja espacio a los botones fijos de arriba */
+      padding: 12px 18px;
+      text-align: center;
+      border-radius: 14px;
+      background: var(--vidrio);
+      border: 1px solid var(--borde-vidrio);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      color: var(--rosa-fuerte);
+      font-weight: 600;
+    }
+
+    /* DOS COLUMNAS. minmax(0, 1fr) evita que un contenido largo
+       ensanche la columna (lo mismo que arreglamos en .layout) */
+    .tarjetas-acceso {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      gap: 24px;
+      align-items: start;
+    }
+    @media (max-width: 760px) {
+      .tarjetas-acceso { grid-template-columns: minmax(0, 1fr); }
+    }
+
+    /* VIDRIO: igual que #form-producto y #panel-productos */
+    #form-registro-admin,
+    #form-login-admin {
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      padding: 32px;
+      background: var(--vidrio);
+      backdrop-filter: blur(20px) saturate(150%);
+      -webkit-backdrop-filter: blur(20px) saturate(150%);
+      border: 1px solid var(--borde-vidrio);
+      border-radius: 24px;
+      box-shadow: 0 30px 60px -30px var(--sombra-color), inset 0 1px 0 var(--borde-vidrio);
+      animation: aparecer 0.6s ease both;
+    }
+    #form-login-admin { animation-delay: 0.1s; }
+
+    /* Franja de color arriba de cada tarjeta */
+    #form-registro-admin::before,
+    #form-login-admin::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: var(--degradado);
+    }
+
+    /* Título con línea fina debajo y un cuadradito de color al lado */
+    #zona-acceso-admin h3 {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin: 0 0 8px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid var(--linea);
+      font-size: 1.4rem;
+      font-weight: 800;
+      letter-spacing: -0.01em;
+    }
+    #zona-acceso-admin h3::before {
+      content: "";
+      width: 12px;
+      height: 12px;
+      border-radius: 4px;
+      background: var(--degradado);
+      box-shadow: 0 0 16px var(--rosa-medio);
+      flex-shrink: 0;
+    }
+
+    /* Etiquetas pequeñas encima de cada campo */
+    #zona-acceso-admin label {
+      margin-top: 6px;
+      font-weight: 600;
+      font-size: 0.82rem;
+      color: var(--texto-suave);
+    }
+
+    #zona-acceso-admin input {
+      padding: 11px 14px;
+      border: 1px solid var(--borde-vidrio);
+      border-radius: 12px;
+      background: var(--campo-vidrio);
+      color: var(--texto);
+      font: inherit;
+      font-size: 0.95rem;
+      transition: border-color 0.15s, box-shadow 0.15s, background 0.15s;
+    }
+    #zona-acceso-admin input:hover { border-color: var(--rosa-borde); }
+
+    /* :focus = cuando el usuario está escribiendo en ese campo */
+    #zona-acceso-admin input:focus {
+      outline: none;
+      background: var(--superficie);
+      border-color: var(--rosa-medio);
+      box-shadow: 0 0 0 4px var(--anillo), 0 8px 24px -12px var(--rosa-medio);
+    }
+
+    /* Botón de cada formulario: ancho completo, esquinas menos redondas */
+    #zona-acceso-admin button {
+      margin-top: 16px;
+      padding: 15px 20px;
+      border-radius: 12px;
+      font-size: 1rem;
+    }
+
+    /* CERRAR SESIÓN: botón "de contorno" de vidrio, fijo arriba a la
+       izquierda (espejo del botón de tema). Al pasar el mouse se pone
+       rojo, para que se note que es "salir" */
+    #btn-logout-admin {
+      position: fixed;
+      top: 12px;
+      left: 12px;
+      z-index: 10;
+      padding: 8px 14px;
+      color: var(--texto-suave);
+      background: var(--vidrio);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid var(--borde-vidrio);
+      box-shadow: none;
+    }
+    #btn-logout-admin:hover {
+      background: var(--campo-vidrio);
+      color: var(--peligro);
+      border-color: var(--peligro);
+    }
+
     /* Aparecer: sube un poco mientras se hace visible */
     @keyframes aparecer {
       from { opacity: 0; transform: translateY(12px); }
@@ -953,9 +1131,24 @@
 </head>
 <body>
 
-  <section id="zona-acceso-admin">
+  <!-- "Cerrar sesión": fijo arriba a la izquierda (el tema está a la derecha) -->
+  <button id="btn-logout-admin" type="button" hidden>Cerrar sesión</button>
+
+  <!-- ESTADO DE LA SESIÓN: queda FUERA de #zona-acceso-admin para que se
+       siga viendo cuando los formularios se ocultan (ej: "Sesión iniciada
+       como Ana (admin).") -->
   <p id="estado-sesion-admin" role="status">No has iniciado sesión.</p>
 
+  <!-- ACCESO: se ve mientras NO haya un admin confirmado -->
+  <section id="zona-acceso-admin">
+  <header class="encabezado-acceso">
+    <span class="etiqueta-superior candado">Acceso restringido</span>
+    <h1>Panel de <span class="texto-degradado">administración</span></h1>
+    <p>Inicia sesión con tu cuenta de administrador para gestionar los productos.</p>
+  </header>
+
+  <!-- DOS COLUMNAS: Registrar | Iniciar sesión (como en cliente.html) -->
+  <div class="tarjetas-acceso">
   <form id="form-registro-admin">
     <h3>Registrar administrador</h3>
     <label for="admin-registro-nombre">Nombre</label>
@@ -980,9 +1173,8 @@
 
     <button type="submit">Iniciar sesión</button>
   </form>
-</section>
-
-<button id="btn-logout-admin" type="button" hidden>Cerrar sesión</button>
+  </div>
+  </section>
 
   <!-- El botón del tema queda FUERA del panel, para poder usarlo
        también en la pantalla de login -->
