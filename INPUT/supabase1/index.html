@@ -4,26 +4,45 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Supabase 1</title>
-  <link rel="stylesheet" href="css/styles.css">
+
+  <!-- Misma tipografía que admin.html, cliente.html y galeria.html -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+
+  <!-- Pone el tema ANTES de dibujar la página (así no "parpadea" en claro) -->
+  <script>
+    let temaGuardado = null;
+    try { temaGuardado = localStorage.getItem("tema"); } catch (e) {}
+    document.documentElement.dataset.tema = temaGuardado ||
+      (matchMedia("(prefers-color-scheme: dark)").matches ? "oscuro" : "claro");
+  </script>
+
+  <!-- Misma estética que admin.html (vidrio, degradados, modo oscuro) -->
+  <link rel="stylesheet" href="css/practica.css">
 </head>
 <body>
-  <header>
-    <h1>Gestión de registros</h1>
+  <button type="button" id="btn-tema">🌙 Modo oscuro</button>
+
+  <header class="encabezado">
+    <span class="etiqueta-superior">Supabase</span>
+    <h1>Gestión de <span class="texto-degradado">registros</span></h1>
     <p id="estado" class="estado">Conectando…</p>
   </header>
 
-  <main>
-    <section class="tarjeta">
+  <!-- Las dos tarjetas lado a lado (en celular, una debajo de la otra) -->
+  <main class="columnas">
+    <section class="vidrio">
       <h2 id="tituloFormulario">Nuevo registro</h2>
       <form id="formulario">
         <input type="hidden" id="id">
         <label>
           Nombre
-          <input type="text" id="nombre" required>
+          <input type="text" id="nombre" placeholder="Ej: Audífonos X200" required>
         </label>
         <label>
           Descripción
-          <textarea id="descripcion" rows="3"></textarea>
+          <textarea id="descripcion" rows="3" placeholder="Opcional"></textarea>
         </label>
         <div class="acciones">
           <button type="submit" id="btnGuardar">Guardar</button>
@@ -32,26 +51,29 @@
       </form>
     </section>
 
-    <section class="tarjeta">
+    <section class="vidrio">
       <h2>Registros</h2>
-      <table>
-        <thead>
-          <tr>
-            <th>ID</th>
-            <th>Nombre</th>
-            <th>Descripción</th>
-            <th>Acciones</th>
-          </tr>
-        </thead>
-        <tbody id="tablaCuerpo"></tbody>
-      </table>
+      <div class="tabla-scroll">
+        <table>
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Nombre</th>
+              <th>Descripción</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody id="tablaCuerpo"></tbody>
+        </table>
+      </div>
     </section>
   </main>
 
   <!-- 1° Librería de Supabase -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="js/supabaseClient.js"></script>  <!-- 2° -->
-  <script src="js/datos.js"></script>           <!-- 3° -->
-  <script src="js/gestion.js"></script>         <!-- 4° -->
+  <script src="js/tema.js"></script>            <!-- 3° botón de tema -->
+  <script src="js/datos.js"></script>           <!-- 4° -->
+  <script src="js/gestion.js"></script>         <!-- 5° -->
 </body>
 </html>
