@@ -29,6 +29,13 @@
       <div class="barra-acciones">
         <button type="button" id="btn-tema">🌙 Modo oscuro</button>
 
+        <!-- Es <a> y no <button> porque lleva a OTRA página (cliente.html).
+             El texto va en un <span> para poder ocultarlo en celular y
+             dejar solo el ícono; aria-label mantiene el nombre completo -->
+        <a href="cliente.html" id="btn-perfil" aria-label="Ir a mi perfil">
+          👤 <span class="texto-boton">Mi perfil</span>
+        </a>
+
         <!-- aria-label: lo que lee un lector de pantalla, porque el
              botón muestra un ícono y un número, no una frase -->
         <button type="button" id="btn-carrito" aria-label="Abrir carrito">

@@ -173,6 +173,31 @@ button.secundario:hover,
 .barra-acciones { display: flex; align-items: center; gap: 10px; }
 #btn-tema { padding: 8px 14px; }
 
+/* MI PERFIL: es un <a>, así que no hereda los estilos de "button";
+   se los damos a mano para que se vea igual que el botón de tema */
+#btn-perfil {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  border-radius: 999px;
+  background: var(--campo-vidrio);
+  color: var(--texto);
+  border: 1px solid var(--borde-vidrio);
+  font-weight: 700;
+  text-decoration: none;      /* quita el subrayado de los links */
+  white-space: nowrap;
+  transition: transform 0.15s, background 0.15s;
+}
+#btn-perfil:hover {
+  background: var(--superficie);
+  transform: translateY(-2px);
+}
+#btn-perfil:focus-visible {
+  outline: 2px solid var(--rosa-medio);
+  outline-offset: 2px;
+}
+
 #btn-carrito {
   display: inline-flex;
   align-items: center;
@@ -209,6 +234,8 @@ button.secundario:hover,
 @media (max-width: 560px) {
   #btn-tema { font-size: 0; padding: 8px 10px; }
   #btn-tema::first-letter { font-size: 1rem; }
+  #btn-perfil { padding: 8px 10px; }
+  #btn-perfil .texto-boton { display: none; } /* solo queda el 👤 */
 }
 
 /* ===================== ENCABEZADO ===================== */

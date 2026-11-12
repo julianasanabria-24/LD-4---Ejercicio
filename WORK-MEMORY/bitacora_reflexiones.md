@@ -264,3 +264,31 @@ layout) tiene más sentido para el proyecto.
 - **Lo que me costó:** entender por qué el orden del código importa. `mostrarEstadoSesionAdmin()` tenía que ir al final porque usa el buscador, y el listener del buscador tiene que existir antes. También me sorprendió que una animación con `both` le ganara al `:hover`.
 - **Lo que me sirvió:** construir la galería primero con datos de prueba que tenían la misma forma que la tabla. Al conectar Supabase solo cambió una función. También vi que los datos reales vienen "sucios" (`tecnología` y `tecnologia`), y el código tiene que aguantar eso.
 - **Para la próxima:** hacer las políticas RLS de admin y probar las páginas en el navegador antes de seguir agregando cosas.
+
+
+## 2026-11-12
+
+> _Entrada redactada por el agente a pedido del estudiante. Pendiente de revisión del estudiante para que quede en sus propias palabras._
+
+**Cambios — menú de la cuenta (`cliente.html` + `js/cliente.js` + `css/cuenta.css`)**
+- La columna "Mi perfil" ahora tiene un menú (`<nav class="menu-cuenta">`) con tres opciones: ✎ Editar perfil, ⚙ Ajustes y 🛍 Productos.
+- Nuevo sidebar `#sidebar-ajustes` con el modo claro/oscuro y "Cerrar sesión" (que salió de la columna).
+- Los dos sidebars comparten la clase `.sidebar`. `abrirSidebar(id)` recibe cuál abrir y cierra el otro, y `cerrarSidebar()` cierra el que esté abierto. La ✕ pasó de id a clase (`.btn-cerrar-sidebar`).
+- "Productos" es un link a `galeria.html`.
+
+**Cambios — galería (`galeria.html` + `css/galeria.css`)**
+- Link "👤 Mi perfil" en la barra superior que lleva a `cliente.html`. En celular solo se ve el ícono.
+
+**Hallazgos**
+- `id` = único en la página. Si un elemento se repite (una ✕ por cada sidebar), tiene que ser `class`, y el JS usa `querySelectorAll(...).forEach(...)`.
+- `<button>` sirve para acciones dentro de la misma página y `<a>` para ir a otra. Un `<a>` no hereda los estilos de `button`: hay que dárselos a mano, incluido `text-decoration: none`.
+- `append()` / `prepend()` con un elemento que ya existe lo **mueven**, no lo copian, y su listener viaja con él. Así el botón de tema entra a Ajustes sin tocar `tema.js`, que también usan otras páginas.
+- `addEventListener('click', () => abrirSidebar('x'))`: hay que pasar una función. Con `abrirSidebar('x')` a secas, la función se ejecuta en ese momento.
+- `::first-letter` no funciona en elementos `inline-flex`. Para ocultar solo el texto de un botón en celular, el texto va en un `<span>`.
+
+**Pendientes**
+- Probar en el navegador: abrir y cerrar los dos sidebars, el tema dentro de Ajustes, cerrar sesión desde Ajustes, y el ir y venir entre `cliente.html` y `galeria.html`.
+- Siguen pendientes las políticas RLS de admin (ver 2026-11-06).
+
+**Reflexión**
+- _(pendiente: la escribe el estudiante)_

@@ -237,7 +237,7 @@ body::after {
 /* SIDEBAR: panel fijo a la derecha, del alto de la pantalla.
    Cerrado: translateX(100%) lo corre su propio ancho hacia la derecha,
    o sea, justo afuera de la pantalla. Abierto: vuelve a su lugar. */
-#sidebar-perfil {
+.sidebar {
   position: fixed;
   top: 0;
   right: 0;
@@ -255,10 +255,10 @@ body::after {
   transform: translateX(100%);
   transition: transform 0.35s ease;
 }
-#sidebar-perfil.abierto { transform: none; }
+.sidebar.abierto { transform: none; }
 
 /* Franja de degradado en el borde izquierdo del sidebar */
-#sidebar-perfil::before {
+.sidebar::before {
   content: "";
   position: absolute;
   top: 0;
@@ -276,7 +276,7 @@ body::after {
 }
 
 /* Botón ✕: arriba a la derecha, sin degradado */
-#btn-cerrar-sidebar {
+.btn-cerrar-sidebar {
   position: absolute;
   top: 20px;
   right: 20px;
@@ -288,7 +288,27 @@ body::after {
   border: 1px solid var(--borde-vidrio);
   box-shadow: none;
 }
-#btn-cerrar-sidebar:hover { color: var(--rosa-fuerte); }
+.btn-cerrar-sidebar:hover { color: var(--rosa-fuerte); }
+
+/* SIDEBAR DE AJUSTES: título pequeño encima de cada grupo */
+.titulo-ajuste {
+  margin: 20px 0 8px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--texto-suave);
+}
+
+/* El botón de tema, cuando cliente.js lo mete en Ajustes, deja de ser
+   flotante. ".sidebar #btn-tema" pesa más que "#btn-tema" solo
+   (clase + id > id), por eso gana sin !important */
+.sidebar #btn-tema {
+  position: static;
+  width: 100%;
+  padding: 13px 20px;
+  border-radius: 12px;
+}
 
 /* Capa oscura detrás del sidebar. Invisible y "transparente a los
    clics" (pointer-events: none) hasta que se abre el sidebar */
@@ -357,7 +377,8 @@ body::after {
 #form-registro h3,
 #form-login h3,
 #resumen-perfil h3,
-#form-perfil h3 {
+#form-perfil h3,
+#sidebar-ajustes h3 {
   display: flex;
   align-items: center;
   gap: 12px;
@@ -371,7 +392,8 @@ body::after {
 #form-registro h3::before,
 #form-login h3::before,
 #resumen-perfil h3::before,
-#form-perfil h3::before {
+#form-perfil h3::before,
+#sidebar-ajustes h3::before {
   content: "";
   width: 12px;
   height: 12px;
@@ -431,12 +453,52 @@ button:active { transform: translateY(0) scale(0.98); }
 /* Botón de cada formulario: ancho completo, esquinas menos redondas */
 #form-registro button,
 #form-login button,
-#form-perfil button,
-#btn-editar-perfil {
+#form-perfil button {
   margin-top: 16px;
   padding: 15px 20px;
   border-radius: 12px;
   font-size: 1rem;
+}
+
+/* MENÚ DE LA CUENTA (Editar perfil / Ajustes / Productos) */
+.menu-cuenta {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 20px;
+  padding-top: 16px;
+  border-top: 1px solid var(--linea);
+}
+
+/* Botones y el link se ven iguales: de contorno, texto a la izquierda.
+   El <a> necesita display:block y text-decoration:none para parecer botón */
+.opcion-menu {
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 13px 16px;
+  border-radius: 12px;
+  text-align: left;
+  text-decoration: none;
+  font-weight: 700;
+  color: var(--texto);
+  background: var(--campo-vidrio);
+  border: 1px solid var(--borde-vidrio);
+  box-shadow: none;
+  transition: transform 0.15s, border-color 0.15s, color 0.15s;
+}
+.opcion-menu:hover {
+  transform: translateX(4px);   /* se corre un poquito a la derecha */
+  color: var(--rosa-fuerte);
+  border-color: var(--rosa-medio);
+  filter: none;
+  box-shadow: none;
+}
+/* Anillo visible cuando se llega con Tab (el <a> no hereda el de button) */
+.opcion-menu:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 4px var(--anillo);
+  border-color: var(--rosa-medio);
 }
 
 /* CERRAR SESIÓN: botón "de contorno", sin degradado */
@@ -479,10 +541,9 @@ button:active { transform: translateY(0) scale(0.98); }
    La clase "con-sesion" la pone cliente.js en mostrarEstadoSesion() */
 body.con-sesion { padding-left: 324px; }
 
-/* Cerrar sesión al fondo de la columna: margin-top: auto en un flex
-   en columna empuja el elemento hasta abajo */
-#resumen-perfil #btn-logout {
-  margin: auto 0 0;
+/* Cerrar sesión dentro de Ajustes: ancho completo como los demás */
+#sidebar-ajustes #btn-logout {
+  margin: 0;
   width: 100%;
   border-radius: 12px;
 }
@@ -498,7 +559,6 @@ body.con-sesion { padding-left: 324px; }
     border-left: 1px solid var(--borde-vidrio);
   }
   body.con-sesion { padding-left: 16px; }
-  #resumen-perfil #btn-logout { margin-top: 8px; }
 }
 
 /* Aparecer: sube un poco mientras se hace visible */

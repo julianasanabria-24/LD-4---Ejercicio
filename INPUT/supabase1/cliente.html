@@ -74,8 +74,15 @@
           <dt>Dirección</dt> <dd id="resumen-direccion">—</dd>
           <dt>Ciudad</dt>    <dd id="resumen-ciudad">—</dd>
         </dl>
-        <button type="button" id="btn-editar-perfil">✎ Editar perfil</button>
-        <button id="btn-logout" type="button" hidden>Cerrar sesión</button>
+        <!-- MENÚ DE LA CUENTA: <nav> = grupo de opciones de navegación.
+             Editar perfil y Ajustes abren un sidebar (son <button> porque
+             hacen algo en esta página); Productos es un <a> porque lleva
+             a OTRA página (la galería con el carrito). -->
+        <nav class="menu-cuenta" aria-label="Opciones de mi cuenta">
+          <button type="button" class="opcion-menu" id="btn-editar-perfil">✎ Editar perfil</button>
+          <button type="button" class="opcion-menu" id="btn-ajustes">⚙ Ajustes</button>
+          <a class="opcion-menu" href="galeria.html">🛍 Productos</a>
+        </nav>
       </article>
 
       <!-- Capa oscura detrás del sidebar: al hacer clic, se cierra -->
@@ -85,8 +92,8 @@
            UPDATE. Cerrado, está fuera de la pantalla (transform en el CSS).
            inert = mientras está cerrado no se puede llegar a sus campos
            con Tab ni hacer clic en ellos. -->
-      <aside id="sidebar-perfil" inert>
-        <button type="button" id="btn-cerrar-sidebar" aria-label="Cerrar">✕</button>
+      <aside id="sidebar-perfil" class="sidebar" inert>
+        <button type="button" class="btn-cerrar-sidebar" aria-label="Cerrar">✕</button>
 
       <form id="form-perfil">
         <h3>Mis datos</h3>
@@ -110,6 +117,22 @@
 
         <button type="submit">Guardar cambios</button>
       </form>
+      </aside>
+
+      <!-- SIDEBAR DE AJUSTES: mismo mecanismo que el de perfil (clase
+           .sidebar). El botón de tema NO está escrito aquí: cliente.js lo
+           MUEVE dentro de #ajustes-tema cuando hay sesión, y lo devuelve
+           arriba a la derecha cuando no la hay. -->
+      <aside id="sidebar-ajustes" class="sidebar" inert>
+        <button type="button" class="btn-cerrar-sidebar" aria-label="Cerrar">✕</button>
+
+        <h3>Ajustes</h3>
+
+        <p class="titulo-ajuste">Apariencia</p>
+        <div id="ajustes-tema"></div>
+
+        <p class="titulo-ajuste">Sesión</p>
+        <button id="btn-logout" type="button" hidden>Cerrar sesión</button>
       </aside>
     </section>
 

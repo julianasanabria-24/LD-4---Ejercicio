@@ -154,6 +154,16 @@ async function mostrarEstadoSesion() {
   // a la columna fija de Mi perfil.
   document.body.classList.toggle('con-sesion', Boolean(data.user));
 
+  // MOVER el botón de tema: append() / prepend() con un elemento que YA
+  // existe no lo copia, lo cambia de lugar. Su listener (el de tema.js)
+  // viaja con él, así que sigue funcionando sin tocar tema.js.
+  const botonTema = document.getElementById('btn-tema');
+  if (data.user) {
+    document.getElementById('ajustes-tema').append(botonTema); // dentro de Ajustes
+  } else {
+    document.body.prepend(botonTema); // de vuelta arriba a la derecha
+  }
+
   if (data.user) {
     estado.textContent = `Sesión iniciada como ${data.user.email}`;
     cargarPerfil(data.user.id);
@@ -164,26 +174,47 @@ async function mostrarEstadoSesion() {
 }
 
 
-// ===================== SIDEBAR =====================
+// ===================== SIDEBARS =====================
 // Abrir y cerrar es solo poner o quitar clases: el movimiento lo hace
-// el CSS (transform + transition en #sidebar-perfil).
-function abrirSidebar() {
-  const sidebar = document.getElementById('sidebar-perfil');
+// el CSS (transform + transition en .sidebar).
+// Ahora hay DOS sidebars (perfil y ajustes), así que abrirSidebar()
+// recibe el id del que quieres abrir: una sola función para los dos.
+function abrirSidebar(id) {
+  cerrarSidebar(); // por si había otro abierto: solo uno a la vez
+
+  const sidebar = document.getElementById(id);
   sidebar.classList.add('abierto');
   sidebar.inert = false; // ya se puede usar con Tab y clic
   document.getElementById('fondo-sidebar').classList.add('visible');
-  document.getElementById('perfil-nombre').focus(); // el cursor queda listo para escribir
+
+  // Pone el cursor en el primer campo editable (o el primer botón que
+  // no sea la ✕). "?." = si no encuentra nada, no hace nada (sin error).
+  sidebar
+    .querySelector('input:not([readonly]), button:not(.btn-cerrar-sidebar)')
+    ?.focus();
 }
 
+// Cierra el que esté abierto, sea cual sea
 function cerrarSidebar() {
-  const sidebar = document.getElementById('sidebar-perfil');
-  sidebar.classList.remove('abierto');
-  sidebar.inert = true;
+  document.querySelectorAll('.sidebar.abierto').forEach((sidebar) => {
+    sidebar.classList.remove('abierto');
+    sidebar.inert = true;
+  });
   document.getElementById('fondo-sidebar').classList.remove('visible');
 }
 
-document.getElementById('btn-editar-perfil').addEventListener('click', abrirSidebar);
-document.getElementById('btn-cerrar-sidebar').addEventListener('click', cerrarSidebar);
+// () => abrirSidebar('...') : se escribe así (y no abrirSidebar('...')
+// a secas) porque addEventListener necesita una FUNCIÓN para llamar
+// después, no el resultado de llamarla ya.
+document.getElementById('btn-editar-perfil')
+  .addEventListener('click', () => abrirSidebar('sidebar-perfil'));
+document.getElementById('btn-ajustes')
+  .addEventListener('click', () => abrirSidebar('sidebar-ajustes'));
+
+// Cada sidebar tiene su propia ✕ — por eso es clase, no id
+document.querySelectorAll('.btn-cerrar-sidebar').forEach((boton) => {
+  boton.addEventListener('click', cerrarSidebar);
+});
 document.getElementById('fondo-sidebar').addEventListener('click', cerrarSidebar);
 
 // La tecla Escape también lo cierra
