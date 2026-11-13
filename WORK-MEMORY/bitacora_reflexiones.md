@@ -292,3 +292,34 @@ layout) tiene más sentido para el proyecto.
 
 **Reflexión**
 - _(pendiente: la escribe el estudiante)_
+
+
+## 2026-11-13
+
+> _Entrada redactada por el agente a pedido del estudiante, incluida la reflexión. Pendiente de revisión del estudiante para que quede en sus propias palabras._
+
+**Cambios — código (`INPUT/supabase1/`)**
+- `cliente.html` + `js/cliente.js` + `css/cuenta.css`: botón "⎋ Cerrar sesión" arriba a la derecha (`#btn-logout-superior`), visible solo con sesión. Comparte la función `cerrarSesion()` con el botón de Ajustes.
+- `js/supabaseClient.js`: se quitó el segundo cliente (`supabaseClient`), que no se usaba. Eliminó el aviso `Multiple GoTrueClient instances detected`.
+
+**Cambios — base de datos (SQL Editor, fuera del repo)**
+- Análisis de seguridad del esquema: cualquiera podía hacerse admin (política `agregar` en `admins_practica`) y `clientes_practica` tenía RLS apagado.
+- Script de RLS para `clientes_practica` (insert/select/update solo de la fila propia, admins leen todo).
+- Diseño nuevo de pedidos: `pedidos` + `detalles_pedidos` + `historial_estados_pedido`, con índices (un solo carrito por cliente) y políticas RLS + permisos por columna.
+
+**Hallazgos**
+- `TypeError: Cannot read properties of null (reading 'id')` = sin sesión, `u.user` es `null`. Antes de usar `algo.propiedad`, revisar que `algo` no sea `null` (o usar `?.`).
+- `PGRST204` = la API no encuentra la columna: el nombre no coincide (`producto_i d` con espacio) o falta `notify pgrst, 'reload schema'`.
+- `42P07` (ya existe) vs `42P01` (no existe): `create table` no reemplaza tablas, y un índice no se puede crear sobre una tabla que no existe. El orden importa: tablas → RLS → índices.
+- Un índice único **parcial** (`where estado = 'carrito'`) crea una regla de negocio: un carrito abierto por cliente, pero historial ilimitado.
+- Seguridad en dos capas: `grant` decide **qué columnas**, `policy` decide **qué filas**.
+- Los experimentos mostraron que validar en el frontend no basta: desde la consola se pudo pedir 999.999 unidades y el pedido no guardaba el precio de compra.
+
+**Pendientes**
+- Verificar si las tablas `pedidos`, `detalles_pedidos` e `historial_estados_pedido` quedaron creadas (salieron los errores 42P07 y 42P01).
+- Trigger que copie `precio_unitario` desde `products_practice` y función `confirmar_pedido()`.
+- Corregir `.from('productos_practica')` en `js/productos.js:644`.
+- Quitar la política `agregar` de `admins_practica`.
+
+**Reflexión**
+- Lo que más me costó fue entender que la base de datos tiene que defenderse sola: en la galería el botón `+` no deja pasar del stock, pero desde la consola pude pedir 999.999 unidades sin problema. También me confundió que el mismo nombre `pedidos` diera "ya existe" y después "no existe"; aprendí a revisar qué hay realmente en la base antes de seguir corriendo scripts. Para la próxima quiero terminar el trigger del precio y probar todo el flujo del carrito de punta a punta.
