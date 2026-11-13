@@ -148,6 +148,7 @@ async function mostrarEstadoSesion() {
   document.querySelector('.tarjetas').hidden = Boolean(data.user);
   document.getElementById('resumen-perfil').hidden = !data.user;
   document.getElementById('btn-logout').hidden = !data.user;
+  document.getElementById('btn-logout-superior').hidden = !data.user;
 
   // classList.toggle(clase, condición): pone la clase si es true y la
   // quita si es false. El CSS usa body.con-sesion para hacer espacio
@@ -331,10 +332,15 @@ document.getElementById('form-perfil').addEventListener('submit', async (event) 
 
 
 //CERRAR SESION//
-document.getElementById('btn-logout').addEventListener('click', async () => {
+// Una sola función para los DOS botones (el de Ajustes y el de arriba a
+// la derecha), así si algún día cambia, se cambia en un solo lugar.
+async function cerrarSesion() {
   await db.auth.signOut();
   mostrarEstadoSesion();
-});
+}
+
+document.getElementById('btn-logout').addEventListener('click', cerrarSesion);
+document.getElementById('btn-logout-superior').addEventListener('click', cerrarSesion);
 
 // Al cargar la página, revisa si ya había una sesión activa
 mostrarEstadoSesion();

@@ -25,6 +25,11 @@
   <body>
     <button type="button" id="btn-tema">🌙 Modo oscuro</button>
 
+    <!-- CERRAR SESIÓN arriba a la derecha. Oculto (hidden) hasta que hay
+         sesión; cliente.js lo muestra en mostrarEstadoSesion(). Ocupa el
+         lugar que deja el botón de tema cuando este se va a Ajustes. -->
+    <button type="button" id="btn-logout-superior" class="btn-cerrar-sesion" hidden>⎋ Cerrar sesión</button>
+
     <header class="encabezado">
       <span class="etiqueta-superior">Conectado a Supabase</span>
       <h1>Mi <span class="texto-degradado">cuenta</span></h1>

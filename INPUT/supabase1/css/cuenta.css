@@ -541,6 +541,30 @@ button:active { transform: translateY(0) scale(0.98); }
    La clase "con-sesion" la pone cliente.js en mostrarEstadoSesion() */
 body.con-sesion { padding-left: 324px; }
 
+/* CERRAR SESIÓN arriba a la derecha: mismo vidrio que #btn-tema (que
+   ocupaba este lugar antes de iniciar sesión). Se pone rojo al pasar
+   el mouse, igual que el de Ajustes. */
+#btn-logout-superior {
+  position: fixed;
+  top: 12px;
+  right: 12px;
+  z-index: 10;               /* debajo del fondo del sidebar (25) */
+  padding: 8px 14px;
+  color: var(--texto);
+  background: var(--vidrio);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--borde-vidrio);
+  box-shadow: none;
+}
+#btn-logout-superior:hover {
+  background: var(--campo-vidrio);
+  color: var(--peligro);
+  border-color: var(--peligro);
+}
+/* [hidden] debe ganarle al display de los estilos de botón */
+#btn-logout-superior[hidden] { display: none; }
+
 /* Cerrar sesión dentro de Ajustes: ancho completo como los demás */
 #sidebar-ajustes #btn-logout {
   margin: 0;

@@ -4,7 +4,8 @@ const SUPABASE_URL = "https://haseapigywwjyzuxrzbp.supabase.co";
 const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imhhc2VhcGlneXd3anl6dXhyemJwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTIwODg1MzUsImV4cCI6MjEwNzY2NDUzNX0.C14Pdjl0XqdRYR8kvq5G5552Vi2JGk--YOciWdCxpX8";
 
 // `supabase` es el objeto global que expone la librería cargada desde el CDN.
-const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
+// Creamos UN SOLO cliente ("db") para todas las páginas: si hubiera dos,
+// cada uno manejaría la sesión por su cuenta en el mismo localStorage
+// (aviso "Multiple GoTrueClient instances detected").
 const { createClient } = supabase;
 const db = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
