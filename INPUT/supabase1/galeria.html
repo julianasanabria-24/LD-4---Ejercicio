@@ -79,13 +79,39 @@
 
       <div id="lista-carrito"></div>
 
+      <!-- Avisos del checkout (falta iniciar sesión, stock insuficiente,
+           pedido confirmado...). Va FUERA de #resumen-carrito porque el
+           resumen se oculta al quedar vacío el carrito, y justo entonces
+           hay que mostrar "Pedido #N confirmado". Vacío no se ve (:empty) -->
+      <p id="mensaje-carrito" class="mensaje-carrito" role="status"></p>
+
       <!-- Resumen: solo se ve si hay algo en el carrito -->
-      <div id="resumen-carrito" hidden>
+      <div id="resumen-carrito" class="carrito-footer" hidden>
         <dl class="totales">
           <dt>Subtotal</dt>    <dd id="carrito-subtotal">$0</dd>
           <dt>Ahorras</dt>     <dd id="carrito-ahorro">$0</dd>
           <dt class="total">Total</dt> <dd id="carrito-total" class="total">$0</dd>
         </dl>
+        <!-- DATOS DE ENVÍO: se muestra al pulsar "Finalizar compra" si hay
+             sesión. Dirección y teléfono solo son obligatorios con envío -->
+        <form id="form-checkout" hidden>
+          <label class="casilla">
+            <input type="checkbox" id="checkout-envio" /> Envío a domicilio
+          </label>
+
+          <label for="checkout-direccion">Dirección</label>
+          <input id="checkout-direccion" type="text" placeholder="Ej: Calle 10 # 5-20" autocomplete="street-address" />
+
+          <label for="checkout-telefono">Teléfono</label>
+          <input id="checkout-telefono" type="tel" placeholder="Ej: 300 123 4567" autocomplete="tel" />
+
+          <label for="checkout-observacion">Observaciones</label>
+          <textarea id="checkout-observacion" rows="2" placeholder="Opcional: indicaciones para la entrega"></textarea>
+
+          <button type="submit" id="btn-confirmar">Confirmar pedido</button>
+          <button type="button" id="btn-cancelar-checkout" class="secundario">Volver al carrito</button>
+        </form>
+
         <button type="button" id="btn-finalizar">Finalizar compra</button>
         <button type="button" id="btn-vaciar" class="secundario">Vaciar carrito</button>
       </div>

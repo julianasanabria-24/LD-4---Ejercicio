@@ -529,6 +529,9 @@ button.secundario:hover,
   width: 100%;
   border-radius: 12px;
 }
+/* Respuesta de Supabase al agregar (galeria.js → clicAgregar) */
+.producto-pie .btn-agregar.agregado  { background: var(--exito);   color: var(--superficie); }
+.producto-pie .btn-agregar.con-error { background: var(--peligro); color: var(--superficie); }
 
 /* ===================== SELECTOR DE CANTIDAD ===================== */
 .cantidad {
@@ -630,6 +633,7 @@ button.secundario:hover,
 /* La lista crece y hace scroll por dentro; el resumen queda abajo */
 #lista-carrito {
   flex: 1;
+  min-height: 140px;   /* con el formulario abierto, la lista no desaparece */
   overflow-y: auto;
   padding: 8px 0;
 }
@@ -724,6 +728,68 @@ button.secundario:hover,
 }
 #resumen-carrito button { width: 100%; border-radius: 12px; }
 #btn-finalizar { padding: 15px 20px; font-size: 1rem; }
+
+/* El pie no puede comerse todo el panel: con el formulario, hace scroll */
+.carrito-footer {
+  max-height: 55vh;
+  overflow-y: auto;
+}
+
+/* Avisos del checkout: pequeños, color de acento; vacíos no ocupan lugar */
+.mensaje-carrito {
+  margin: 0 0 12px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--rosa-fuerte);
+}
+.mensaje-carrito:empty { display: none; }
+
+/* FORMULARIO DE ENVÍO: campos con el mismo vidrio que el buscador */
+#form-checkout {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+#form-checkout label {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--texto-suave);
+}
+#form-checkout .casilla {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 4px;
+  font-size: 0.9rem;
+  color: var(--texto);
+  cursor: pointer;
+}
+#form-checkout .casilla input {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--rosa-medio);
+}
+#form-checkout input:not([type="checkbox"]),
+#form-checkout textarea {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 10px 14px;
+  border: 1px solid var(--borde-vidrio);
+  border-radius: 12px;
+  background: var(--campo-vidrio);
+  color: var(--texto);
+  font: inherit;
+  transition: border-color 0.15s, box-shadow 0.15s, background 0.15s;
+}
+#form-checkout textarea { resize: vertical; }
+#form-checkout input:not([type="checkbox"]):focus,
+#form-checkout textarea:focus {
+  outline: none;
+  background: var(--superficie);
+  border-color: var(--rosa-medio);
+  box-shadow: 0 0 0 4px var(--anillo);
+}
+#btn-confirmar { margin-top: 6px; }
 
 /* Capa detrás del carrito: invisible y "transparente a los clics"
    (pointer-events: none) hasta que se abre */
