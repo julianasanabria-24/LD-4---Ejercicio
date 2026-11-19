@@ -323,3 +323,62 @@ layout) tiene más sentido para el proyecto.
 
 **Reflexión**
 - Lo que más me costó fue entender que la base de datos tiene que defenderse sola: en la galería el botón `+` no deja pasar del stock, pero desde la consola pude pedir 999.999 unidades sin problema. También me confundió que el mismo nombre `pedidos` diera "ya existe" y después "no existe"; aprendí a revisar qué hay realmente en la base antes de seguir corriendo scripts. Para la próxima quiero terminar el trigger del precio y probar todo el flujo del carrito de punta a punta.
+
+
+## 2026-11-19
+
+> _Entrada redactada por el agente a pedido del estudiante. Pendiente de revisión del estudiante para que quede en sus propias palabras._
+
+**Cambios — carrito en Supabase (`galeria.html` + `js/galeria.js` + `css/galeria.css`)**
+- El carrito ya no vive solo en `localStorage`: es una fila de `pedidos` con `estado = 'carrito'` y cada producto es una fila de `detalles_pedidos`.
+- Funciones base: `obtenerUsuario()`, `buscarCarrito()`, `obtenerOCrearCarrito()` (si el insert da `23505` porque ya hay un carrito abierto, lo vuelve a buscar) y `vaciarCarritoLocal()`.
+- `agregarAlCarrito(id, cantidad)`: INSERT del detalle la primera vez (sin precio: lo copia el trigger `detalles_pedidos_fijar_precio`) y UPDATE de la cantidad después. Sin sesión funciona en "modo demostración", sin tocar Supabase.
+- `quitarDelCarrito(id)`: DELETE del detalle. El pedido no se borra aunque quede vacío: se reutiliza.
+- `cargarCarritoDesdeBD()`: al abrir la página trae el carrito con **una** consulta anidada (`pedidos` → `detalles_pedidos`), así sobrevive a la recarga.
+- Botón "Agregar al carrito": se deshabilita mientras espera y muestra "Agregado ✓" (verde) o "Error" (rojo) durante 1,2 s.
+- Formulario de envío en el panel del carrito (envío a domicilio, dirección, teléfono, observaciones). Dirección y teléfono son `required` solo con envío.
+- "Confirmar pedido" solo llama a `db.rpc('confirmar_pedido', {...})`: la base descuenta el stock, fija el precio final y cambia el estado. El navegador no calcula el total: lo lee de la vista `pedidos_con_total`.
+- `onAuthStateChange` vacía el carrito si se cierra sesión en otra pestaña, y `pageshow` lo recarga al volver con "Atrás".
+
+**Cambios — "Mis pedidos" del cliente (`cliente.html` + `js/cliente.js`)**
+- Botón 📦 Mis pedidos en el menú de la cuenta: un sidebar con cada pedido, su estado actual (pastilla de color), una barra Confirmado → Enviado → Entregado, productos, entrega y total.
+
+**Cambios — panel del admin (`admin.html` + `js/admin-pedidos.js`)**
+- Pestañas Productos | Pedidos | Mis clientes.
+- Pedidos: todos los pedidos con el cliente, un selector para cambiar el estado, el historial de cambios y un resumen (por enviar, enviados, vendido).
+- Mis clientes: tabla con número de pedidos y total comprado por cliente, con buscador.
+- Archivos compartidos por las dos páginas: `js/pedidos.js` (`traerPedidos()`, `tarjetaPedido()`, `escaparHTML()`) y `css/pedidos.css`.
+
+**Cambios — seguridad (`sql/` + SQL Editor)**
+- `sql/pedidos_admin.sql`: la vista `pedidos_con_total` con `security_invoker = true` y las políticas de admin con el nombre real `admins_practica`.
+- `sql/proteger_admins.sql`: se quita la política `agregar` y el permiso de escritura en `admins_practica`. Se quitó el registro de administradores de `admin.html` y `admin.js`: los admins se crean desde Supabase.
+- `sql/cancelar_pedidos.sql`: triggers para que solo un admin cancele, que cancelar sea definitivo y que se devuelva el stock.
+
+**Hallazgos**
+- `btn.dataset.id` siempre llega como **texto**; para la base hay que convertirlo con `Number(id)`.
+- Con RLS, un INSERT bloqueado **sí** da error (`42501`), pero un UPDATE o DELETE bloqueado **no**: devuelve `[]`. Por eso se pide `.select()` y se revisa `data.length`.
+- `insert(...).select()` también tiene que pasar la política de SELECT: si esa falla, el mensaje es el mismo que si fallara la de INSERT.
+- Se puede probar RLS desde el SQL Editor **haciéndose pasar por un cliente** (`set_config('role', 'authenticated')` + su `uid`). Fue lo que encontró que faltaban 3 políticas.
+- Una **vista** normal se ejecuta con los permisos de su dueño y se salta RLS: `pedidos_con_total` dejaba a cualquier cliente leer los pedidos (direcciones y teléfonos) de todos. Se arregla con `security_invoker = true`.
+- Postgres **no revisa** los nombres de tabla dentro de una función al crearla, solo al ejecutarla.
+- Todos los `<script>` de una página comparten las variables globales: un `const formato` en dos archivos rompe la página. Por eso los nuevos usan nombres propios (`pesos`, `fechaPedido`).
+- Lo que escribe un cliente (dirección, nota) y se muestra con `innerHTML` en la página del admin hay que **escaparlo**; si no, un cliente podría meter código en la página del admin.
+- Una política dice **quién** puede actualizar; un trigger puede decir **qué valores** se permiten. Se usan juntos.
+- El SQL Editor de Supabase **ejecuta solo lo seleccionado** si hay texto seleccionado.
+
+**Errores** (detalle en `OUTPUT/explicacion_error_2026-11-19.md`)
+- `42710` policy already exists: el script ya se había ejecutado; se resuelve con `drop policy if exists`.
+- `42501` new row violates RLS en `detalles_pedidos`: faltaban las políticas de INSERT, UPDATE y DELETE.
+- `409 Conflict` al agregar: el producto ya tenía fila en el carrito; `agregarAlCarrito()` ahora se recupera.
+- `42P01` relation `productos_practica` does not exist en `confirmar_pedido()`. Es la **4.ª vez** que sale `productos_practica` → antes de pegar código de la guía, buscar `productos_practica` y `admin_practica`.
+
+**Pendientes**
+- Ejecutar completos (sin seleccionar nada) `sql/proteger_admins.sql` y la segunda parte de `sql/cancelar_pedidos.sql`: en la revisión salieron 3 de 5 en `FALTA`.
+- Los botones `−`/`+` y "Vaciar carrito" todavía no guardan en Supabase.
+- Sin sesión, el carrito de demostración se pierde al recargar.
+- Corregir `.from('productos_practica')` en `js/productos.js:644`.
+- Revisar `validar_transicion_estado()`: no sé qué transiciones permite.
+- Probar en el navegador las pestañas Pedidos y Mis clientes del admin, y "Mis pedidos" del cliente.
+
+**Reflexión**
+- _(pendiente: la escribe el estudiante)_
