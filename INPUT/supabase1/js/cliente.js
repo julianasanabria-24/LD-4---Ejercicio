@@ -331,6 +331,44 @@ document.getElementById('form-perfil').addEventListener('submit', async (event) 
 });
 
 
+// ===================== MIS PEDIDOS =====================
+// Usa traerPedidos() y tarjetaPedido() de pedidos.js. El cliente solo ve
+// el estado: quien lo cambia (enviado, entregado...) es el admin.
+async function cargarMisPedidos() {
+  const lista = document.getElementById('lista-mis-pedidos');
+  lista.innerHTML = '<p class="pedidos-vacio">Cargando tus pedidos…</p>';
+
+  const { data } = await db.auth.getUser();
+  if (!data.user) return;
+
+  // Filtramos por su id aunque RLS ya lo haga: así la consulta es clara
+  const pedidos = await traerPedidos(data.user.id);
+
+  if (!pedidos) {
+    lista.innerHTML = '<p class="pedidos-vacio">No pudimos cargar tus pedidos. Revisa la consola (F12).</p>';
+    return;
+  }
+  if (pedidos.length === 0) {
+    lista.innerHTML = `
+      <p class="pedidos-vacio">
+        Aún no tienes pedidos.<br>
+        <a href="galeria.html">Ir a la tienda →</a>
+      </p>`;
+    return;
+  }
+
+  lista.innerHTML = pedidos
+    .map((p) => tarjetaPedido(p, { arriba: progresoPedido(p.estado) }))
+    .join('');
+}
+
+// Se recarga cada vez que se abre: el admin pudo cambiar un estado
+document.getElementById('btn-mis-pedidos').addEventListener('click', () => {
+  abrirSidebar('sidebar-pedidos');
+  cargarMisPedidos();
+});
+
+
 //CERRAR SESION//
 // Una sola función para los DOS botones (el de Ajustes y el de arriba a
 // la derecha), así si algún día cambia, se cambia en un solo lugar.

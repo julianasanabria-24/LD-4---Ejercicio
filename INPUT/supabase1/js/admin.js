@@ -1,48 +1,7 @@
-// ===================== LOGIN ⇄ REGISTRO =====================
-// Solo se ve una tarjeta a la vez. "cual" es "login" o "registro".
-// Cada vez que una se vuelve visible, la animación "aparecer" del CSS
-// se repite sola (un elemento que pasa de hidden a visible la reinicia).
-function mostrarFormularioAcceso(cual) {
-  document.getElementById('form-login-admin').hidden = cual !== 'login';
-  document.getElementById('form-registro-admin').hidden = cual !== 'registro';
-
-  // Deja el cursor listo en el primer campo del formulario que se ve
-  const primerCampo = cual === 'login' ? 'admin-login-correo' : 'admin-registro-nombre';
-  document.getElementById(primerCampo).focus();
-}
-
-document.getElementById('btn-mostrar-registro').addEventListener('click', () => mostrarFormularioAcceso('registro'));
-document.getElementById('btn-volver-login').addEventListener('click', () => mostrarFormularioAcceso('login'));
-
-document.getElementById('form-registro-admin').addEventListener('submit', async (evento) => {
-  evento.preventDefault();
-  const form = evento.target;
-
-  const { data, error } = await db.auth.signUp({
-    email: form.elements['admin-registro-correo'].value,
-    password: form.elements['admin-registro-password'].value,
-  });
-
-  if (error) {
-    document.getElementById('estado-sesion-admin').innerText = 'Error al registrar: ' + error.message;
-    return;
-  }
-
-  const { error: errorPerfil } = await db.from('admins_practica').insert([{
-    id: data.user.id,
-    nombre: form.elements['admin-registro-nombre'].value.trim(),
-    correo: form.elements['admin-registro-correo'].value.trim(),
-  }]);
-
-  if (errorPerfil) {
-    document.getElementById('estado-sesion-admin').innerText = 'Cuenta creada, pero falló el perfil: ' + errorPerfil.message;
-    return;
-  }
-
-  document.getElementById('estado-sesion-admin').innerText = 'Cuenta de administrador creada. Ya puedes iniciar sesión.';
-  form.reset();
-  mostrarFormularioAcceso('login');   // volvemos al login para que entre
-});
+// ===================== LOGIN DEL ADMINISTRADOR =====================
+// Aquí NO hay registro: si la página pudiera insertar en admins_practica,
+// cualquier cliente con sesión podría hacerse admin desde la consola.
+// Los admins se crean desde Supabase (ver sql/proteger_admins.sql).
 
 document.getElementById('form-login-admin').addEventListener('submit', async (evento) => {
   evento.preventDefault();

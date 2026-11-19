@@ -12,6 +12,8 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <!-- Tarjetas de pedido, pestañas y "Mis clientes" -->
+  <link rel="stylesheet" href="css/pedidos.css">
 
   <!-- Pone el tema ANTES de dibujar la página (así no "parpadea" en claro).
        Usa el que guardaste la última vez; si no hay, el del sistema operativo -->
@@ -1103,6 +1105,12 @@
       height: 1px;
       background: var(--linea);
     }
+    .nota-acceso {
+      margin: 8px 0 0;
+      font-size: 0.85rem;
+      text-align: center;
+      color: var(--texto-suave);
+    }
 
     /* Botones secundarios (Registrar / Volver): de contorno, sin
        degradado, para que no compitan con el botón principal */
@@ -1174,9 +1182,10 @@
     <p>Inicia sesión con tu cuenta de administrador para gestionar los productos.</p>
   </header>
 
-  <!-- UNA SOLA TARJETA A LA VEZ: se ve el login, y el botón
-       "Registrar cuenta de administrador" lo cambia por el registro.
-       admin.js alterna el "hidden" de los dos formularios. -->
+  <!-- Solo hay login. Ya NO hay registro de administradores desde la
+       página: si el navegador pudiera escribir en admins_practica,
+       cualquier cliente con sesión podría darse permisos de admin.
+       Los admins se crean desde Supabase (ver sql/proteger_admins.sql). -->
   <div class="tarjetas-acceso">
   <form id="form-login-admin">
     <h3>Iniciar sesión</h3>
@@ -1188,25 +1197,8 @@
 
     <button type="submit">Iniciar sesión</button>
 
-    <!-- type="button": si no, al estar dentro del <form> sería "submit"
-         e intentaría iniciar sesión en vez de mostrar el registro -->
-    <p class="separador-acceso">¿Aún no tienes cuenta?</p>
-    <button type="button" id="btn-mostrar-registro" class="secundario">Registrar cuenta de administrador</button>
-  </form>
-
-  <form id="form-registro-admin" hidden>
-    <h3>Registrar administrador</h3>
-    <label for="admin-registro-nombre">Nombre</label>
-    <input id="admin-registro-nombre" type="text" required>
-
-    <label for="admin-registro-correo">Correo</label>
-    <input id="admin-registro-correo" type="email" required>
-
-    <label for="admin-registro-password">Contraseña</label>
-    <input id="admin-registro-password" type="password" minlength="6" required>
-
-    <button type="submit">Crear cuenta de administrador</button>
-    <button type="button" id="btn-volver-login" class="secundario">← Volver a iniciar sesión</button>
+    <p class="separador-acceso">¿Necesitas una cuenta?</p>
+    <p class="nota-acceso">Las cuentas de administrador las crea el dueño de la tienda desde Supabase.</p>
   </form>
   </div>
   </section>
@@ -1236,9 +1228,63 @@
     </div>
   </header>
 
+  <!-- PESTAÑAS: cada botón muestra una sección y oculta las otras dos
+       (admin-pedidos.js). aria-selected marca la activa; el CSS la pinta. -->
+  <nav class="pestanas-admin" role="tablist" aria-label="Secciones del panel">
+    <button type="button" class="pestana" role="tab" aria-selected="true" data-seccion="seccion-productos">📦 Productos</button>
+    <button type="button" class="pestana" role="tab" aria-selected="false" data-seccion="seccion-pedidos">🧾 Pedidos</button>
+    <button type="button" class="pestana" role="tab" aria-selected="false" data-seccion="seccion-clientes">👥 Mis clientes</button>
+  </nav>
+
+  <!-- PEDIDOS DE LOS CLIENTES: admin-pedidos.js los trae al abrir la
+       pestaña. Cada tarjeta tiene un selector para cambiar el estado. -->
+  <section id="seccion-pedidos" class="seccion-admin" hidden>
+    <div class="barra-seccion">
+      <h2>Pedidos</h2>
+      <label class="filtro">Estado
+        <select id="filtro-estado-pedidos">
+          <option value="">Todos</option>
+          <option value="confirmado">Confirmado</option>
+          <option value="enviado">Enviado</option>
+          <option value="entregado">Entregado</option>
+          <option value="cancelado">Cancelado</option>
+        </select>
+      </label>
+      <button type="button" id="btn-recargar-pedidos" class="secundario">↻ Actualizar</button>
+    </div>
+    <p id="resumen-pedidos" class="resumen-seccion"></p>
+    <p id="mensaje-pedidos" class="mensaje-seccion" role="status"></p>
+    <div id="lista-pedidos-admin" class="grilla-pedidos"></div>
+  </section>
+
+  <!-- MIS CLIENTES: la tabla reutiliza el estilo .tabla-productos -->
+  <section id="seccion-clientes" class="seccion-admin" hidden>
+    <div class="barra-seccion">
+      <h2>Mis clientes</h2>
+      <input type="search" id="buscar-cliente" placeholder="Buscar por nombre, correo o ciudad..." aria-label="Buscar cliente">
+    </div>
+    <p id="resumen-clientes" class="resumen-seccion"></p>
+    <div class="contenedor-tabla">
+      <table class="tabla-productos tabla-clientes">
+        <thead>
+          <tr>
+            <th>Cliente</th>
+            <th>Teléfono</th>
+            <th>Ciudad</th>
+            <th>Dirección</th>
+            <th>Pedidos</th>
+            <th>Total comprado</th>
+            <th>Cliente desde</th>
+          </tr>
+        </thead>
+        <tbody id="tabla-clientes"></tbody>
+      </table>
+    </div>
+  </section>
+
   <!-- DISEÑO EN DOS COLUMNAS: a la izquierda el formulario,
        a la derecha el recuadro con los productos -->
-  <div class="layout">
+  <div class="layout" id="seccion-productos">
 
   <div class="columna-form">
   <!-- FORMULARIO: cada campo corresponde a una propiedad del objeto
@@ -1355,6 +1401,10 @@
   <script src="js/supabaseClient.js"></script>
   <!-- admin.js: lógica del panel (listar, agregar, buscar, editar, eliminar) -->
   <script src="js/admin.js"></script>
+  <!-- pedidos.js: funciones compartidas con cliente.html.
+       admin-pedidos.js: pestañas, pedidos (cambiar estado) y clientes -->
+  <script src="js/pedidos.js"></script>
+  <script src="js/admin-pedidos.js"></script>
 </body>
 
 </html>

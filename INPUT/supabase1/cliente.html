@@ -21,6 +21,8 @@
 
     <!-- Estilos de esta página, en su propio archivo -->
     <link rel="stylesheet" href="css/cuenta.css" />
+    <!-- Tarjetas de pedido (compartidas con admin.html) -->
+    <link rel="stylesheet" href="css/pedidos.css" />
   </head>
   <body>
     <button type="button" id="btn-tema">🌙 Modo oscuro</button>
@@ -85,6 +87,7 @@
              a OTRA página (la galería con el carrito). -->
         <nav class="menu-cuenta" aria-label="Opciones de mi cuenta">
           <button type="button" class="opcion-menu" id="btn-editar-perfil">✎ Editar perfil</button>
+          <button type="button" class="opcion-menu" id="btn-mis-pedidos">📦 Mis pedidos</button>
           <button type="button" class="opcion-menu" id="btn-ajustes">⚙ Ajustes</button>
           <a class="opcion-menu" href="galeria.html">🛍 Productos</a>
         </nav>
@@ -139,10 +142,23 @@
         <p class="titulo-ajuste">Sesión</p>
         <button id="btn-logout" type="button" hidden>Cerrar sesión</button>
       </aside>
+
+      <!-- SIDEBAR DE MIS PEDIDOS: mismo mecanismo (clase .sidebar).
+           cliente.js lo llena con cargarMisPedidos() cada vez que se abre,
+           así el estado siempre es el actual (el admin pudo cambiarlo). -->
+      <aside id="sidebar-pedidos" class="sidebar" inert aria-label="Mis pedidos">
+        <button type="button" class="btn-cerrar-sidebar" aria-label="Cerrar">✕</button>
+
+        <h3>Mis pedidos</h3>
+        <div id="lista-mis-pedidos"></div>
+      </aside>
     </section>
 
     <script src="js/supabaseClient.js"></script>
     <script src="js/tema.js"></script>
+    <!-- pedidos.js: funciones compartidas con admin.html (traerPedidos,
+         tarjetaPedido...). Va ANTES de cliente.js, que las usa -->
+    <script src="js/pedidos.js"></script>
     <script src="js/cliente.js"></script>
   </body>
 </html>
