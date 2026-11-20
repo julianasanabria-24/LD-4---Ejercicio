@@ -382,3 +382,45 @@ layout) tiene más sentido para el proyecto.
 
 **Reflexión**
 - _(pendiente: la escribe el estudiante)_
+
+## 2026-11-20
+
+> _Entrada redactada por el agente a pedido del estudiante. Pendiente de revisión del estudiante para que quede en sus propias palabras._
+
+**Cambios — administradores**
+- Pestaña 🛡️ **Administradores** en `admin.html`: lista del equipo y formulario para agregar un admin (nombre, correo, contraseña).
+- `admins_practica` sigue cerrada para el navegador: el alta pasa por funciones `security definer` que primero comprueban que quien llama ya es admin (`sql/agregar_admin.sql`).
+- **Registro con código de invitación** en el login del admin (`sql/registro_admin_codigo.sql`): el código se guarda como hash bcrypt en `config_admin` y se cambia desde el panel. Si el correo ya tenía cuenta, primero se comprueba su contraseña.
+
+**Cambios — rediseño de Everwish (joyería de fantasía)**
+- Referencias revisadas: qdetallazo, trementina, Disney Store, blush-bar, materile. Se tomó la estructura: barra de anuncios, compra por franquicia, carruseles de novedades y ofertas, filtros laterales.
+- Sistema visual nuevo en `css/everwish.css`: Fraunces + Plus Jakarta Sans, violeta, rosa y dorado sobre perla, bandas nocturnas con estrellas, claro y oscuro.
+- `index.html`: hero animado, 7 mundos, carruseles, banners por estudio, compra por tipo.
+- `galeria.html`: filtros por mundo, tipo, precio, disponibles y oferta, con conteos, y orden.
+- `cliente.html`: acceso con pestañas. Ya dentro: Inicio, Catálogo con carrito, Mundos, Mis pedidos y Perfil.
+- `admin.html`: barra lateral. El CSS que estaba dentro del HTML pasó a `css/admin.css`.
+- **Catálogo:** 7 mundos × 10 = 70 joyas (`sql/everwish_mundos.sql`).
+  - Disney: Princesas, Clásicos, Bajo el mar, País de las Maravillas y Villanos.
+  - Warner Bros: Mundo mágico.
+  - Universal: Aventuras.
+- 61 ilustraciones SVG provisionales y 7 portadas de mundo.
+
+**Aprendizajes**
+- Autenticación (quién eres) ≠ autorización (qué puedes hacer). Ocultar un panel es solo visual: lo que protege los datos es RLS.
+- Una función `security definer` corre con permisos del dueño de la tabla: por eso su primera línea tiene que comprobar `auth.uid()`.
+- Un `UPDATE` con un `WHERE` que no coincide no da error: hay que revisar cuántas filas cambió.
+- Varios `<script>` comparten variables globales: el mismo `galeria.js` sirve en dos páginas si los `id` del HTML coinciden.
+
+**Errores** (detalle en `OUTPUT/explicacion_error_2026-11-20.md`)
+- Panel de admin sin acceso por contraseña olvidada → se cambió desde el SQL Editor con `crypt()`.
+- `fatal: detected dubious ownership in repository` → `git -c safe.directory=...`.
+- `UPDATE` por nombre que afectaba 0 filas → el SQL ahora inserta lo que falta. Es la 2.ª vez que algo "no hace nada" sin error.
+
+**Pendientes**
+- Ejecutar en Supabase `sql/agregar_admin.sql`, `sql/registro_admin_codigo.sql` (cambiar antes `CAMBIAME-everwish`) y `sql/everwish_mundos.sql`.
+- Decidir si se borran los productos de práctica sin mundo (paso 4 opcional de `everwish_mundos.sql`).
+- Reemplazar las ilustraciones provisionales por las imágenes reales.
+- Probar con sesión: login de cliente y admin, carrito, checkout, cambio de estados y alta de admins.
+
+**Reflexión**
+- _(pendiente: la escribe el estudiante)_
