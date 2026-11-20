@@ -19,6 +19,9 @@ async function registrarCliente(nombre, correo, contrasena) {
   const { data, error } = await db.auth.signUp({
     email: correo,
     password: contrasena,
+    // options.data guarda el nombre TAMBIÉN en Auth (user_metadata):
+    // si el insert de abajo falla, el perfil igual puede mostrar el nombre
+    options: { data: { nombre } },
   });
 
   // Mismo patrón de "revisar error antes de seguir" que ya usaste en el
@@ -204,6 +207,7 @@ function mostrarVista(nombre) {
   // Cada vista se refresca al abrirla: siempre datos actuales
   if (nombre === 'inicio') cargarInicio();
   if (nombre === 'pedidos') cargarMisPedidos();
+  if (nombre === 'perfil') db.auth.getUser().then(({ data }) => data.user && cargarPerfil(data.user.id));
 }
 
 // Botones de la barra (data-vista) y atajos dentro de la página (data-ir)
@@ -291,16 +295,73 @@ async function leerCliente(id) {
   return data;
 }
 
+// ¿Esta sesión es de un administrador? (admins_practica solo deja leer la fila propia)
+async function esAdministrador(id) {
+  const { data } = await db.from('admins_practica').select('id').eq('id', id).maybeSingle();
+  return Boolean(data);
+}
+
+// Si la fila de clientes_practica NO existe (el insert del registro falló,
+// por ejemplo porque Supabase pidió confirmar el correo y aún no había
+// sesión), la creamos ahora que sí hay sesión. Necesita la política de
+// insert de sql/perfil_cliente_insert.sql.
+async function crearPerfilFaltante(usuario) {
+  const nombre = usuario.user_metadata?.nombre || usuario.email.split('@')[0];
+  const { data, error } = await db
+    .from('clientes_practica')
+    .insert([{ id: usuario.id, nombre, correo: usuario.email, rol: 'cliente' }])
+    .select()
+    .maybeSingle();
+
+  if (error) {
+    console.log('No se pudo crear el perfil que faltaba:', error);
+    return null;
+  }
+  return data;
+}
+
 // Lee el cliente y pone cada dato en su campo del formulario.
 // "?? ''" = si la columna viene en null, deja el campo vacío.
-async function cargarPerfil(id) {
-  const cliente = await leerCliente(id);
+// Si ya se está cargando (al entrar y al abrir "Mi perfil" a la vez),
+// reutilizamos esa misma carga: así no se intenta crear el perfil dos veces
+let cargaPerfilEnCurso = null;
+function cargarPerfil(id) {
+  if (!cargaPerfilEnCurso) {
+    cargaPerfilEnCurso = cargarPerfilAhora(id).finally(() => { cargaPerfilEnCurso = null; });
+  }
+  return cargaPerfilEnCurso;
+}
+
+async function cargarPerfilAhora(id) {
+  const mensaje = document.getElementById('mensaje-perfil');
+  let cliente = await leerCliente(id);
 
   if (!cliente) {
-    document.getElementById('mensaje-perfil').textContent =
-      'Iniciaste sesión, pero no se encontró tu perfil. Revisa la consola.';
-    return;
+    const { data } = await db.auth.getUser();
+    const usuario = data.user;
+    if (!usuario) return;
+
+    // Un admin no tiene fila de cliente: su "cuenta" es el panel
+    if (await esAdministrador(id)) {
+      location.href = 'admin.html';
+      return;
+    }
+
+    cliente = await crearPerfilFaltante(usuario);
+
+    if (!cliente) {
+      // Último recurso: mostramos lo que sabemos por Auth (correo y nombre)
+      // para que la pantalla no quede vacía
+      cliente = {
+        correo: usuario.email,
+        nombre: usuario.user_metadata?.nombre || usuario.email.split('@')[0],
+      };
+      mensaje.textContent =
+        'Tu perfil aún no está guardado en la base de datos. Ejecuta sql/perfil_cliente_insert.sql en Supabase y vuelve a entrar.';
+    }
   }
+
+  if (cliente.id) mensaje.textContent = '';
 
   document.getElementById('perfil-correo').value    = cliente.correo ?? '';
   document.getElementById('perfil-nombre').value    = cliente.nombre ?? '';

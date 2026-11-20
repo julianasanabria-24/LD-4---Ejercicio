@@ -12,6 +12,9 @@
 
     <script>
       document.documentElement.classList.add("js");
+      // Splash: solo la primera vez en esta sesión del navegador (interacciones.js)
+      try { if (!sessionStorage.getItem("splash-visto")) document.documentElement.classList.add("splash"); } catch (e) {}
+    setTimeout(function () { document.documentElement.classList.remove("splash"); }, 6000); // por si algo falla
       let temaGuardado = null;
       try { temaGuardado = localStorage.getItem("tema"); } catch (e) {}
       document.documentElement.dataset.tema = temaGuardado ||
@@ -23,6 +26,7 @@
     <link rel="stylesheet" href="css/galeria.css" />
     <link rel="stylesheet" href="css/pedidos.css" />
     <link rel="stylesheet" href="css/cuenta.css" />
+    <link rel="stylesheet" href="css/interacciones.css" />
   </head>
   <body>
 
@@ -343,5 +347,6 @@
     <script src="js/pedidos.js"></script>
     <script src="js/galeria.js"></script>
     <script src="js/cliente.js"></script>
+    <script src="js/interacciones.js"></script>
   </body>
 </html>

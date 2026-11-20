@@ -17,6 +17,10 @@
   <!-- Pone el tema ANTES de dibujar la página (así no "parpadea" en claro).
        Usa el que guardaste la última vez; si no hay, el del sistema operativo -->
   <script>
+    document.documentElement.classList.add("js");
+    // Splash: solo la primera vez en esta sesión del navegador (interacciones.js)
+    try { if (!sessionStorage.getItem("splash-visto")) document.documentElement.classList.add("splash"); } catch (e) {}
+    setTimeout(function () { document.documentElement.classList.remove("splash"); }, 6000); // por si algo falla
     let temaGuardado = null;
     try { temaGuardado = localStorage.getItem("tema"); } catch (e) {}
     document.documentElement.dataset.tema = temaGuardado ||
@@ -29,11 +33,12 @@
   <link rel="stylesheet" href="css/everwish.css">
   <link rel="stylesheet" href="css/pedidos.css">
   <link rel="stylesheet" href="css/admin.css">
+  <link rel="stylesheet" href="css/interacciones.css">
 </head>
 <body>
 
-  <!-- Tema y "Cerrar sesión": fijos arriba a la derecha, se ven en el
-       login y en el panel. Salir aparece con CUALQUIER sesión (admin.js),
+  <!-- Tema y "Cerrar sesión": en el login flotan arriba a la derecha; con
+       el panel abierto, admin-ui.js los mueve a la barra superior. Salir aparece con CUALQUIER sesión (admin.js),
        para que alguien sin perfil de admin también pueda cerrarla -->
   <div class="esquina-admin">
     <button type="button" id="btn-tema" aria-label="Cambiar tema">🌙</button>
@@ -117,8 +122,8 @@
 
     <!-- BARRA LATERAL: marca, secciones y quién está conectado -->
     <aside class="admin-lateral">
-      <a href="index.html" class="marca">Everwish</a>
-      <span class="admin-lateral-etiqueta">Panel</span>
+      <a href="admin.html" class="marca">Everwish</a>
+      <span class="admin-lateral-etiqueta">Taller de deseos</span>
 
       <!-- PESTAÑAS: cada botón muestra una sección y oculta las otras
            (admin-pedidos.js). aria-selected marca la activa; el CSS la pinta. -->
@@ -129,6 +134,12 @@
         <button type="button" class="pestana" role="tab" aria-selected="false" data-seccion="seccion-admins"><span>🛡️</span> Administradores</button>
       </nav>
 
+      <!-- Adorno: una joya que flota en la barra -->
+      <div class="lateral-joya" aria-hidden="true">
+        <img src="img/productos/tiara-rosa-encantada.svg" alt="">
+        <p>Cada joya que publicas<br>es un deseo cumplido ✦</p>
+      </div>
+
       <div class="admin-usuario">
         <span id="admin-inicial" class="admin-avatar" aria-hidden="true">A</span>
         <div>
@@ -136,25 +147,22 @@
           <small id="admin-correo"></small>
         </div>
       </div>
-      <a href="index.html" class="admin-ver-tienda">Ver la tienda ↗</a>
     </aside>
 
     <main class="admin-principal">
-      <!-- ENCABEZADO: título y estadísticas (los números los llena admin.js) -->
-      <header class="admin-encabezado">
-        <div>
-          <span class="etiqueta-superior">Taller de deseos</span>
-          <h1>Tu <span class="texto-degradado">catálogo</span> mágico</h1>
-          <p>Crea y edita las joyas, atiende los pedidos y conoce a tus clientes.</p>
+      <!-- BARRA SUPERIOR: título de la sección abierta (admin-ui.js lo cambia)
+           y, a la derecha, el tema y "Salir" -->
+      <header class="admin-topbar">
+        <div class="admin-titulos">
+          <span class="etiqueta-superior" id="admin-etiqueta">Catálogo</span>
+          <h1 id="admin-titulo">Tu <span class="texto-degradado">catálogo</span> mágico</h1>
+          <p id="admin-subtitulo">Crea y edita las joyas de los 7 mundos.</p>
+        </div>
+        <!-- admin-ui.js agrega aquí el tema y "Salir", después de este enlace -->
+        <div class="admin-topbar-acciones" id="acciones-admin">
+          <a href="index.html" class="boton-barra principal" aria-label="Volver a la tienda">🛍️ <span class="texto-boton">Volver a la tienda</span></a>
         </div>
       </header>
-
-      <div class="estadisticas">
-        <div class="estadistica"><span>💎</span><strong id="stat-total">–</strong><small>Productos</small></div>
-        <div class="estadistica"><span>✅</span><strong id="stat-disponibles">–</strong><small>Disponibles</small></div>
-        <div class="estadistica"><span>⏳</span><strong id="stat-agotados">–</strong><small>Agotados</small></div>
-        <div class="estadistica"><span>📦</span><strong id="stat-unidades">–</strong><small>Unidades en stock</small></div>
-      </div>
 
       <!-- PEDIDOS DE LOS CLIENTES: admin-pedidos.js los trae al abrir la
            pestaña. Cada tarjeta tiene un selector para cambiar el estado. -->
@@ -256,117 +264,126 @@
         </div>
       </section>
 
-      <!-- PRODUCTOS: a la izquierda el formulario, a la derecha la lista -->
-      <div class="layout" id="seccion-productos">
-
-        <div class="columna-form">
-          <!-- FORMULARIO: cada campo corresponde a una columna de la tabla
-               products_practice. El atributo "name" de cada input es el que
-               usamos en admin.js para leer su valor. "required" hace que el
-               navegador no deje enviar el formulario si ese campo está vacío. -->
-          <form id="form-producto">
-            <h2 id="titulo-form">Agregar producto</h2>
-
-            <!-- Campo oculto: vacío = agregar; con un id = modificar ese producto -->
-            <input type="hidden" name="id">
-
-            <p class="grupo">Información básica</p>
-
-            <label>Nombre
-              <input type="text" name="nombre" placeholder="Ej: Collar Flor de Magnolia" required>
-            </label>
-
-            <!-- Las categorías se escriben separadas por coma y en el JS
-                 las convertimos en un array: "collares, princesas" → ["collares", "princesas"] -->
-            <label>Categorías
-              <input type="text" name="categorias" placeholder="collares, princesas">
-              <small>Primero el tipo, luego el mundo · separadas por coma</small>
-            </label>
-
-            <p class="grupo">Precio e inventario</p>
-
-            <div class="fila-3">
-              <!-- type="number" solo deja escribir números (sin step solo acepta enteros) -->
-              <label>Precio
-                <input type="number" name="precio" min="0" placeholder="0" required>
-              </label>
-              <label>Unidades
-                <input type="number" name="unidades" min="0" placeholder="0" required>
-              </label>
-              <!-- El descuento va de 0 a 1 (0.1 = 10%) -->
-              <label>Descuento
-                <input type="number" name="descuento" min="0" max="1" step="any" value="0">
-                <small>0.1 = 10%</small>
-              </label>
-            </div>
-
-            <p class="grupo">Detalles</p>
-
-            <label>Descripción
-              <textarea name="description" rows="3" placeholder="¿Qué joya es y qué película evoca?" required></textarea>
-            </label>
-
-            <label>URL de la imagen
-              <!-- Campo + cuadrito con la vista previa de la imagen al lado -->
-              <span class="campo-imagen">
-                <!-- type="text" (no "url"): así acepta también rutas del proyecto
-                     como img/productos/aretes-rayo.svg, que no empiezan con https -->
-                <input type="text" name="imagen_url" placeholder="img/productos/....svg o https://...jpg">
-                <img id="vista-previa" alt="">
-              </span>
-              <small id="ayuda-imagen"></small>
-            </label>
-
-            <!-- Un checkbox da true/false, perfecto para "disponible" -->
-            <label class="casilla-disponible">
-              <input type="checkbox" name="disponible" checked> Disponible para la venta
-            </label>
-
-            <div class="botones-form">
-              <!-- type="submit": al hacer clic se dispara el evento "submit" del formulario -->
-              <button type="submit" id="btn2">Agregar Producto</button>
-              <!-- Solo aparece en modo edición (hidden lo oculta) -->
-              <button type="button" id="btn-cancelar" class="secundario" hidden>Cancelar</button>
-            </div>
-          </form>
-          <div id="notificacion" role="status"></div>
-
-          <!-- EJERCICIO DE CLASE: "Traer productos" muestra en crudo lo que
-               devuelve Supabase (JSON, map, filter...). Va plegado en un
-               <details> para no estorbar; se abre con un clic.
-               OJO: type="button" en el botón para que no envíe nada. -->
-          <details class="catalogo">
-            <summary>Ejercicio: traer productos (JSON)</summary>
-            <button type="button" id="btn-traer">Traer productos</button>
-            <div id="resultado"></div>
-            <div id="resultado2"></div>
-            <div id="resultado3"></div>
-            <div id="resultado4"></div>
-            <div id="resultado5"></div>
-            <div id="resultado6"></div>
-            <div id="resultado7"></div>
-            <div id="resultado8"></div>
-          </details>
+      <!-- PRODUCTOS: estadísticas + la lista a todo el ancho.
+           El formulario vive en un cajón lateral (abajo, #cajon-producto)
+           que se abre con "Nuevo producto" o al editar. -->
+      <section id="seccion-productos" class="seccion-admin">
+        <div class="estadisticas">
+          <div class="estadistica"><span>💎</span><strong id="stat-total">–</strong><small>Productos</small></div>
+          <div class="estadistica"><span>✅</span><strong id="stat-disponibles">–</strong><small>Disponibles</small></div>
+          <div class="estadistica"><span>⏳</span><strong id="stat-agotados">–</strong><small>Agotados</small></div>
+          <div class="estadistica"><span>📦</span><strong id="stat-unidades">–</strong><small>Unidades en stock</small></div>
         </div>
 
         <!-- RECUADRO DE PRODUCTOS: al abrir la página muestra todos.
              El buscador filtra por nombre, por categoría, o por ID si
              escribes solo un número. Con el campo vacío vuelve a mostrar todos. -->
-        <aside id="panel-productos">
+        <div id="panel-productos">
           <div class="panel-productos-cabecera">
-            <h2>Productos</h2>
             <form id="form-busqueda">
               <input type="search" id="input-busqueda" placeholder="Buscar por nombre, categoría o ID...">
-              <button type="submit" id="btn-buscar">Buscar</button>
+              <button type="submit" id="btn-buscar" class="secundario">Buscar</button>
               <!-- Cambia entre tabla y tarjetas. type="button" para que NO envíe el buscador -->
               <button type="button" id="btn-vista" class="secundario" title="Cambiar vista">▦ Tarjetas</button>
             </form>
+            <button type="button" id="btn-nuevo-producto">＋ Nuevo producto</button>
           </div>
           <div id="resultados-busqueda"></div>
-        </aside>
-      </div>
+        </div>
+
+        <!-- EJERCICIO DE CLASE: "Traer productos" muestra en crudo lo que
+             devuelve Supabase (JSON, map, filter...). Va plegado. -->
+        <details class="catalogo">
+          <summary>Ejercicio: traer productos (JSON)</summary>
+          <button type="button" id="btn-traer">Traer productos</button>
+          <div id="resultado"></div>
+          <div id="resultado2"></div>
+          <div id="resultado3"></div>
+          <div id="resultado4"></div>
+          <div id="resultado5"></div>
+          <div id="resultado6"></div>
+          <div id="resultado7"></div>
+          <div id="resultado8"></div>
+        </details>
+      </section>
     </main>
   </div>
+
+  <!-- CAJÓN DEL FORMULARIO: cada campo corresponde a una columna de
+       products_practice. admin.js lo maneja igual que antes (mismos ids);
+       admin-ui.js solo lo abre y lo cierra. -->
+  <div id="fondo-cajon" class="fondo-cajon"></div>
+  <aside id="cajon-producto" class="cajon" aria-label="Formulario de producto" inert>
+    <button type="button" id="btn-cerrar-cajon" class="boton-icono" aria-label="Cerrar formulario">✕</button>
+    <form id="form-producto">
+      <h2 id="titulo-form">Agregar producto</h2>
+
+      <!-- Campo oculto: vacío = agregar; con un id = modificar ese producto -->
+      <input type="hidden" name="id">
+
+      <p class="grupo">Información básica</p>
+
+      <label>Nombre
+        <input type="text" name="nombre" placeholder="Ej: Collar Flor de Magnolia" required>
+      </label>
+
+      <!-- Las categorías se escriben separadas por coma y en el JS
+           las convertimos en un array: "collares, princesas" → ["collares", "princesas"] -->
+      <label>Categorías
+        <input type="text" name="categorias" placeholder="collares, princesas">
+        <small>Primero el tipo, luego el mundo · separadas por coma</small>
+      </label>
+
+      <p class="grupo">Precio e inventario</p>
+
+      <div class="fila-3">
+        <!-- type="number" solo deja escribir números (sin step solo acepta enteros) -->
+        <label>Precio
+          <input type="number" name="precio" min="0" placeholder="0" required>
+        </label>
+        <label>Unidades
+          <input type="number" name="unidades" min="0" placeholder="0" required>
+        </label>
+        <!-- El descuento va de 0 a 1 (0.1 = 10%) -->
+        <label>Descuento
+          <input type="number" name="descuento" min="0" max="1" step="any" value="0">
+          <small>0.1 = 10%</small>
+        </label>
+      </div>
+
+      <p class="grupo">Detalles</p>
+
+      <label>Descripción
+        <textarea name="description" rows="3" placeholder="¿Qué joya es y qué película evoca?" required></textarea>
+      </label>
+
+      <label>URL de la imagen
+        <!-- Campo + cuadrito con la vista previa de la imagen al lado -->
+        <span class="campo-imagen">
+          <!-- type="text" (no "url"): así acepta también rutas del proyecto
+               como img/productos/aretes-rayo.svg, que no empiezan con https -->
+          <input type="text" name="imagen_url" placeholder="img/productos/....svg o https://...jpg">
+          <img id="vista-previa" alt="">
+        </span>
+        <small id="ayuda-imagen"></small>
+      </label>
+
+      <!-- Un checkbox da true/false, perfecto para "disponible" -->
+      <label class="casilla-disponible">
+        <input type="checkbox" name="disponible" checked> Disponible para la venta
+      </label>
+
+      <div class="botones-form">
+        <!-- type="submit": al hacer clic se dispara el evento "submit" del formulario -->
+        <button type="submit" id="btn2">Agregar Producto</button>
+        <!-- Solo aparece en modo edición (hidden lo oculta) -->
+        <button type="button" id="btn-cancelar" class="secundario" hidden>Cancelar</button>
+      </div>
+    </form>
+  </aside>
+
+  <!-- Mensaje después de guardar o eliminar (aparece abajo, como aviso) -->
+  <div id="notificacion" role="status"></div>
 
   <!-- supabaseClient.js crea "db": el cliente ya conectado a tu proyecto
        de Supabase. Lo usa admin.js, por eso se carga ANTES -->
@@ -377,6 +394,10 @@
        admin-pedidos.js: pestañas, pedidos (cambiar estado), clientes y admins -->
   <script src="js/pedidos.js"></script>
   <script src="js/admin-pedidos.js"></script>
+  <!-- interacciones.js: cursor, ondas al hacer clic y transiciones entre páginas -->
+  <!-- admin-ui.js: cajón del formulario, títulos por sección, barra superior -->
+  <script src="js/admin-ui.js"></script>
+  <script src="js/interacciones.js"></script>
 </body>
 
 </html>

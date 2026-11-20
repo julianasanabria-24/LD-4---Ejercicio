@@ -15,6 +15,9 @@
          La clase "js" avisa al CSS que puede usar las animaciones de scroll -->
     <script>
       document.documentElement.classList.add("js");
+      // Splash: solo la primera vez en esta sesión del navegador (interacciones.js)
+      try { if (!sessionStorage.getItem("splash-visto")) document.documentElement.classList.add("splash"); } catch (e) {}
+    setTimeout(function () { document.documentElement.classList.remove("splash"); }, 6000); // por si algo falla
       let temaGuardado = null;
       try { temaGuardado = localStorage.getItem("tema"); } catch (e) {}
       document.documentElement.dataset.tema = temaGuardado ||
@@ -24,6 +27,7 @@
     <!-- 1° sistema visual  2° tienda (tarjetas, filtros, carrito) -->
     <link rel="stylesheet" href="css/everwish.css" />
     <link rel="stylesheet" href="css/galeria.css" />
+    <link rel="stylesheet" href="css/interacciones.css" />
   </head>
   <body>
 
@@ -222,5 +226,8 @@
     <script src="js/mundos.js"></script>
     <script src="js/efectos.js"></script>
     <script src="js/galeria.js"></script>
+    <!-- "Mi cuenta" lleva al panel si es admin + cursor y transiciones -->
+    <script src="js/sesion.js"></script>
+    <script src="js/interacciones.js"></script>
   </body>
 </html>

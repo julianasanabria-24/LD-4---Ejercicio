@@ -110,8 +110,6 @@
   font-style: italic;
   font-size: 1.2rem;
 }
-.admin-ver-tienda { padding: 0 10px; color: #f3d896; font-size: 0.85rem; font-weight: 700; text-decoration: none; }
-.admin-ver-tienda:hover { text-decoration: underline; }
 
 /* CONTENIDO */
 .admin-principal {
@@ -122,9 +120,6 @@
   max-width: 1440px;
   padding: 28px clamp(16px, 3vw, 40px) 56px;
 }
-.admin-encabezado { padding-right: 140px; }   /* deja libre la esquina con tema y salir */
-.admin-encabezado h1 { margin-top: 12px; font-size: clamp(2rem, 3.5vw, 2.8rem); }
-.admin-encabezado p { margin-top: 6px; color: var(--texto-suave); }
 
 /* En pantallas medianas la barra lateral se vuelve una fila arriba */
 @media (max-width: 980px) {
@@ -139,11 +134,10 @@
     padding: 12px 16px;
     padding-right: 130px;
   }
-  .admin-lateral-etiqueta, .admin-usuario, .admin-ver-tienda { display: none; }
+  .admin-lateral-etiqueta, .admin-usuario { display: none; }
   .pestanas-admin { flex-direction: row; width: 100%; overflow-x: auto; scrollbar-width: none; }
   .pestanas-admin .pestana { width: auto; white-space: nowrap; padding: 8px 12px; }
   .pestanas-admin .pestana[aria-selected="true"]::before { display: none; }
-  .admin-encabezado { padding-right: 0; }
 }
 
 
@@ -419,3 +413,210 @@ label:has(#vista-previa.con-error) #ayuda-imagen { color: var(--peligro); }
 .tarjeta .stock { font-size: 0.8rem; color: var(--texto-suave); }
 .tarjeta .estado { align-self: flex-start; }
 .tarjeta .acciones-fila button { flex: 1; }
+
+
+/* =================================================================
+   NUEVA ESTRUCTURA DEL PANEL
+   Barra lateral de vidrio · barra superior fija con el título de la
+   sección · productos a todo el ancho · formulario en un cajón lateral
+   · aviso flotante. (admin-ui.js abre/cierra el cajón y cambia títulos)
+   ================================================================= */
+
+
+
+.admin-app { grid-template-columns: 272px minmax(0, 1fr); }
+
+/* ---------- BARRA LATERAL ---------- */
+.admin-lateral {
+  padding: 26px 16px 18px;
+  gap: 6px;
+  background:
+    radial-gradient(120% 60% at 0% 0%, rgba(124, 92, 255, 0.35), transparent 60%),
+    radial-gradient(90% 50% at 100% 100%, rgba(255, 143, 183, 0.18), transparent 60%),
+    linear-gradient(180deg, #1a1442 0%, #110c27 100%);
+  border-right: 1px solid rgba(255, 255, 255, 0.06);
+  box-shadow: 10px 0 40px -20px rgba(0, 0, 0, 0.6);
+  overflow: hidden;
+}
+.admin-lateral .marca { font-size: 1.6rem; }
+.admin-lateral-etiqueta { margin: 22px 12px 8px; }
+
+.pestanas-admin { gap: 6px; }
+.pestanas-admin .pestana {
+  padding: 13px 16px;
+  border: 1px solid transparent;
+  font-size: 0.95rem;
+}
+.pestanas-admin .pestana span {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.06);
+  font-size: 1rem;
+}
+.pestanas-admin .pestana[aria-selected="true"] {
+  background: linear-gradient(120deg, rgba(124, 92, 255, 0.45), rgba(192, 90, 216, 0.25));
+  border-color: rgba(255, 255, 255, 0.12);
+  box-shadow: 0 12px 30px -16px rgba(124, 92, 255, 0.9);
+}
+.pestanas-admin .pestana[aria-selected="true"] span { background: rgba(255, 255, 255, 0.16); }
+.pestanas-admin .pestana[aria-selected="true"]::before { left: -16px; }
+
+/* Joya que flota en la barra lateral */
+.lateral-joya {
+  margin: auto 6px 0;
+  padding: 18px 16px 16px;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  text-align: center;
+}
+.lateral-joya img {
+  width: 92px;
+  margin: -46px auto 8px;
+  border-radius: 22px;
+  box-shadow: 0 18px 30px -14px rgba(0, 0, 0, 0.8);
+  animation: levitar-joya 5s ease-in-out infinite;
+}
+.lateral-joya p { font-size: 0.8rem; color: #cfc6ef; line-height: 1.45; }
+@keyframes levitar-joya {
+  0%, 100% { transform: translateY(0) rotate(-4deg); }
+  50% { transform: translateY(-10px) rotate(4deg); }
+}
+.admin-usuario { margin-top: 14px; border-radius: 16px; background: rgba(0, 0, 0, 0.2); border-top: 0; }
+
+/* ---------- CONTENIDO ---------- */
+.admin-principal { gap: 22px; padding-top: 18px; max-width: 1500px; }
+
+/* Barra superior de vidrio, pegada arriba al hacer scroll */
+.admin-topbar {
+  position: sticky;
+  top: 12px;
+  z-index: 30;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 18px 22px;
+  border-radius: 24px;
+  background: var(--vidrio);
+  border: 1px solid var(--borde-vidrio);
+  box-shadow: var(--sombra-1);
+  backdrop-filter: blur(18px) saturate(1.4);
+  -webkit-backdrop-filter: blur(18px) saturate(1.4);
+}
+.admin-titulos h1 { margin-top: 6px; font-size: clamp(1.6rem, 2.6vw, 2.2rem); }
+.admin-titulos p { margin-top: 2px; color: var(--texto-suave); font-size: 0.9rem; }
+.admin-titulos.cambiando > * { animation: vista-entra 0.45s cubic-bezier(0.2, 0.7, 0.2, 1) backwards; }
+.admin-titulos.cambiando > :nth-child(2) { animation-delay: 0.05s; }
+.admin-titulos.cambiando > :nth-child(3) { animation-delay: 0.1s; }
+.admin-topbar-acciones { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
+
+/* ---------- ESTADÍSTICAS ---------- */
+.seccion-admin {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  background: var(--vidrio);
+  border-color: var(--borde-vidrio);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+}
+/* Productos no va en tarjeta: sus bloques (estadísticas, lista) ya lo son */
+#seccion-productos { padding: 0; background: none; border: 0; box-shadow: none; backdrop-filter: none; -webkit-backdrop-filter: none; gap: 20px; }
+.estadistica {
+  background: var(--vidrio);
+  border-color: var(--borde-vidrio);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  overflow: hidden;
+}
+.estadistica span { background: var(--degradado); box-shadow: 0 10px 20px -10px var(--acento); }
+.estadistica:nth-child(2) span { background: linear-gradient(135deg, #1c9d6b, #5fd39a); }
+.estadistica:nth-child(3) span { background: linear-gradient(135deg, #d94f82, #ff9cc2); }
+.estadistica:nth-child(4) span { background: var(--degradado-oro); }
+.estadistica strong { font-size: 2rem; }
+
+/* ---------- LISTA DE PRODUCTOS (todo el ancho) ---------- */
+#panel-productos {
+  padding: 20px;
+  border-radius: 24px;
+  background: var(--vidrio);
+  border: 1px solid var(--borde-vidrio);
+  box-shadow: var(--sombra-1);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+}
+.panel-productos-cabecera { margin-bottom: 18px; }
+#form-busqueda { justify-content: flex-start; flex: 1 1 420px; }
+#btn-nuevo-producto { padding: 12px 22px; flex-shrink: 0; }
+#resultados-busqueda { max-height: none; }
+.catalogo { background: var(--vidrio); border-color: var(--borde-vidrio); }
+
+/* ---------- CAJÓN DEL FORMULARIO ---------- */
+.fondo-cajon {
+  position: fixed;
+  inset: 0;
+  z-index: 80;
+  background: rgba(10, 6, 30, 0.45);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.35s;
+}
+.fondo-cajon.visible { opacity: 1; pointer-events: auto; }
+.cajon {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 90;
+  width: min(500px, 100%);
+  overflow-y: auto;
+  padding: 22px;
+  background: var(--fondo);
+  border-left: 1px solid var(--linea);
+  box-shadow: -30px 0 60px -30px rgba(0, 0, 0, 0.6);
+  transform: translateX(105%);
+  transition: transform 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.cajon.abierto { transform: none; }
+.cajon #form-producto { border: 0; box-shadow: none; background: transparent; padding: 6px 4px 20px; }
+.cajon #form-producto h2 { padding-right: 56px; font-size: 1.7rem; }
+#btn-cerrar-cajon { position: absolute; top: 20px; right: 20px; z-index: 2; }
+body.cajon-abierto { overflow: hidden; }
+
+/* ---------- AVISO FLOTANTE ---------- */
+#notificacion {
+  position: fixed;
+  left: 50%;
+  bottom: 24px;
+  z-index: 120;
+  transform: translateX(-50%);
+  padding: 14px 22px;
+  border-radius: 999px;
+  background: var(--texto);
+  color: var(--fondo);
+  box-shadow: var(--sombra-2);
+  animation: aviso-entra 0.45s cubic-bezier(0.2, 0.8, 0.2, 1.3) backwards;
+}
+#notificacion::before { content: "✦ "; color: var(--oro-brillo); }
+#notificacion.error { background: var(--peligro); color: #fff; }
+#notificacion.saliendo-aviso { opacity: 0; transform: translate(-50%, 20px); transition: 0.3s; }
+@keyframes aviso-entra { from { opacity: 0; transform: translate(-50%, 30px) scale(0.9); } }
+
+/* ---------- PANTALLAS MEDIANAS Y CELULAR ---------- */
+@media (max-width: 980px) {
+  .admin-app { grid-template-columns: 1fr; }
+  .admin-lateral { padding-right: 16px; overflow: visible; }
+  .lateral-joya { display: none; }
+  .admin-topbar { position: relative; top: 0; }
+}
+@media (max-width: 640px) {
+  .admin-topbar { flex-direction: column; align-items: flex-start; }
+  .admin-topbar-acciones { align-self: flex-end; }
+  #btn-nuevo-producto { width: 100%; }
+}
