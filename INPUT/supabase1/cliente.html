@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Mi cuenta · Everwish</title>
+
+    <!-- Tipografías: Fraunces (títulos) y Plus Jakarta Sans (texto) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500;1,9..144,600&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+
+    <script>
+      document.documentElement.classList.add("js");
+      let temaGuardado = null;
+      try { temaGuardado = localStorage.getItem("tema"); } catch (e) {}
+      document.documentElement.dataset.tema = temaGuardado ||
+        (matchMedia("(prefers-color-scheme: dark)").matches ? "oscuro" : "claro");
+    </script>
+
+    <!-- 1° sistema visual  2° tienda (catálogo y carrito)  3° pedidos  4° esta página -->
+    <link rel="stylesheet" href="css/everwish.css" />
+    <link rel="stylesheet" href="css/galeria.css" />
+    <link rel="stylesheet" href="css/pedidos.css" />
+    <link rel="stylesheet" href="css/cuenta.css" />
+  </head>
+  <body>
+
+    <!-- =============================================================
+         1) SIN SESIÓN: pantalla de acceso (login / registro)
+         ============================================================= -->
+    <section id="zona-acceso" class="acceso">
+      <div class="acceso-arte">
+        <a href="index.html" class="marca">Everwish</a>
+        <div>
+          <h1>Tu rincón de <span class="texto-degradado">deseos</span></h1>
+          <p>Entra para ver el catálogo completo con filtros, guardar tu carrito y seguir cada pedido hasta que llegue a tus manos.</p>
+        </div>
+        <ul class="acceso-beneficios">
+          <li><span>🛍️</span> Tu carrito se guarda aunque cierres la página</li>
+          <li><span>📦</span> Sigue tus pedidos: confirmado, enviado, entregado</li>
+          <li><span>✨</span> 70 joyas en 7 mundos de película</li>
+        </ul>
+        <div class="acceso-collage" aria-hidden="true">
+          <img src="img/productos/collar-flor-de-magnolia.svg" alt="">
+          <img src="img/productos/anillo-espejo-magico.svg" alt="">
+          <img src="img/productos/aretes-lechuza-mensajera.svg" alt="">
+        </div>
+      </div>
+
+      <div class="acceso-formulario">
+        <div class="acceso-caja">
+          <span class="etiqueta-superior">Mi cuenta</span>
+          <h2>Te damos la bienvenida</h2>
+          <p>Inicia sesión o crea tu cuenta en un minuto.</p>
+
+          <!-- Pestañas: cliente.js muestra un formulario y oculta el otro -->
+          <div class="selector-acceso" role="tablist" aria-label="Acceso">
+            <button type="button" role="tab" aria-selected="true" data-acceso="form-login">Iniciar sesión</button>
+            <button type="button" role="tab" aria-selected="false" data-acceso="form-registro">Crear cuenta</button>
+          </div>
+
+          <p id="estado-sesion" class="estado-acceso" role="status"></p>
+
+          <form id="form-login" class="formulario-acceso">
+            <label class="campo" for="login-correo">Correo
+              <input id="login-correo" type="email" placeholder="tucorreo@gmail.com" autocomplete="email" required />
+            </label>
+            <label class="campo" for="login-password">Contraseña
+              <input id="login-password" type="password" placeholder="Tu contraseña" autocomplete="current-password" required />
+            </label>
+            <button type="submit">Iniciar sesión</button>
+          </form>
+
+          <form id="form-registro" class="formulario-acceso" hidden>
+            <label class="campo" for="registro-nombre">Nombre
+              <input id="registro-nombre" type="text" placeholder="Ej: Aurora" autocomplete="name" required />
+            </label>
+            <label class="campo" for="registro-correo">Correo
+              <input id="registro-correo" type="email" placeholder="tucorreo@gmail.com" autocomplete="email" required />
+            </label>
+            <label class="campo" for="registro-password">Contraseña
+              <input id="registro-password" type="password" minlength="6" placeholder="Mínimo 6 caracteres" autocomplete="new-password" required />
+            </label>
+            <button type="submit">Crear cuenta</button>
+          </form>
+
+          <a href="index.html" class="volver-tienda">← Volver a la tienda</a>
+        </div>
+      </div>
+    </section>
+
+
+    <!-- =============================================================
+         2) CON SESIÓN: panel de la cuenta con pestañas
+         ============================================================= -->
+    <div id="zona-cuenta" hidden>
+      <nav class="barra" aria-label="Mi cuenta">
+        <div class="contenedor barra-interior">
+          <a href="index.html" class="marca">Everwish</a>
+
+          <!-- Cada botón muestra una vista (cliente.js). aria-current = la activa -->
+          <ul class="nav-enlaces nav-cuenta">
+            <li><button type="button" data-vista="inicio">Inicio</button></li>
+            <li><button type="button" data-vista="catalogo">Catálogo</button></li>
+            <li><button type="button" data-vista="mundos">Mundos</button></li>
+            <li><button type="button" data-vista="pedidos">Mis pedidos</button></li>
+            <li><button type="button" data-vista="perfil">Mi perfil</button></li>
+          </ul>
+
+          <div class="barra-acciones">
+            <button type="button" id="btn-tema" aria-label="Cambiar tema">🌙</button>
+            <button type="button" id="btn-carrito" class="boton-barra principal" aria-label="Abrir carrito">
+              🛍️ <span class="texto-boton">Carrito</span> <span id="contador-carrito">0</span>
+            </button>
+            <button type="button" id="btn-logout-superior" class="boton-icono" aria-label="Cerrar sesión" title="Cerrar sesión">⎋</button>
+          </div>
+        </div>
+      </nav>
+
+      <main class="contenedor">
+
+        <!-- ---------- INICIO ---------- -->
+        <section id="vista-inicio" class="vista" aria-label="Inicio">
+          <div class="saludo">
+            <div>
+              <span class="etiqueta-superior">Tu rincón de deseos</span>
+              <h1>Hola, <span id="saludo-nombre" class="texto-degradado">de nuevo</span> ✦</h1>
+              <p>¿Qué mundo vas a llevar contigo hoy?</p>
+            </div>
+            <div class="saludo-botones">
+              <button type="button" class="boton claro" data-ir="catalogo">Ver catálogo</button>
+              <button type="button" class="boton contorno-claro" data-ir="pedidos">Mis pedidos</button>
+            </div>
+          </div>
+
+          <div class="datos-cuenta">
+            <article class="dato-cuenta"><span>📦</span><strong id="stat-pedidos">–</strong><small>Pedidos realizados</small></article>
+            <article class="dato-cuenta"><span>🚚</span><strong id="stat-en-curso">–</strong><small>En camino</small></article>
+            <article class="dato-cuenta"><span>🛍️</span><strong id="stat-carrito">–</strong><small>En tu carrito</small></article>
+            <article class="dato-cuenta"><span>💎</span><strong id="stat-comprado">–</strong><small>Total comprado</small></article>
+          </div>
+
+          <div class="inicio-columnas">
+            <section class="panel-cuenta">
+              <div class="panel-titulo">
+                <h2>Tu último pedido</h2>
+                <button type="button" class="boton-texto" data-ir="pedidos">Ver todos</button>
+              </div>
+              <div id="ultimo-pedido"><p class="pedidos-vacio">Cargando…</p></div>
+            </section>
+
+            <section class="panel-cuenta">
+              <div class="panel-titulo"><h2>Explora por mundo</h2></div>
+              <div id="mundos-mini" class="mundos-mini"></div>
+            </section>
+          </div>
+
+          <section class="seccion-cuenta">
+            <div class="seccion-cabecera">
+              <div>
+                <span class="etiqueta-superior">Elegidas para ti</span>
+                <h2>Ofertas que brillan</h2>
+              </div>
+              <div class="flechas">
+                <button type="button" class="boton-icono" data-carrusel="carrusel-recomendados" data-direccion="-1" aria-label="Anteriores">←</button>
+                <button type="button" class="boton-icono" data-carrusel="carrusel-recomendados" data-direccion="1" aria-label="Siguientes">→</button>
+              </div>
+            </div>
+            <div id="carrusel-recomendados" class="carrusel"></div>
+          </section>
+        </section>
+
+        <!-- ---------- CATÁLOGO (los mismos ids que galeria.html: lo maneja galeria.js) ---------- -->
+        <section id="vista-catalogo" class="vista" aria-label="Catálogo" hidden>
+          <header class="encabezado-tienda">
+            <span class="etiqueta-superior">Catálogo</span>
+            <h1 id="titulo-tienda">Todas las <span class="texto-degradado">joyas</span> de cuento</h1>
+            <p id="subtitulo-tienda"></p>
+            <div id="mundos-rapidos" class="mundos-rapidos" role="group" aria-label="Elegir mundo"></div>
+          </header>
+
+          <div class="tienda">
+            <aside id="panel-filtros" class="panel-filtros" aria-label="Filtros">
+              <div class="panel-filtros-cabecera">
+                <h2>Filtros</h2>
+                <button type="button" id="btn-limpiar-filtros" class="boton-texto">Limpiar</button>
+                <button type="button" id="btn-cerrar-filtros" class="boton-icono" aria-label="Cerrar filtros">✕</button>
+              </div>
+              <section class="filtro-grupo"><h3>Mundo</h3><div id="filtros-mundo" class="filtro-lista"></div></section>
+              <section class="filtro-grupo"><h3>Tipo de joya</h3><div id="filtros-tipo" class="filtro-lista"></div></section>
+              <section class="filtro-grupo filtro-precio">
+                <h3>Precio</h3>
+                <input type="range" id="filtro-precio" min="0" max="300000" value="300000" aria-label="Precio máximo">
+                <output id="filtro-precio-valor">Cualquier precio</output>
+              </section>
+              <section class="filtro-grupo">
+                <h3>Mostrar</h3>
+                <label class="casilla-filtro"><input type="checkbox" id="filtro-disponibles"> Solo disponibles</label>
+                <label class="casilla-filtro"><input type="checkbox" id="filtro-oferta"> En oferta</label>
+              </section>
+            </aside>
+            <div id="fondo-filtros" class="fondo-oscuro"></div>
+
+            <section aria-label="Productos">
+              <div class="herramientas-tienda">
+                <button type="button" id="btn-filtros" class="secundario">⚙ Filtros</button>
+                <div class="buscador">
+                  <input type="search" id="input-busqueda" placeholder="Busca una joya, un personaje o un mundo…" aria-label="Buscar en el catálogo" />
+                </div>
+                <select id="orden-productos" aria-label="Ordenar">
+                  <option value="destacados">Destacados</option>
+                  <option value="nuevos">Novedades</option>
+                  <option value="precio-asc">Precio: menor a mayor</option>
+                  <option value="precio-desc">Precio: mayor a menor</option>
+                  <option value="nombre">Nombre A–Z</option>
+                </select>
+              </div>
+              <p id="conteo-resultados" role="status"></p>
+              <div id="grilla-productos" class="grilla-productos">
+                <p class="sin-resultados">Abriendo el cofre de joyas…</p>
+              </div>
+            </section>
+          </div>
+        </section>
+
+        <!-- ---------- MUNDOS ---------- -->
+        <section id="vista-mundos" class="vista" aria-label="Mundos" hidden>
+          <header class="seccion-cabecera">
+            <div>
+              <span class="etiqueta-superior">Colecciones</span>
+              <h2>Elige tu <span class="texto-degradado">mundo</span></h2>
+              <p>Al elegir uno se abre el catálogo ya filtrado.</p>
+            </div>
+          </header>
+          <div id="lista-mundos-cuenta" class="mundos-grilla mundos-grandes"></div>
+        </section>
+
+        <!-- ---------- MIS PEDIDOS ---------- -->
+        <section id="vista-pedidos" class="vista" aria-label="Mis pedidos" hidden>
+          <header class="seccion-cabecera">
+            <div>
+              <span class="etiqueta-superior">Seguimiento</span>
+              <h2>Mis pedidos</h2>
+            </div>
+            <div class="filtro-pedidos" role="group" aria-label="Filtrar pedidos">
+              <button type="button" data-filtro-pedidos="todos" aria-pressed="true">Todos</button>
+              <button type="button" data-filtro-pedidos="curso" aria-pressed="false">En curso</button>
+              <button type="button" data-filtro-pedidos="entregado" aria-pressed="false">Entregados</button>
+              <button type="button" data-filtro-pedidos="cancelado" aria-pressed="false">Cancelados</button>
+            </div>
+          </header>
+          <div id="lista-mis-pedidos" class="grilla-pedidos"></div>
+        </section>
+
+        <!-- ---------- MI PERFIL ---------- -->
+        <section id="vista-perfil" class="vista" aria-label="Mi perfil" hidden>
+          <header class="seccion-cabecera">
+            <div>
+              <span class="etiqueta-superior">Tus datos</span>
+              <h2>Mi perfil</h2>
+            </div>
+          </header>
+
+          <div class="perfil-columnas">
+            <article id="resumen-perfil" class="panel-cuenta tarjeta-perfil">
+              <div class="avatar" id="avatar-inicial" aria-hidden="true">✦</div>
+              <h3 id="resumen-nombre">—</h3>
+              <dl class="datos-perfil">
+                <dt>Correo</dt>    <dd id="resumen-correo">—</dd>
+                <dt>Teléfono</dt>  <dd id="resumen-telefono">—</dd>
+                <dt>Dirección</dt> <dd id="resumen-direccion">—</dd>
+                <dt>Ciudad</dt>    <dd id="resumen-ciudad">—</dd>
+              </dl>
+              <button id="btn-logout" type="button" class="secundario">⎋ Cerrar sesión</button>
+            </article>
+
+            <form id="form-perfil" class="panel-cuenta formulario-perfil">
+              <h3>Editar mis datos</h3>
+              <p class="ayuda">Tu dirección y teléfono se usan para el envío a domicilio.</p>
+              <!-- readonly: el correo vive en Auth; si lo cambiáramos solo en la tabla quedarían distintos -->
+              <label class="campo">Correo <input id="perfil-correo" type="email" readonly /></label>
+              <label class="campo">Nombre <input id="perfil-nombre" type="text" required /></label>
+              <div class="fila-campos">
+                <label class="campo">Teléfono <input id="perfil-telefono" type="tel" placeholder="Ej: 300 123 4567" /></label>
+                <label class="campo">Ciudad <input id="perfil-ciudad" type="text" placeholder="Ej: Medellín" /></label>
+              </div>
+              <label class="campo">Dirección <input id="perfil-direccion" type="text" placeholder="Ej: Calle 10 # 5-20" /></label>
+              <button type="submit">Guardar cambios</button>
+              <p id="mensaje-perfil" class="estado-acceso" role="status"></p>
+            </form>
+          </div>
+        </section>
+      </main>
+
+      <footer class="pie-pagina pie-compacto">
+        <div class="contenedor pie-legal">
+          Everwish · Proyecto académico de Lenguajes Digitales. Joyas inspiradas en películas de Disney, Warner Bros. y Universal; sin afiliación con esos estudios.
+        </div>
+      </footer>
+    </div>
+
+    <!-- CARRITO (el mismo de galeria.html, lo maneja galeria.js) -->
+    <div id="fondo-carrito"></div>
+    <aside id="panel-carrito" inert aria-label="Carrito de compras">
+      <div class="carrito-cabecera">
+        <h2>Tu carrito</h2>
+        <button type="button" id="btn-cerrar-carrito" class="boton-icono" aria-label="Cerrar carrito">✕</button>
+      </div>
+      <div id="lista-carrito"></div>
+      <p id="mensaje-carrito" class="mensaje-carrito" role="status"></p>
+      <div id="resumen-carrito" class="carrito-footer" hidden>
+        <dl class="totales">
+          <dt>Subtotal</dt>    <dd id="carrito-subtotal">$0</dd>
+          <dt>Ahorras</dt>     <dd id="carrito-ahorro">$0</dd>
+          <dt class="total">Total</dt> <dd id="carrito-total" class="total">$0</dd>
+        </dl>
+        <form id="form-checkout" hidden>
+          <label class="casilla"><input type="checkbox" id="checkout-envio" /> Envío a domicilio</label>
+          <label for="checkout-direccion">Dirección</label>
+          <input id="checkout-direccion" type="text" placeholder="Ej: Calle 10 # 5-20" autocomplete="street-address" />
+          <label for="checkout-telefono">Teléfono</label>
+          <input id="checkout-telefono" type="tel" placeholder="Ej: 300 123 4567" autocomplete="tel" />
+          <label for="checkout-observacion">Observaciones</label>
+          <textarea id="checkout-observacion" rows="2" placeholder="Opcional: una dedicatoria o indicaciones para la entrega"></textarea>
+          <button type="submit" id="btn-confirmar">Confirmar pedido</button>
+          <button type="button" id="btn-cancelar-checkout" class="secundario">Volver al carrito</button>
+        </form>
+        <button type="button" id="btn-finalizar">Finalizar compra</button>
+        <button type="button" id="btn-vaciar" class="secundario">Vaciar carrito</button>
+      </div>
+    </aside>
+
+    <div id="aviso" role="status" aria-live="polite"></div>
+
+    <!-- Orden: Supabase → db → tema → mundos → efectos → pedidos.js
+         (funciones de pedidos) → galeria.js (catálogo y carrito) → cliente.js -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/supabaseClient.js"></script>
+    <script src="js/tema.js"></script>
+    <script src="js/mundos.js"></script>
+    <script src="js/efectos.js"></script>
+    <script src="js/pedidos.js"></script>
+    <script src="js/galeria.js"></script>
+    <script src="js/cliente.js"></script>
+  </body>
+</html>

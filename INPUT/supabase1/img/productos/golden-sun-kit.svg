@@ -1,0 +1,60 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 600" role="img" aria-label="Golden Sun Kit: emblema de sol dorado y farolillos flotando al atardecer">
+  <defs>
+    <linearGradient id="fondo" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#3a2a6e"/>
+      <stop offset=".6" stop-color="#b75d8d"/>
+      <stop offset="1" stop-color="#f4b75c"/>
+    </linearGradient>
+    <radialGradient id="halo">
+      <stop offset="0" stop-color="#ffd77a" stop-opacity=".6"/>
+      <stop offset="1" stop-color="#ffd77a" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="sol" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#ffe18a"/>
+      <stop offset="1" stop-color="#e99a2a"/>
+    </linearGradient>
+    <!-- Un farolillo, reutilizado varias veces con <use> -->
+    <g id="farol">
+      <circle r="58" fill="url(#halo)"/>
+      <rect x="-17" y="-40" width="34" height="9" rx="3" fill="#7a3f17"/>
+      <rect x="-22" y="-32" width="44" height="60" rx="11" fill="#ffaf45"/>
+      <rect x="-12" y="-22" width="24" height="40" rx="6" fill="#fff1b8" opacity=".85"/>
+      <rect x="-17" y="27" width="34" height="8" rx="3" fill="#7a3f17"/>
+    </g>
+    <path id="destello" d="M0-1C.12-.12.12-.12 1 0C.12.12.12.12 0 1C-.12.12-.12.12-1 0C-.12-.12-.12-.12 0-1Z"/>
+  </defs>
+
+  <rect width="600" height="600" fill="url(#fondo)"/>
+  <!-- Colinas y agua -->
+  <path d="M0 470C110 430 200 455 300 440C420 420 500 450 600 430V600H0Z" fill="#5a3473" opacity=".75"/>
+  <path d="M0 520C140 500 260 530 380 510C470 496 540 510 600 500V600H0Z" fill="#3a2458"/>
+
+  <!-- Emblema de sol: 16 rayos alrededor de un círculo -->
+  <g transform="translate(300 230)">
+    <g fill="#f6c24e">
+      <path d="M0-118L12-84H-12Z"/><path d="M0-118L12-84H-12Z" transform="rotate(22.5)"/>
+      <path d="M0-118L12-84H-12Z" transform="rotate(45)"/><path d="M0-118L12-84H-12Z" transform="rotate(67.5)"/>
+      <path d="M0-118L12-84H-12Z" transform="rotate(90)"/><path d="M0-118L12-84H-12Z" transform="rotate(112.5)"/>
+      <path d="M0-118L12-84H-12Z" transform="rotate(135)"/><path d="M0-118L12-84H-12Z" transform="rotate(157.5)"/>
+      <path d="M0-118L12-84H-12Z" transform="rotate(180)"/><path d="M0-118L12-84H-12Z" transform="rotate(202.5)"/>
+      <path d="M0-118L12-84H-12Z" transform="rotate(225)"/><path d="M0-118L12-84H-12Z" transform="rotate(247.5)"/>
+      <path d="M0-118L12-84H-12Z" transform="rotate(270)"/><path d="M0-118L12-84H-12Z" transform="rotate(292.5)"/>
+      <path d="M0-118L12-84H-12Z" transform="rotate(315)"/><path d="M0-118L12-84H-12Z" transform="rotate(337.5)"/>
+    </g>
+    <circle r="76" fill="url(#sol)"/>
+    <circle r="56" fill="none" stroke="#fff3c4" stroke-width="5" stroke-dasharray="10 9"/>
+    <circle r="26" fill="#fff3c4" opacity=".9"/>
+  </g>
+
+  <!-- Farolillos flotando a distintas alturas y tamaños -->
+  <use href="#farol" transform="translate(110 150) scale(.8)"/>
+  <use href="#farol" transform="translate(500 120) scale(.65)"/>
+  <use href="#farol" transform="translate(130 390) scale(1.15)"/>
+  <use href="#farol" transform="translate(470 370) scale(1)"/>
+  <use href="#farol" transform="translate(300 450) scale(.7)"/>
+
+  <!-- Destellos -->
+  <use href="#destello" fill="#fff3c4" transform="translate(60 60) scale(12)"/>
+  <use href="#destello" fill="#fff3c4" transform="translate(400 70) scale(9)"/>
+  <use href="#destello" fill="#fff" transform="translate(550 250) scale(11)"/>
+</svg>

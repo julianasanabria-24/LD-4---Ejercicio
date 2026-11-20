@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Panel · Everwish</title>
+  <!-- CDN: trae la librería de Supabase ANTES que nuestros propios
+       scripts — sin esta línea, "supabase.createClient" no existiría
+       todavía cuando supabaseClient.js intente usarlo -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <!-- Tipografías: Fraunces (títulos) y Plus Jakarta Sans (texto) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500;1,9..144,600&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <!-- Pone el tema ANTES de dibujar la página (así no "parpadea" en claro).
+       Usa el que guardaste la última vez; si no hay, el del sistema operativo -->
+  <script>
+    let temaGuardado = null;
+    try { temaGuardado = localStorage.getItem("tema"); } catch (e) {}
+    document.documentElement.dataset.tema = temaGuardado ||
+      (matchMedia("(prefers-color-scheme: dark)").matches ? "oscuro" : "claro");
+  </script>
+
+  <!-- 1° sistema visual (colores, botones, pantalla de acceso)
+       2° tarjetas de pedido, clientes y administradores
+       3° el panel: barra lateral, productos, tabla y tarjetas -->
+  <link rel="stylesheet" href="css/everwish.css">
+  <link rel="stylesheet" href="css/pedidos.css">
+  <link rel="stylesheet" href="css/admin.css">
+</head>
+<body>
+
+  <!-- Tema y "Cerrar sesión": fijos arriba a la derecha, se ven en el
+       login y en el panel. Salir aparece con CUALQUIER sesión (admin.js),
+       para que alguien sin perfil de admin también pueda cerrarla -->
+  <div class="esquina-admin">
+    <button type="button" id="btn-tema" aria-label="Cambiar tema">🌙</button>
+    <button id="btn-logout-admin" type="button" class="boton-salir" hidden>⎋ Salir</button>
+  </div>
+
+  <!-- ===================== ACCESO ===================== -->
+  <!-- Se ve mientras NO haya un admin confirmado -->
+  <section id="zona-acceso-admin" class="acceso">
+    <div class="acceso-arte">
+      <a href="index.html" class="marca">Everwish</a>
+      <div>
+        <span class="etiqueta-superior candado">Acceso restringido</span>
+        <h1>Taller de <span class="texto-degradado">deseos</span></h1>
+        <p>Gestiona el catálogo, atiende los pedidos y conoce a tus clientes desde un solo lugar.</p>
+      </div>
+      <ul class="acceso-beneficios">
+        <li><span>💎</span> Crea y edita las joyas de los 7 mundos</li>
+        <li><span>🧾</span> Cambia el estado de los pedidos</li>
+        <li><span>👥</span> Revisa clientes y administradores</li>
+      </ul>
+    </div>
+
+    <div class="acceso-formulario">
+      <div class="acceso-caja">
+        <span class="etiqueta-superior">Panel de administración</span>
+        <h2>Entra a tu taller</h2>
+        <p>Solo para el equipo de Everwish.</p>
+
+        <!-- ESTADO DE LA SESIÓN: errores del login o "sin perfil de admin" -->
+        <p id="estado-sesion-admin" class="estado-acceso" role="status">No has iniciado sesión.</p>
+
+        <!-- Login + registro con CÓDIGO DE INVITACIÓN. El navegador sigue sin
+             poder escribir en admins_practica: el registro pasa por la función
+             registrar_admin (sql/registro_admin_codigo.sql), que solo agrega
+             la cuenta si el código es correcto. Se ve una tarjeta a la vez. -->
+        <form id="form-login-admin" class="formulario-acceso">
+          <label class="campo" for="admin-login-correo">Correo
+            <input id="admin-login-correo" type="email" autocomplete="email" required>
+          </label>
+          <label class="campo" for="admin-login-password">Contraseña
+            <input id="admin-login-password" type="password" autocomplete="current-password" required>
+          </label>
+          <button type="submit">Iniciar sesión</button>
+
+          <p class="separador-acceso">¿Eres nuevo admin?</p>
+          <button type="button" id="btn-mostrar-registro" class="secundario">Crear cuenta de admin</button>
+        </form>
+
+        <form id="form-registro-admin" class="formulario-acceso" hidden>
+          <h3>Crear cuenta de admin</h3>
+          <label class="campo" for="registro-admin-nombre">Nombre
+            <input id="registro-admin-nombre" type="text" required>
+          </label>
+          <label class="campo" for="registro-admin-correo">Correo
+            <input id="registro-admin-correo" type="email" required>
+          </label>
+          <label class="campo" for="registro-admin-password">Contraseña
+            <input id="registro-admin-password" type="password" minlength="6" required autocomplete="new-password">
+          </label>
+          <label class="campo" for="registro-admin-codigo">Código de invitación
+            <input id="registro-admin-codigo" type="password" required autocomplete="off">
+          </label>
+          <button type="submit" id="btn-registrar-admin">Crear cuenta</button>
+          <button type="button" id="btn-volver-login" class="secundario">Volver a iniciar sesión</button>
+          <p class="nota-acceso">Pídele el código a otro administrador de la tienda.</p>
+        </form>
+
+        <a href="index.html" class="volver-tienda">← Volver a la tienda</a>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ===================== PANEL ===================== -->
+  <!-- Empieza oculto ("hidden"). admin.js lo muestra solo si hay sesión
+       iniciada Y existe fila en admins_practica.
+       OJO: esto solo oculta lo que se VE. Lo que de verdad protege los
+       datos son las políticas RLS en Supabase. -->
+  <div id="panel-admin" class="admin-app" hidden>
+
+    <!-- BARRA LATERAL: marca, secciones y quién está conectado -->
+    <aside class="admin-lateral">
+      <a href="index.html" class="marca">Everwish</a>
+      <span class="admin-lateral-etiqueta">Panel</span>
+
+      <!-- PESTAÑAS: cada botón muestra una sección y oculta las otras
+           (admin-pedidos.js). aria-selected marca la activa; el CSS la pinta. -->
+      <nav class="pestanas-admin" role="tablist" aria-label="Secciones del panel">
+        <button type="button" class="pestana" role="tab" aria-selected="true" data-seccion="seccion-productos"><span>💎</span> Productos</button>
+        <button type="button" class="pestana" role="tab" aria-selected="false" data-seccion="seccion-pedidos"><span>🧾</span> Pedidos</button>
+        <button type="button" class="pestana" role="tab" aria-selected="false" data-seccion="seccion-clientes"><span>👥</span> Clientes</button>
+        <button type="button" class="pestana" role="tab" aria-selected="false" data-seccion="seccion-admins"><span>🛡️</span> Administradores</button>
+      </nav>
+
+      <div class="admin-usuario">
+        <span id="admin-inicial" class="admin-avatar" aria-hidden="true">A</span>
+        <div>
+          <strong id="admin-nombre">Admin</strong>
+          <small id="admin-correo"></small>
+        </div>
+      </div>
+      <a href="index.html" class="admin-ver-tienda">Ver la tienda ↗</a>
+    </aside>
+
+    <main class="admin-principal">
+      <!-- ENCABEZADO: título y estadísticas (los números los llena admin.js) -->
+      <header class="admin-encabezado">
+        <div>
+          <span class="etiqueta-superior">Taller de deseos</span>
+          <h1>Tu <span class="texto-degradado">catálogo</span> mágico</h1>
+          <p>Crea y edita las joyas, atiende los pedidos y conoce a tus clientes.</p>
+        </div>
+      </header>
+
+      <div class="estadisticas">
+        <div class="estadistica"><span>💎</span><strong id="stat-total">–</strong><small>Productos</small></div>
+        <div class="estadistica"><span>✅</span><strong id="stat-disponibles">–</strong><small>Disponibles</small></div>
+        <div class="estadistica"><span>⏳</span><strong id="stat-agotados">–</strong><small>Agotados</small></div>
+        <div class="estadistica"><span>📦</span><strong id="stat-unidades">–</strong><small>Unidades en stock</small></div>
+      </div>
+
+      <!-- PEDIDOS DE LOS CLIENTES: admin-pedidos.js los trae al abrir la
+           pestaña. Cada tarjeta tiene un selector para cambiar el estado. -->
+      <section id="seccion-pedidos" class="seccion-admin" hidden>
+        <div class="barra-seccion">
+          <h2>Pedidos</h2>
+          <label class="filtro">Estado
+            <select id="filtro-estado-pedidos">
+              <option value="">Todos</option>
+              <option value="confirmado">Confirmado</option>
+              <option value="enviado">Enviado</option>
+              <option value="entregado">Entregado</option>
+              <option value="cancelado">Cancelado</option>
+            </select>
+          </label>
+          <button type="button" id="btn-recargar-pedidos" class="secundario">↻ Actualizar</button>
+        </div>
+        <p id="resumen-pedidos" class="resumen-seccion"></p>
+        <p id="mensaje-pedidos" class="mensaje-seccion" role="status"></p>
+        <div id="lista-pedidos-admin" class="grilla-pedidos"></div>
+      </section>
+
+      <!-- MIS CLIENTES: la tabla reutiliza el estilo .tabla-productos -->
+      <section id="seccion-clientes" class="seccion-admin" hidden>
+        <div class="barra-seccion">
+          <h2>Clientes</h2>
+          <input type="search" id="buscar-cliente" placeholder="Buscar por nombre, correo o ciudad..." aria-label="Buscar cliente">
+        </div>
+        <p id="resumen-clientes" class="resumen-seccion"></p>
+        <div class="contenedor-tabla">
+          <table class="tabla-productos tabla-clientes">
+            <thead>
+              <tr>
+                <th>Cliente</th>
+                <th>Teléfono</th>
+                <th>Ciudad</th>
+                <th>Dirección</th>
+                <th>Pedidos</th>
+                <th>Total comprado</th>
+                <th>Cliente desde</th>
+              </tr>
+            </thead>
+            <tbody id="tabla-clientes"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- ADMINISTRADORES: lista + formulario para agregar otro admin.
+           admin-pedidos.js crea la cuenta (signUp) y llama a la función
+           agregar_admin de Supabase (sql/agregar_admin.sql), que comprueba
+           que quien la usa ya sea admin. -->
+      <section id="seccion-admins" class="seccion-admin" hidden>
+        <div class="barra-seccion">
+          <h2>Administradores</h2>
+          <button type="button" id="btn-recargar-admins" class="secundario">↻ Actualizar</button>
+        </div>
+
+        <h3 class="subtitulo-admin">Agregar un administrador</h3>
+        <form id="form-nuevo-admin" class="form-nuevo-admin">
+          <label>Nombre
+            <input type="text" name="nombre" required autocomplete="off">
+          </label>
+          <label>Correo
+            <input type="email" name="correo" required autocomplete="off">
+          </label>
+          <label>Contraseña
+            <input type="password" name="contrasena" minlength="6" required autocomplete="new-password">
+          </label>
+          <button type="submit" id="btn-agregar-admin">＋ Agregar admin</button>
+        </form>
+        <p class="resumen-seccion">Si el correo ya tiene cuenta (por ejemplo, un cliente), esa cuenta pasa a ser admin y conserva su contraseña.</p>
+        <p id="mensaje-admins" class="mensaje-seccion" role="status"></p>
+
+        <!-- Código de invitación: quien lo tenga puede crearse una cuenta de
+             admin desde la pantalla de login. Solo se puede CAMBIAR, no ver
+             (en Supabase se guarda como hash). -->
+        <h3 class="subtitulo-admin">Código de invitación</h3>
+        <form id="form-codigo-admin" class="form-nuevo-admin">
+          <label>Nuevo código de invitación
+            <input type="password" name="codigo" minlength="8" required autocomplete="new-password">
+          </label>
+          <button type="submit" class="secundario">🔑 Cambiar código</button>
+        </form>
+        <p id="mensaje-codigo" class="mensaje-seccion" role="status"></p>
+
+        <h3 class="subtitulo-admin">Equipo</h3>
+        <p id="resumen-admins" class="resumen-seccion"></p>
+        <div class="contenedor-tabla">
+          <table class="tabla-productos tabla-clientes">
+            <thead>
+              <tr>
+                <th>Administrador</th>
+                <th>Rol</th>
+                <th>Admin desde</th>
+              </tr>
+            </thead>
+            <tbody id="tabla-admins"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- PRODUCTOS: a la izquierda el formulario, a la derecha la lista -->
+      <div class="layout" id="seccion-productos">
+
+        <div class="columna-form">
+          <!-- FORMULARIO: cada campo corresponde a una columna de la tabla
+               products_practice. El atributo "name" de cada input es el que
+               usamos en admin.js para leer su valor. "required" hace que el
+               navegador no deje enviar el formulario si ese campo está vacío. -->
+          <form id="form-producto">
+            <h2 id="titulo-form">Agregar producto</h2>
+
+            <!-- Campo oculto: vacío = agregar; con un id = modificar ese producto -->
+            <input type="hidden" name="id">
+
+            <p class="grupo">Información básica</p>
+
+            <label>Nombre
+              <input type="text" name="nombre" placeholder="Ej: Collar Flor de Magnolia" required>
+            </label>
+
+            <!-- Las categorías se escriben separadas por coma y en el JS
+                 las convertimos en un array: "collares, princesas" → ["collares", "princesas"] -->
+            <label>Categorías
+              <input type="text" name="categorias" placeholder="collares, princesas">
+              <small>Primero el tipo, luego el mundo · separadas por coma</small>
+            </label>
+
+            <p class="grupo">Precio e inventario</p>
+
+            <div class="fila-3">
+              <!-- type="number" solo deja escribir números (sin step solo acepta enteros) -->
+              <label>Precio
+                <input type="number" name="precio" min="0" placeholder="0" required>
+              </label>
+              <label>Unidades
+                <input type="number" name="unidades" min="0" placeholder="0" required>
+              </label>
+              <!-- El descuento va de 0 a 1 (0.1 = 10%) -->
+              <label>Descuento
+                <input type="number" name="descuento" min="0" max="1" step="any" value="0">
+                <small>0.1 = 10%</small>
+              </label>
+            </div>
+
+            <p class="grupo">Detalles</p>
+
+            <label>Descripción
+              <textarea name="description" rows="3" placeholder="¿Qué joya es y qué película evoca?" required></textarea>
+            </label>
+
+            <label>URL de la imagen
+              <!-- Campo + cuadrito con la vista previa de la imagen al lado -->
+              <span class="campo-imagen">
+                <!-- type="text" (no "url"): así acepta también rutas del proyecto
+                     como img/productos/aretes-rayo.svg, que no empiezan con https -->
+                <input type="text" name="imagen_url" placeholder="img/productos/....svg o https://...jpg">
+                <img id="vista-previa" alt="">
+              </span>
+              <small id="ayuda-imagen"></small>
+            </label>
+
+            <!-- Un checkbox da true/false, perfecto para "disponible" -->
+            <label class="casilla-disponible">
+              <input type="checkbox" name="disponible" checked> Disponible para la venta
+            </label>
+
+            <div class="botones-form">
+              <!-- type="submit": al hacer clic se dispara el evento "submit" del formulario -->
+              <button type="submit" id="btn2">Agregar Producto</button>
+              <!-- Solo aparece en modo edición (hidden lo oculta) -->
+              <button type="button" id="btn-cancelar" class="secundario" hidden>Cancelar</button>
+            </div>
+          </form>
+          <div id="notificacion" role="status"></div>
+
+          <!-- EJERCICIO DE CLASE: "Traer productos" muestra en crudo lo que
+               devuelve Supabase (JSON, map, filter...). Va plegado en un
+               <details> para no estorbar; se abre con un clic.
+               OJO: type="button" en el botón para que no envíe nada. -->
+          <details class="catalogo">
+            <summary>Ejercicio: traer productos (JSON)</summary>
+            <button type="button" id="btn-traer">Traer productos</button>
+            <div id="resultado"></div>
+            <div id="resultado2"></div>
+            <div id="resultado3"></div>
+            <div id="resultado4"></div>
+            <div id="resultado5"></div>
+            <div id="resultado6"></div>
+            <div id="resultado7"></div>
+            <div id="resultado8"></div>
+          </details>
+        </div>
+
+        <!-- RECUADRO DE PRODUCTOS: al abrir la página muestra todos.
+             El buscador filtra por nombre, por categoría, o por ID si
+             escribes solo un número. Con el campo vacío vuelve a mostrar todos. -->
+        <aside id="panel-productos">
+          <div class="panel-productos-cabecera">
+            <h2>Productos</h2>
+            <form id="form-busqueda">
+              <input type="search" id="input-busqueda" placeholder="Buscar por nombre, categoría o ID...">
+              <button type="submit" id="btn-buscar">Buscar</button>
+              <!-- Cambia entre tabla y tarjetas. type="button" para que NO envíe el buscador -->
+              <button type="button" id="btn-vista" class="secundario" title="Cambiar vista">▦ Tarjetas</button>
+            </form>
+          </div>
+          <div id="resultados-busqueda"></div>
+        </aside>
+      </div>
+    </main>
+  </div>
+
+  <!-- supabaseClient.js crea "db": el cliente ya conectado a tu proyecto
+       de Supabase. Lo usa admin.js, por eso se carga ANTES -->
+  <script src="js/supabaseClient.js"></script>
+  <!-- admin.js: lógica del panel (listar, agregar, buscar, editar, eliminar) -->
+  <script src="js/admin.js"></script>
+  <!-- pedidos.js: funciones compartidas con cliente.html.
+       admin-pedidos.js: pestañas, pedidos (cambiar estado), clientes y admins -->
+  <script src="js/pedidos.js"></script>
+  <script src="js/admin-pedidos.js"></script>
+</body>
+
+</html>

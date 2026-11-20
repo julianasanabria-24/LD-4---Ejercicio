@@ -1,0 +1,223 @@
+/* =================================================================
+   EVERWISH · MI CUENTA (cliente.html)
+   Se carga después de everwish.css (acceso, botones, barra),
+   galeria.css (catálogo y carrito) y pedidos.css (tarjetas de pedido).
+   Aquí: el botón de tema flotante, las pestañas de la cuenta y las
+   vistas Inicio, Mundos, Mis pedidos y Mi perfil.
+   ================================================================= */
+
+/* Botón de tema en la pantalla de acceso (sin sesión) */
+#btn-tema.tema-flotante {
+  position: fixed;
+  top: 16px;
+  right: 16px;
+  z-index: 20;
+}
+
+/* ===================== PESTAÑAS EN LA BARRA ===================== */
+/* Son <button>, pero se ven como los enlaces de la barra de la tienda */
+.nav-cuenta button {
+  position: relative;
+  padding: 8px 14px;
+  background: transparent;
+  color: var(--texto-suave);
+  box-shadow: none;
+  font-weight: 600;
+  font-size: 0.92rem;
+  white-space: nowrap;
+}
+.nav-cuenta button:hover { color: var(--texto); background: var(--acento-suave); transform: none; box-shadow: none; }
+.nav-cuenta button[aria-current="page"] { color: var(--acento-fuerte); background: var(--acento-suave); }
+
+.vista { padding-top: 24px; animation: aparecer 0.4s ease both; }
+.seccion-cuenta { margin-top: 40px; }
+
+
+/* ===================== INICIO ===================== */
+.saludo {
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 24px;
+  padding: clamp(28px, 5vw, 48px);
+  border-radius: var(--radio-l);
+  background: var(--degradado-noche);
+  color: #fff;
+}
+.saludo::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image:
+    radial-gradient(2px 2px at 40px 30px, #fff, transparent 70%),
+    radial-gradient(1.5px 1.5px at 200px 90px, #f3d896, transparent 70%),
+    radial-gradient(1px 1px at 120px 140px, #ffb3d1, transparent 70%);
+  background-size: 260px 180px;
+  opacity: 0.55;
+  pointer-events: none;
+}
+.saludo > * { position: relative; }
+.saludo .etiqueta-superior { background: rgba(255, 255, 255, 0.1); color: #f3d896; }
+.saludo .etiqueta-superior::before { color: #f3d896; }
+.saludo h1 { margin-top: 14px; font-size: clamp(2rem, 4vw, 3rem); color: #fff; }
+.saludo .texto-degradado { background: linear-gradient(120deg, #f0d48c, #ff9cc2); -webkit-background-clip: text; background-clip: text; }
+.saludo p { margin-top: 8px; color: #cfc6ef; }
+.saludo-botones { display: flex; flex-wrap: wrap; gap: 10px; }
+
+/* Cuatro números de la cuenta */
+.datos-cuenta {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+  margin-top: 18px;
+}
+.dato-cuenta {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  grid-template-rows: auto auto;
+  column-gap: 14px;
+  align-items: center;
+  padding: 18px;
+  border-radius: 20px;
+  background: var(--superficie);
+  border: 1px solid var(--linea);
+  box-shadow: var(--sombra-1);
+}
+.dato-cuenta span {
+  grid-row: span 2;
+  display: grid;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+  background: var(--acento-suave);
+  font-size: 1.4rem;
+}
+.dato-cuenta strong { font-family: var(--fuente-titulos); font-size: 1.6rem; font-weight: 600; line-height: 1.1; }
+.dato-cuenta small { color: var(--texto-suave); font-size: 0.8rem; }
+@media (max-width: 860px) { .datos-cuenta { grid-template-columns: 1fr 1fr; } }
+
+.inicio-columnas {
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+  gap: 18px;
+  margin-top: 18px;
+}
+@media (max-width: 860px) { .inicio-columnas { grid-template-columns: 1fr; } }
+
+/* Tarjeta blanca genérica de la cuenta */
+.panel-cuenta {
+  padding: 22px;
+  border-radius: 22px;
+  background: var(--superficie);
+  border: 1px solid var(--linea);
+  box-shadow: var(--sombra-1);
+}
+.panel-titulo {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+.panel-titulo h2 { font-size: 1.35rem; }
+#ultimo-pedido .pedido { margin: 0; box-shadow: none; }
+
+/* Mundos pequeños (Inicio) */
+.mundos-mini {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(96px, 1fr));
+  gap: 10px;
+}
+.mundo-mini {
+  flex-direction: column;
+  gap: 6px;
+  padding: 6px 6px 10px;
+  border-radius: 16px;
+  background: var(--campo-suave);
+  color: var(--texto);
+  box-shadow: none;
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-align: center;
+}
+.mundo-mini img { width: 100%; aspect-ratio: 1; object-fit: cover; border-radius: 12px; }
+.mundo-mini:hover { background: var(--acento-suave); box-shadow: none; transform: translateY(-3px); }
+
+/* Mundos grandes (pestaña Mundos): misma tarjeta que la portada */
+.mundos-grandes { grid-template-columns: repeat(auto-fill, minmax(min(220px, 100%), 1fr)); }
+.mundos-grandes .mundo-tarjeta { animation: aparecer 0.5s ease both; animation-delay: calc(var(--i) * 60ms); }
+.mundos-grandes .mundo-nombre { font-size: 1.6rem; }
+
+
+/* ===================== MIS PEDIDOS ===================== */
+.filtro-pedidos {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  padding: 4px;
+  border-radius: 999px;
+  background: var(--campo-suave);
+  border: 1px solid var(--linea);
+}
+.filtro-pedidos button {
+  padding: 8px 14px;
+  background: transparent;
+  color: var(--texto-suave);
+  box-shadow: none;
+  font-size: 0.85rem;
+}
+.filtro-pedidos button:hover { color: var(--texto); transform: none; box-shadow: none; }
+.filtro-pedidos button[aria-pressed="true"] { background: var(--superficie); color: var(--texto); box-shadow: var(--sombra-1); }
+
+
+/* ===================== MI PERFIL ===================== */
+.perfil-columnas {
+  display: grid;
+  grid-template-columns: minmax(0, 340px) minmax(0, 1fr);
+  gap: 18px;
+  align-items: start;
+}
+@media (max-width: 860px) { .perfil-columnas { grid-template-columns: 1fr; } }
+
+.tarjeta-perfil { display: flex; flex-direction: column; align-items: center; gap: 12px; text-align: center; }
+.avatar {
+  display: grid;
+  place-items: center;
+  width: 88px;
+  height: 88px;
+  border-radius: 50%;
+  background: var(--degradado);
+  color: #fff;
+  font-family: var(--fuente-titulos);
+  font-size: 2.4rem;
+  font-style: italic;
+  box-shadow: 0 0 0 6px var(--acento-suave);
+}
+.tarjeta-perfil h3 { font-size: 1.5rem; }
+.datos-perfil {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 10px 16px;
+  width: 100%;
+  margin: 8px 0;
+  padding: 16px 0;
+  border-block: 1px solid var(--linea);
+  text-align: left;
+  font-size: 0.9rem;
+}
+.datos-perfil dt { color: var(--texto-suave); font-weight: 600; }
+.datos-perfil dd { margin: 0; overflow-wrap: anywhere; }
+.tarjeta-perfil button { width: 100%; }
+
+.formulario-perfil { display: flex; flex-direction: column; gap: 14px; }
+.formulario-perfil h3 { font-size: 1.4rem; }
+.formulario-perfil .ayuda { color: var(--texto-suave); font-size: 0.88rem; margin-top: -8px; }
+.formulario-perfil button[type="submit"] { align-self: flex-start; }
+.fila-campos { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+@media (max-width: 560px) { .fila-campos { grid-template-columns: 1fr; } }
+
+.pie-compacto { margin-top: 72px; }

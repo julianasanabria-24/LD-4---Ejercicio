@@ -1,0 +1,378 @@
+/* =================================================================
+   ESTILOS DE LAS PÁGINAS DE PRÁCTICA (index.html)
+   Misma estética que admin.html, cliente.html y galeria.html:
+   variables de color, vidrio, degradados, manchas animadas y granulado.
+   ================================================================= */
+
+/* Variables de color: mismos valores que cuenta.css */
+:root {
+  --rosa-fondo: #fff0f5;
+  --rosa-medio: #f06292;
+  --rosa-fuerte: #d81b60;
+  --texto: #4a1530;
+  --texto-suave: #8a5a70;
+  --superficie: #fff;
+  --linea: #f3d9e3;
+  --peligro: #c62828;
+  --exito: #2e7d32;
+  --anillo: rgba(240, 98, 146, 0.18);
+  --grano-opacidad: 0.09;
+  --degradado: linear-gradient(135deg, #ff3d7f 0%, #ff7a59 55%, #ffb547 100%);
+  --vidrio: rgba(255, 255, 255, 0.62);
+  --borde-vidrio: rgba(255, 255, 255, 0.85);
+  --campo-vidrio: rgba(255, 255, 255, 0.7);
+  --sombra-color: rgba(216, 27, 96, 0.35);
+  --mancha-1: rgba(255, 61, 127, 0.38);
+  --mancha-2: rgba(255, 181, 71, 0.32);
+  --mancha-3: rgba(167, 112, 255, 0.28);
+}
+
+/* MODO OSCURO: solo cambiamos las variables */
+:root[data-tema="oscuro"] {
+  --rosa-fondo: #1c1016;
+  --rosa-medio: #e0557f;
+  --rosa-fuerte: #ff8fb5;
+  --texto: #fbe6ee;
+  --texto-suave: #c9a3b4;
+  --superficie: #241319;
+  --linea: #3a2029;
+  --peligro: #ef5350;
+  --exito: #66bb6a;
+  --anillo: rgba(224, 85, 127, 0.25);
+  --grano-opacidad: 0.13;
+  --degradado: linear-gradient(135deg, #ff4d8d 0%, #c55cff 55%, #6b7bff 100%);
+  --vidrio: rgba(30, 16, 24, 0.55);
+  --borde-vidrio: rgba(255, 255, 255, 0.08);
+  --campo-vidrio: rgba(255, 255, 255, 0.04);
+  --sombra-color: rgba(0, 0, 0, 0.6);
+  --mancha-1: rgba(255, 77, 141, 0.30);
+  --mancha-2: rgba(107, 123, 255, 0.26);
+  --mancha-3: rgba(197, 92, 255, 0.22);
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  font-family: "Plus Jakarta Sans", system-ui, sans-serif;
+  color: var(--texto);
+  background: var(--rosa-fondo);
+  padding: 24px 16px 48px;
+  min-height: 100vh;
+  margin: 0;
+  transition: background 0.2s, color 0.2s;
+}
+
+/* hidden deja de funcionar si otra regla le pone display al elemento */
+[hidden] { display: none !important; }
+
+/* GRANULADO: capa de "ruido" encima del fondo */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  opacity: var(--grano-opacidad);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* MANCHAS DE COLOR ANIMADAS detrás de todo */
+body::after {
+  content: "";
+  position: fixed;
+  inset: -20%;
+  z-index: -2;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at 15% 20%, var(--mancha-1), transparent 32%),
+    radial-gradient(circle at 85% 15%, var(--mancha-2), transparent 30%),
+    radial-gradient(circle at 70% 85%, var(--mancha-3), transparent 34%);
+  filter: blur(40px);
+  animation: flotar 22s ease-in-out infinite alternate;
+}
+
+@keyframes flotar {
+  from { transform: translate(0, 0) rotate(0deg); }
+  to   { transform: translate(4%, -3%) rotate(8deg); }
+}
+
+/* ===================== ENCABEZADO ===================== */
+.encabezado {
+  max-width: 1100px;
+  margin: 40px auto 28px;
+  text-align: center;
+  animation: aparecer 0.6s ease both;
+}
+
+.etiqueta-superior {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: var(--vidrio);
+  border: 1px solid var(--linea);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--texto-suave);
+}
+
+/* Puntito verde que "late" = conectado a la base de datos */
+.etiqueta-superior::before {
+  content: "";
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #22c55e;
+  animation: latido 2s infinite;
+}
+
+@keyframes latido {
+  0%   { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.6); }
+  70%  { box-shadow: 0 0 0 8px rgba(34, 197, 94, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0); }
+}
+
+.encabezado h1 {
+  margin: 12px 0 6px;
+  font-size: clamp(2rem, 4vw, 3rem);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1.05;
+}
+
+.encabezado p { margin: 0; color: var(--texto-suave); }
+
+/* Texto con degradado: el fondo se "recorta" a las letras */
+.texto-degradado {
+  background: var(--degradado);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* Mensaje de estado (index.html): verde si conectó, rojo si falló.
+   gestion.js puede ponerle la clase "error" */
+.estado { font-weight: 600; }
+.estado.ok    { color: var(--exito); }
+.estado.error { color: var(--peligro); }
+
+/* ===================== BOTONES ===================== */
+button {
+  background: var(--degradado);
+  color: #fff;
+  border: none;
+  padding: 12px 20px;
+  border-radius: 999px;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 10px 24px -12px var(--rosa-medio);
+  transition: transform 0.15s, box-shadow 0.15s, filter 0.15s, background 0.15s;
+}
+button:hover {
+  filter: brightness(1.08);
+  transform: translateY(-2px);
+  box-shadow: 0 16px 30px -12px var(--rosa-medio);
+}
+button:active { transform: translateY(0) scale(0.98); }
+
+/* Botón "de contorno", sin degradado (Cancelar, Editar…) */
+button.secundario {
+  background: transparent;
+  color: var(--texto-suave);
+  border: 1px solid var(--linea);
+  box-shadow: none;
+}
+button.secundario:hover {
+  background: var(--campo-vidrio);
+  color: var(--rosa-fuerte);
+  border-color: var(--rosa-medio);
+}
+
+/* Botón para borrar: rojo, sin degradado */
+button.peligro {
+  background: transparent;
+  color: var(--peligro);
+  border: 1px solid var(--peligro);
+  box-shadow: none;
+}
+button.peligro:hover { background: var(--peligro); color: #fff; }
+
+button:disabled {
+  background: var(--linea);
+  color: var(--texto-suave);
+  box-shadow: none;
+  cursor: not-allowed;
+  transform: none;
+  filter: none;
+}
+
+/* Botón de tema fijo arriba a la derecha */
+#btn-tema {
+  position: fixed;
+  top: 12px;
+  right: 12px;
+  z-index: 10;
+  padding: 8px 14px;
+  color: var(--texto);
+  background: var(--vidrio);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--borde-vidrio);
+  box-shadow: none;
+}
+#btn-tema:hover { background: var(--campo-vidrio); }
+
+/* ===================== TARJETAS DE VIDRIO ===================== */
+/* "glassmorphism": semitransparentes, difuminan lo que hay detrás */
+.vidrio {
+  position: relative;
+  overflow: hidden;
+  padding: 32px;
+  background: var(--vidrio);
+  backdrop-filter: blur(20px) saturate(150%);
+  -webkit-backdrop-filter: blur(20px) saturate(150%);
+  border: 1px solid var(--borde-vidrio);
+  border-radius: 24px;
+  box-shadow: 0 30px 60px -30px var(--sombra-color), inset 0 1px 0 var(--borde-vidrio);
+  animation: aparecer 0.6s ease both;
+}
+
+/* Franja de color arriba de cada tarjeta */
+.vidrio::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: var(--degradado);
+}
+
+/* Título con línea fina debajo y un cuadradito de color al lado */
+.vidrio h2 {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 0 0 16px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--linea);
+  font-size: 1.4rem;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+}
+.vidrio h2::before {
+  content: "";
+  width: 12px;
+  height: 12px;
+  border-radius: 4px;
+  background: var(--degradado);
+  box-shadow: 0 0 16px var(--rosa-medio);
+  flex-shrink: 0;
+}
+
+/* DOS COLUMNAS (index.html): formulario angosto | tabla ancha.
+   minmax(0, ...) evita que un contenido largo ensanche la columna */
+.columnas {
+  max-width: 1100px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 2fr);
+  gap: 24px;
+  align-items: start;
+}
+.columnas > :nth-child(2) { animation-delay: 0.1s; }
+
+/* En celular: una tarjeta debajo de la otra */
+@media (max-width: 760px) {
+  .columnas { grid-template-columns: minmax(0, 1fr); }
+}
+
+/* ===================== FORMULARIO ===================== */
+.vidrio form {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+/* Etiqueta pequeña encima, campo debajo */
+.vidrio label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-weight: 600;
+  font-size: 0.82rem;
+  color: var(--texto-suave);
+}
+
+.vidrio input,
+.vidrio textarea {
+  padding: 11px 14px;
+  border: 1px solid var(--borde-vidrio);
+  border-radius: 12px;
+  background: var(--campo-vidrio);
+  color: var(--texto);
+  font: inherit;
+  font-size: 0.95rem;
+  resize: vertical;
+  transition: border-color 0.15s, box-shadow 0.15s, background 0.15s;
+}
+
+/* :focus = cuando el usuario está escribiendo en ese campo */
+.vidrio input:focus,
+.vidrio textarea:focus {
+  outline: none;
+  background: var(--superficie);
+  border-color: var(--rosa-medio);
+  box-shadow: 0 0 0 4px var(--anillo), 0 8px 24px -12px var(--rosa-medio);
+}
+
+.acciones { display: flex; gap: 10px; margin-top: 6px; }
+.acciones button { flex: 1; border-radius: 12px; padding: 14px 20px; }
+
+/* ===================== TABLA ===================== */
+/* La tabla puede ser más ancha que la tarjeta en celular:
+   el contenedor hace scroll horizontal por dentro */
+.tabla-scroll { overflow-x: auto; }
+
+table { width: 100%; border-collapse: collapse; font-size: 0.92rem; }
+
+th {
+  text-align: left;
+  padding: 10px 12px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--texto-suave);
+  border-bottom: 1px solid var(--linea);
+}
+
+td {
+  padding: 12px;
+  border-bottom: 1px solid var(--linea);
+  vertical-align: middle;
+}
+
+tbody tr { transition: background 0.15s; }
+tbody tr:hover { background: var(--campo-vidrio); }
+
+td button { padding: 6px 12px; font-size: 0.82rem; margin-right: 6px; }
+
+td.vacio { text-align: center; color: var(--texto-suave); padding: 28px 12px; }
+
+
+/* Aparecer: sube un poco mientras se hace visible */
+@keyframes aparecer {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: none; }
+}
+
+/* Si la persona tiene activado "reducir movimiento", apagamos animaciones */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; }
+}

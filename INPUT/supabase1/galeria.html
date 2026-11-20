@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Tienda · Everwish</title>
+    <meta name="description" content="Joyería de fantasía inspirada en películas de Disney, Warner Bros. y Universal: collares, aretes, anillos, pulseras y kits regalo." />
+
+    <!-- Tipografías: Fraunces (títulos) y Plus Jakarta Sans (texto) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500;1,9..144,600&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+
+    <!-- Pone el tema ANTES de dibujar la página (así no "parpadea" en claro).
+         La clase "js" avisa al CSS que puede usar las animaciones de scroll -->
+    <script>
+      document.documentElement.classList.add("js");
+      let temaGuardado = null;
+      try { temaGuardado = localStorage.getItem("tema"); } catch (e) {}
+      document.documentElement.dataset.tema = temaGuardado ||
+        (matchMedia("(prefers-color-scheme: dark)").matches ? "oscuro" : "claro");
+    </script>
+
+    <!-- 1° sistema visual  2° tienda (tarjetas, filtros, carrito) -->
+    <link rel="stylesheet" href="css/everwish.css" />
+    <link rel="stylesheet" href="css/galeria.css" />
+  </head>
+  <body>
+
+    <!-- ANUNCIOS: el texto va dos veces para que la marquesina no tenga salto -->
+    <div class="barra-promo" aria-label="Anuncios">
+      <div class="barra-promo-pista">
+        <span>Envío gratis desde $200.000</span><span>Empaque de regalo en cada pedido</span>
+        <span>Nuevos mundos: Villanos, Mundo mágico y Aventuras</span><span>Recoge gratis en tienda</span>
+        <span aria-hidden="true">Envío gratis desde $200.000</span><span aria-hidden="true">Empaque de regalo en cada pedido</span>
+        <span aria-hidden="true">Nuevos mundos: Villanos, Mundo mágico y Aventuras</span><span aria-hidden="true">Recoge gratis en tienda</span>
+      </div>
+    </div>
+
+    <!-- BARRA SUPERIOR: queda pegada arriba al bajar (position: sticky) -->
+    <nav class="barra" aria-label="Principal">
+      <div class="contenedor barra-interior">
+        <a href="index.html" class="marca">Everwish</a>
+
+        <ul class="nav-enlaces">
+          <li><a href="index.html">Inicio</a></li>
+          <li><a href="galeria.html" aria-current="page">Tienda</a></li>
+          <li><a href="index.html#mundos">Mundos</a></li>
+          <li><a href="galeria.html?oferta=1">Ofertas</a></li>
+        </ul>
+
+        <div class="barra-acciones">
+          <button type="button" id="btn-tema" aria-label="Cambiar tema">🌙</button>
+          <a href="cliente.html" class="boton-barra" aria-label="Ir a mi cuenta">👤 <span class="texto-boton">Mi cuenta</span></a>
+          <button type="button" id="btn-carrito" class="boton-barra principal" aria-label="Abrir carrito">
+            🛍️ <span class="texto-boton">Carrito</span> <span id="contador-carrito">0</span>
+          </button>
+        </div>
+      </div>
+    </nav>
+
+    <main class="contenedor">
+      <!-- ENCABEZADO: el título cambia con el mundo elegido (galeria.js) -->
+      <header class="encabezado-tienda">
+        <span class="etiqueta-superior">La tienda</span>
+        <h1 id="titulo-tienda">Todas las <span class="texto-degradado">joyas</span> de cuento</h1>
+        <p id="subtitulo-tienda">Collares, aretes, anillos, pulseras y kits inspirados en las películas que te hicieron soñar.</p>
+        <div id="mundos-rapidos" class="mundos-rapidos" role="group" aria-label="Elegir mundo"></div>
+      </header>
+
+      <div class="tienda">
+        <!-- FILTROS: galeria.js llena las listas con los mundos y tipos, y
+             muestra cuántos productos hay en cada opción -->
+        <aside id="panel-filtros" class="panel-filtros" aria-label="Filtros">
+          <div class="panel-filtros-cabecera">
+            <h2>Filtros</h2>
+            <button type="button" id="btn-limpiar-filtros" class="boton-texto">Limpiar</button>
+            <button type="button" id="btn-cerrar-filtros" class="boton-icono" aria-label="Cerrar filtros">✕</button>
+          </div>
+
+          <section class="filtro-grupo">
+            <h3>Mundo</h3>
+            <div id="filtros-mundo" class="filtro-lista"></div>
+          </section>
+
+          <section class="filtro-grupo">
+            <h3>Tipo de joya</h3>
+            <div id="filtros-tipo" class="filtro-lista"></div>
+          </section>
+
+          <section class="filtro-grupo filtro-precio">
+            <h3>Precio</h3>
+            <input type="range" id="filtro-precio" min="0" max="300000" value="300000" aria-label="Precio máximo">
+            <output id="filtro-precio-valor">Cualquier precio</output>
+          </section>
+
+          <section class="filtro-grupo">
+            <h3>Mostrar</h3>
+            <label class="casilla-filtro"><input type="checkbox" id="filtro-disponibles"> Solo disponibles</label>
+            <label class="casilla-filtro"><input type="checkbox" id="filtro-oferta"> En oferta</label>
+          </section>
+        </aside>
+        <div id="fondo-filtros" class="fondo-oscuro"></div>
+
+        <section aria-label="Productos">
+          <div class="herramientas-tienda">
+            <button type="button" id="btn-filtros" class="secundario">⚙ Filtros</button>
+            <div class="buscador">
+              <input type="search" id="input-busqueda" placeholder="Busca una joya, un personaje o un mundo…" aria-label="Buscar en la tienda" />
+            </div>
+            <select id="orden-productos" aria-label="Ordenar">
+              <option value="destacados">Destacados</option>
+              <option value="nuevos">Novedades</option>
+              <option value="precio-asc">Precio: menor a mayor</option>
+              <option value="precio-desc">Precio: mayor a menor</option>
+              <option value="nombre">Nombre A–Z</option>
+            </select>
+          </div>
+          <p id="conteo-resultados" role="status"></p>
+
+          <!-- GRILLA: galeria.js dibuja aquí una tarjeta por producto -->
+          <div id="grilla-productos" class="grilla-productos">
+            <p class="sin-resultados">Abriendo el cofre de joyas…</p>
+          </div>
+        </section>
+      </div>
+    </main>
+
+    <!-- PIE DE PÁGINA -->
+    <footer class="pie-pagina">
+      <div class="contenedor pie-grilla">
+        <div>
+          <a href="index.html" class="marca">Everwish</a>
+          <p>Joyería de fantasía para llevar contigo la magia de tus películas favoritas.</p>
+        </div>
+        <div>
+          <h4>Tienda</h4>
+          <ul class="pie-enlaces">
+            <li><a href="galeria.html">Todas las joyas</a></li>
+            <li><a href="galeria.html?orden=nuevos">Novedades</a></li>
+            <li><a href="galeria.html?oferta=1">Ofertas</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4>Mundos</h4>
+          <ul class="pie-enlaces">
+            <li><a href="galeria.html?mundo=princesas">Princesas</a></li>
+            <li><a href="galeria.html?mundo=villanos">Villanos</a></li>
+            <li><a href="galeria.html?mundo=mundo%20magico">Mundo mágico</a></li>
+            <li><a href="galeria.html?mundo=aventuras">Aventuras</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4>Mi cuenta</h4>
+          <ul class="pie-enlaces">
+            <li><a href="cliente.html">Iniciar sesión</a></li>
+            <li><a href="cliente.html">Mis pedidos</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="contenedor pie-legal">
+        Proyecto académico de Lenguajes Digitales. Las joyas son conceptos inspirados en películas de Disney, Warner Bros. y Universal; Everwish no está afiliada a esos estudios.
+      </div>
+    </footer>
+
+    <!-- Capa oscura detrás del carrito: al hacer clic, se cierra -->
+    <div id="fondo-carrito"></div>
+
+    <!-- CARRITO: panel que entra desde la derecha. inert = cerrado, no se
+         puede llegar a sus botones con Tab ni con clic. -->
+    <aside id="panel-carrito" inert aria-label="Carrito de compras">
+      <div class="carrito-cabecera">
+        <h2>Tu carrito</h2>
+        <button type="button" id="btn-cerrar-carrito" class="boton-icono" aria-label="Cerrar carrito">✕</button>
+      </div>
+
+      <div id="lista-carrito"></div>
+
+      <!-- Avisos del checkout. Va FUERA del resumen porque el resumen se
+           oculta al quedar vacío el carrito, y justo entonces hay que
+           mostrar "Pedido #N confirmado". Vacío no se ve (:empty) -->
+      <p id="mensaje-carrito" class="mensaje-carrito" role="status"></p>
+
+      <div id="resumen-carrito" class="carrito-footer" hidden>
+        <dl class="totales">
+          <dt>Subtotal</dt>    <dd id="carrito-subtotal">$0</dd>
+          <dt>Ahorras</dt>     <dd id="carrito-ahorro">$0</dd>
+          <dt class="total">Total</dt> <dd id="carrito-total" class="total">$0</dd>
+        </dl>
+        <form id="form-checkout" hidden>
+          <label class="casilla">
+            <input type="checkbox" id="checkout-envio" /> Envío a domicilio
+          </label>
+
+          <label for="checkout-direccion">Dirección</label>
+          <input id="checkout-direccion" type="text" placeholder="Ej: Calle 10 # 5-20" autocomplete="street-address" />
+
+          <label for="checkout-telefono">Teléfono</label>
+          <input id="checkout-telefono" type="tel" placeholder="Ej: 300 123 4567" autocomplete="tel" />
+
+          <label for="checkout-observacion">Observaciones</label>
+          <textarea id="checkout-observacion" rows="2" placeholder="Opcional: una dedicatoria o indicaciones para la entrega"></textarea>
+
+          <button type="submit" id="btn-confirmar">Confirmar pedido</button>
+          <button type="button" id="btn-cancelar-checkout" class="secundario">Volver al carrito</button>
+        </form>
+
+        <button type="button" id="btn-finalizar">Finalizar compra</button>
+        <button type="button" id="btn-vaciar" class="secundario">Vaciar carrito</button>
+      </div>
+    </aside>
+
+    <!-- AVISO (toast): mensaje corto que aparece abajo y se va solo -->
+    <div id="aviso" role="status" aria-live="polite"></div>
+
+    <!-- Orden importante:
+         1° librería de Supabase  2° cliente "db"  3° tema  4° mundos
+         (datos que usa galeria.js)  5° efectos  6° la tienda -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/supabaseClient.js"></script>
+    <script src="js/tema.js"></script>
+    <script src="js/mundos.js"></script>
+    <script src="js/efectos.js"></script>
+    <script src="js/galeria.js"></script>
+  </body>
+</html>

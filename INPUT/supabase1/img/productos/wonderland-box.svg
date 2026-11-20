@@ -1,0 +1,52 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 600" role="img" aria-label="Wonderland Box: taza de té de rayas, naipe de corazones y reloj de bolsillo">
+  <defs>
+    <radialGradient id="fondo" cx="45%" cy="35%" r="80%">
+      <stop offset="0" stop-color="#f5edff"/>
+      <stop offset="1" stop-color="#b7e3d2"/>
+    </radialGradient>
+    <pattern id="rayas" width="28" height="28" patternUnits="userSpaceOnUse" patternTransform="rotate(90)">
+      <rect width="28" height="28" fill="#ffffff"/>
+      <rect width="12" height="28" fill="#a993e6"/>
+    </pattern>
+    <linearGradient id="oro" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#f3d38c"/>
+      <stop offset="1" stop-color="#b8862f"/>
+    </linearGradient>
+    <path id="destello" d="M0-1C.12-.12.12-.12 1 0C.12.12.12.12 0 1C-.12.12-.12.12-1 0C-.12-.12-.12-.12 0-1Z"/>
+  </defs>
+
+  <rect width="600" height="600" fill="url(#fondo)"/>
+
+  <!-- Naipe de corazones, inclinado detrás -->
+  <g transform="rotate(-14 170 255)">
+    <rect x="100" y="170" width="140" height="190" rx="14" fill="#fff" stroke="#e3d6f7" stroke-width="4"/>
+    <path d="M170 292C140 268 132 244 150 232C162 224 170 234 170 240C170 234 178 224 190 232C208 244 200 268 170 292Z" fill="#d93b55"/>
+    <text x="118" y="206" font-family="Georgia, serif" font-size="26" font-weight="700" fill="#d93b55">A</text>
+  </g>
+
+  <!-- Taza de té -->
+  <ellipse cx="300" cy="458" rx="160" ry="32" fill="#fff" stroke="#8b6fd6" stroke-width="5"/>
+  <ellipse cx="300" cy="452" rx="96" ry="14" fill="#efe8ff"/>
+  <path d="M420 330C470 322 476 392 420 396" fill="none" stroke="#8b6fd6" stroke-width="16" stroke-linecap="round"/>
+  <path d="M196 312H404C404 404 366 446 300 446C234 446 196 404 196 312Z" fill="url(#rayas)" stroke="#8b6fd6" stroke-width="5"/>
+  <ellipse cx="300" cy="312" rx="104" ry="20" fill="#7a4a2e" stroke="#8b6fd6" stroke-width="5"/>
+  <!-- Vapor -->
+  <path d="M262 286C246 262 280 248 264 220M306 286C290 258 326 244 308 212M348 286C334 266 362 252 350 230" fill="none" stroke="#fff" stroke-width="7" stroke-linecap="round" opacity=".9"/>
+
+  <!-- Reloj de bolsillo -->
+  <path d="M470 228C500 300 540 330 560 380" fill="none" stroke="#b8862f" stroke-width="5" stroke-dasharray="3 9" stroke-linecap="round"/>
+  <rect x="460" y="88" width="20" height="18" rx="4" fill="url(#oro)"/>
+  <circle cx="470" cy="166" r="62" fill="url(#oro)"/>
+  <circle cx="470" cy="166" r="49" fill="#fffaf0"/>
+  <g stroke="#6c5a8e" stroke-width="4" stroke-linecap="round">
+    <path d="M470 124v9M470 199v9M428 166h9M503 166h9"/>
+  </g>
+  <path d="M470 166V134M470 166L494 178" stroke="#2d2a55" stroke-width="5" stroke-linecap="round"/>
+  <circle cx="470" cy="166" r="5" fill="#b8862f"/>
+
+  <!-- Destellos -->
+  <use href="#destello" fill="#b8862f" transform="translate(90 470) scale(14)"/>
+  <use href="#destello" fill="#8b6fd6" transform="translate(360 90) scale(16)"/>
+  <use href="#destello" fill="#fff" transform="translate(520 500) scale(12)"/>
+  <use href="#destello" fill="#d93b55" transform="translate(300 160) scale(8)"/>
+</svg>

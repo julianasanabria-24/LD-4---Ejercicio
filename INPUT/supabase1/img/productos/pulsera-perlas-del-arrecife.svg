@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 600" role="img" aria-label="Pulsera Perlas del Arrecife (ilustración provisional)">
+  <defs>
+    <radialGradient id="fondo" cx="50%" cy="40%" r="75%">
+      <stop offset="0" stop-color="#e9fbff"/><stop offset="1" stop-color="#9fdfe6"/>
+    </radialGradient>
+  <linearGradient id="oro" x1="0" y1="0" x2="1" y2="1">
+    <stop offset="0" stop-color="#b8862f"/><stop offset=".45" stop-color="#f6dc93"/><stop offset="1" stop-color="#a87526"/>
+  </linearGradient>
+  <path id="chispa" d="M0-1C.12-.12.12-.12 1 0C.12.12.12.12 0 1C-.12.12-.12.12-1 0C-.12-.12-.12-.12 0-1Z"/>
+  </defs>
+  <rect width="600" height="600" fill="url(#fondo)"/>
+  <circle cx="300" cy="320" r="230" fill="#fff" opacity="0.35"/>
+  <use href="#chispa" transform="translate(90 110) scale(14)" fill="#ffffff" opacity="0.55"/><use href="#chispa" transform="translate(500 90) scale(18)" fill="#ffffff" opacity="0.7000000000000001"/><use href="#chispa" transform="translate(520 300) scale(10)" fill="#ffffff" opacity="0.8500000000000001"/><use href="#chispa" transform="translate(80 380) scale(12)" fill="#ffffff" opacity="0.55"/><use href="#chispa" transform="translate(470 470) scale(16)" fill="#ffffff" opacity="0.7000000000000001"/><use href="#chispa" transform="translate(140 520) scale(9)" fill="#ffffff" opacity="0.8500000000000001"/><use href="#chispa" transform="translate(300 70) scale(8)" fill="#ffffff" opacity="0.55"/>
+  <ellipse cx="300" cy="560" rx="170" ry="14" fill="#145a6a" opacity=".12"/>
+  <ellipse cx="300" cy="300" rx="190" ry="120" fill="none" stroke="url(#oro)" stroke-width="7" opacity=".7"/>
+        <circle cx="110.0" cy="300.0" r="17" fill="#f78fb3"/><circle cx="116.5" cy="331.1" r="13" fill="url(#oro)"/><circle cx="135.5" cy="360.0" r="17" fill="#f78fb3"/><circle cx="165.6" cy="384.9" r="13" fill="url(#oro)"/><circle cx="205.0" cy="403.9" r="17" fill="#f78fb3"/><circle cx="250.8" cy="415.9" r="13" fill="url(#oro)"/><circle cx="300.0" cy="420.0" r="17" fill="#f78fb3"/><circle cx="349.2" cy="415.9" r="13" fill="url(#oro)"/><circle cx="395.0" cy="403.9" r="17" fill="#f78fb3"/><circle cx="434.4" cy="384.9" r="13" fill="url(#oro)"/><circle cx="464.5" cy="360.0" r="17" fill="#f78fb3"/><circle cx="483.5" cy="331.1" r="13" fill="url(#oro)"/><circle cx="490.0" cy="300.0" r="17" fill="#f78fb3"/>
+        <line x1="300" y1="420" x2="300" y2="445" stroke="#c99a45" stroke-width="5"/>
+        <g transform="translate(300 495) scale(0.9)"><path d="M0 44L-52-8C-52-36-28-52 0-52C28-52 52-36 52-8Z" fill="#f78fb3" stroke="#145a6a" stroke-width="3" stroke-linejoin="round"/>
+              <path d="M0 44L-30-46M0 44L-12-52M0 44L12-52M0 44L30-46M0 44L-46-24M0 44L46-24" stroke="#145a6a" stroke-width="2.5" opacity=".55"/>
+              <circle cy="22" r="10" fill="#fff" stroke="#145a6a" stroke-width="2"/></g>
+</svg>

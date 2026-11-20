@@ -1,0 +1,211 @@
+/* =================================================================
+   PEDIDOS: estilos compartidos por cliente.html ("Mis pedidos") y
+   admin.html ("Pedidos", "Clientes" y "Administradores").
+   Solo usa variables de everwish.css, así el modo oscuro funciona solo.
+   ================================================================= */
+
+/* ===================== TARJETA DE UN PEDIDO ===================== */
+.grilla-pedidos {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(330px, 100%), 1fr));
+  gap: 16px;
+  align-items: start;
+}
+
+.pedido {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 18px 20px;
+  border-radius: 20px;
+  background: var(--superficie);
+  border: 1px solid var(--linea);
+  box-shadow: var(--sombra-1);
+  animation: aparecer 0.35s ease both;
+}
+
+.pedido-cabecera {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+.pedido-cabecera strong { font-family: var(--fuente-titulos); font-size: 1.3rem; font-weight: 600; }
+.pedido-fecha { display: block; font-size: 0.78rem; color: var(--texto-suave); }
+
+/* Pastilla del estado: cada estado con su color (claro y oscuro) */
+.estado-pedido {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 11px 5px 9px;
+  border-radius: 999px;
+  font-size: 0.74rem;
+  font-weight: 800;
+  white-space: nowrap;
+  color: var(--texto-suave);
+  background: var(--linea);
+}
+.estado-pedido::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: currentColor; }
+.estado-confirmado { color: #1d4ed8; background: rgba(59, 130, 246, 0.13); }
+.estado-enviado    { color: #b45309; background: rgba(245, 158, 11, 0.15); }
+.estado-entregado  { color: #15803d; background: rgba(34, 197, 94, 0.14); }
+.estado-cancelado  { color: #b91c1c; background: rgba(239, 68, 68, 0.12); }
+:root[data-tema="oscuro"] .estado-confirmado { color: #93c5fd; }
+:root[data-tema="oscuro"] .estado-enviado    { color: #fcd34d; }
+:root[data-tema="oscuro"] .estado-entregado  { color: #86efac; }
+:root[data-tema="oscuro"] .estado-cancelado  { color: #fca5a5; }
+
+/* Avance Confirmado → Enviado → Entregado */
+.pedido-progreso {
+  display: flex;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.pedido-progreso li {
+  flex: 1;
+  padding-top: 8px;
+  border-top: 4px solid var(--linea);
+  border-radius: 2px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-align: center;
+  color: var(--texto-suave);
+}
+.pedido-progreso li.hecho { border-top-color: var(--acento); color: var(--acento-fuerte); }
+.pedido-progreso li.hecho:last-child { border-top-color: var(--exito); color: var(--exito); }
+
+/* "2 × Collar ........ $138.000" */
+.pedido-items { margin: 0; padding: 0; list-style: none; font-size: 0.88rem; }
+.pedido-items li {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 7px 0;
+  border-bottom: 1px dashed var(--linea);
+}
+.pedido-items li span:last-child { font-weight: 700; white-space: nowrap; }
+
+.pedido-entrega,
+.pedido-nota { font-size: 0.82rem; color: var(--texto-suave); overflow-wrap: anywhere; }
+.pedido-nota { font-style: italic; }
+
+.pedido-total {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  padding-top: 10px;
+  border-top: 1px solid var(--linea);
+  font-size: 0.9rem;
+  color: var(--texto-suave);
+}
+.pedido-total strong { font-size: 1.2rem; font-weight: 800; color: var(--texto); }
+
+/* "Cargando…" / "No hay pedidos" */
+.pedidos-vacio {
+  grid-column: 1 / -1;
+  padding: 36px 8px;
+  text-align: center;
+  color: var(--texto-suave);
+}
+.pedidos-vacio a { color: var(--acento-fuerte); font-weight: 700; }
+
+
+/* ===================== SOLO ADMIN ===================== */
+
+/* Tarjeta blanca de cada sección del panel */
+.seccion-admin {
+  padding: 24px;
+  border-radius: 22px;
+  background: var(--superficie);
+  border: 1px solid var(--linea);
+  box-shadow: var(--sombra-1);
+  animation: aparecer 0.35s ease both;
+}
+
+/* Título + filtros en una fila (en celular se acomodan solos) */
+.barra-seccion {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 14px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--linea);
+}
+.barra-seccion h2 { flex: 1; margin: 0; font-size: 1.5rem; }
+.barra-seccion .filtro {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--texto-suave);
+}
+.barra-seccion select { width: auto; }
+.barra-seccion button.secundario { padding: 10px 16px; }
+#buscar-cliente { width: min(340px, 100%); border-radius: 999px; }
+
+.resumen-seccion { margin: 0 0 10px; font-size: 0.85rem; color: var(--texto-suave); }
+.mensaje-seccion {
+  margin: 0 0 14px;
+  padding: 10px 14px;
+  border-radius: var(--radio-s);
+  background: var(--acento-suave);
+  color: var(--acento-fuerte);
+  font-weight: 600;
+  font-size: 0.88rem;
+}
+.mensaje-seccion:empty { display: none; }
+
+.pedido-cliente { margin: 0; font-weight: 700; font-size: 0.9rem; }
+.pedido-cliente span { display: block; font-weight: 400; font-size: 0.78rem; color: var(--texto-suave); overflow-wrap: anywhere; }
+
+/* Selector de estado + botón Guardar */
+.pedido-acciones { display: flex; flex-wrap: wrap; gap: 8px; }
+.pedido-acciones select { flex: 1; min-width: 140px; width: auto; }
+.pedido-acciones button { padding: 10px 16px; }
+
+.pedido-historial { font-size: 0.8rem; }
+.pedido-historial summary { cursor: pointer; font-weight: 700; color: var(--texto-suave); }
+.pedido-historial ol { margin: 8px 0 0; padding: 0; list-style: none; }
+.pedido-historial li {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 4px 0;
+  border-bottom: 1px dashed var(--linea);
+}
+.pedido-historial time { color: var(--texto-suave); white-space: nowrap; }
+
+/* Tablas de Clientes y Administradores (usan .tabla-productos de admin.css) */
+.contenedor-tabla {
+  max-height: 70vh;
+  overflow: auto;
+  border: 1px solid var(--linea);
+  border-radius: 16px;
+}
+.correo-cliente { display: block; font-size: 0.78rem; color: var(--texto-suave); }
+.tabla-clientes td.numero { text-align: center; font-weight: 700; }
+
+/* Formularios en una fila (nuevo admin, código de invitación) */
+.form-nuevo-admin {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 12px;
+  margin: 8px 0;
+}
+.form-nuevo-admin label {
+  flex: 1 1 200px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--texto-suave);
+}
+.form-nuevo-admin button:disabled { cursor: wait; }

@@ -1,0 +1,58 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 600" role="img" aria-label="Cinderella Dream Kit: zapatilla de cristal sobre un cojín, tiara y reloj de medianoche">
+  <defs>
+    <radialGradient id="fondo" cx="50%" cy="35%" r="78%">
+      <stop offset="0" stop-color="#f1f7ff"/>
+      <stop offset="1" stop-color="#b3cdf2"/>
+    </radialGradient>
+    <linearGradient id="cristal" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#ffffff" stop-opacity=".95"/>
+      <stop offset=".5" stop-color="#9ccaf3" stop-opacity=".75"/>
+      <stop offset="1" stop-color="#e0f0ff" stop-opacity=".95"/>
+    </linearGradient>
+    <linearGradient id="cojin" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#7d8ee0"/>
+      <stop offset="1" stop-color="#4f5cb8"/>
+    </linearGradient>
+    <path id="destello" d="M0-1C.12-.12.12-.12 1 0C.12.12.12.12 0 1C-.12.12-.12.12-1 0C-.12-.12-.12-.12 0-1Z"/>
+  </defs>
+
+  <rect width="600" height="600" fill="url(#fondo)"/>
+  <ellipse cx="300" cy="530" rx="210" ry="22" fill="#2d3a7a" opacity=".16"/>
+
+  <!-- Cojín con borlas -->
+  <path d="M110 452C110 428 130 418 160 418H440C470 418 490 428 490 452V492C490 512 470 522 440 522H160C130 522 110 512 110 492Z" fill="url(#cojin)"/>
+  <path d="M130 440H470" stroke="#a9b6f2" stroke-width="3" stroke-dasharray="2 10" stroke-linecap="round"/>
+  <circle cx="110" cy="440" r="11" fill="#e8c37a"/>
+  <circle cx="490" cy="440" r="11" fill="#e8c37a"/>
+  <path d="M104 448l-8 34M116 448l6 34" stroke="#e8c37a" stroke-width="4" stroke-linecap="round"/>
+  <path d="M484 448l-6 34M496 448l8 34" stroke="#e8c37a" stroke-width="4" stroke-linecap="round"/>
+
+  <!-- Zapatilla de cristal (vista de lado: punta a la izquierda) -->
+  <path d="M398 404L406 446H420L426 396" fill="url(#cristal)" stroke="#fff" stroke-width="4" stroke-linejoin="round"/>
+  <path d="M150 392C158 360 220 350 282 360C326 366 356 340 380 306C396 284 430 288 432 318L430 392C430 404 420 412 404 412H172C152 412 144 404 150 392Z" fill="url(#cristal)" stroke="#fff" stroke-width="4" stroke-linejoin="round"/>
+  <path d="M188 378C230 366 280 372 316 378" fill="none" stroke="#fff" stroke-width="6" stroke-linecap="round" opacity=".9"/>
+  <path d="M396 312C404 300 418 302 420 318" fill="none" stroke="#fff" stroke-width="5" stroke-linecap="round" opacity=".9"/>
+  <ellipse cx="230" cy="372" rx="16" ry="5" fill="#fff" opacity=".8"/>
+
+  <!-- Tiara -->
+  <path d="M96 168L118 120L140 152L162 104L184 152L206 120L228 168Z" fill="#f2d08a" stroke="#c99a45" stroke-width="4" stroke-linejoin="round"/>
+  <circle cx="162" cy="104" r="9" fill="#9ccaf3" stroke="#fff" stroke-width="3"/>
+  <circle cx="118" cy="122" r="6" fill="#fff"/>
+  <circle cx="206" cy="122" r="6" fill="#fff"/>
+
+  <!-- Reloj a punto de dar la medianoche -->
+  <circle cx="470" cy="150" r="62" fill="#fffaf0" stroke="#c99a45" stroke-width="8"/>
+  <g stroke="#7d6a9e" stroke-width="4" stroke-linecap="round">
+    <path d="M470 98v10M470 192v10M418 150h10M512 150h10"/>
+  </g>
+  <path d="M470 150V108" stroke="#2d2a55" stroke-width="5" stroke-linecap="round"/>
+  <path d="M470 150L463 118" stroke="#2d2a55" stroke-width="7" stroke-linecap="round"/>
+  <circle cx="470" cy="150" r="6" fill="#c99a45"/>
+
+  <!-- Destellos -->
+  <use href="#destello" fill="#fff" transform="translate(300 270) scale(22)"/>
+  <use href="#destello" fill="#c99a45" transform="translate(84 290) scale(13)"/>
+  <use href="#destello" fill="#fff" transform="translate(520 300) scale(15)"/>
+  <use href="#destello" fill="#7d8ee0" transform="translate(330 90) scale(11)"/>
+  <use href="#destello" fill="#c99a45" transform="translate(260 200) scale(8)"/>
+</svg>
