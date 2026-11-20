@@ -3,13 +3,14 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Mi cuenta</title>
+    <title>Mi cuenta · Everwish</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-    <!-- Misma tipografía que admin.html -->
+    <!-- Tipografías de Everwish (las mismas en todas las páginas):
+         Cormorant Garamond para títulos y DM Sans para el texto -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500;1,600&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700&display=swap" rel="stylesheet" />
 
     <!-- Pone el tema ANTES de dibujar la página (así no "parpadea" en claro) -->
     <script>
@@ -19,7 +20,9 @@
         (matchMedia("(prefers-color-scheme: dark)").matches ? "oscuro" : "claro");
     </script>
 
-    <!-- Estilos de esta página, en su propio archivo -->
+    <!-- 1° tema de Everwish (colores, fuentes, cielo estrellado)
+         2° estilos de esta página -->
+    <link rel="stylesheet" href="css/everwish.css" />
     <link rel="stylesheet" href="css/cuenta.css" />
     <!-- Tarjetas de pedido (compartidas con admin.html) -->
     <link rel="stylesheet" href="css/pedidos.css" />
@@ -33,9 +36,11 @@
     <button type="button" id="btn-logout-superior" class="btn-cerrar-sesion" hidden>⎋ Cerrar sesión</button>
 
     <header class="encabezado">
-      <span class="etiqueta-superior">Conectado a Supabase</span>
+      <!-- La marca lleva de vuelta al inicio de la tienda -->
+      <a href="index.html" class="marca">Everwish</a>
+      <span class="etiqueta-superior">Tu rincón de deseos</span>
       <h1>Mi <span class="texto-degradado">cuenta</span></h1>
-      <p>Crea tu cuenta o inicia sesión para continuar.</p>
+      <p>Crea tu cuenta o inicia sesión para seguir tus kits y tus pedidos.</p>
     </header>
 
     <section id="panel-cuenta">
@@ -46,7 +51,7 @@
         <form id="form-registro">
           <h3>Registrarme</h3>
           <label for="registro-nombre">Nombre</label>
-          <input id="registro-nombre" type="text" placeholder="Ej: Sofía" required />
+          <input id="registro-nombre" type="text" placeholder="Ej: Aurora" required />
 
           <label for="registro-correo">Correo</label>
           <input id="registro-correo" type="email" placeholder="tucorreo@gmail.com" required />
@@ -89,7 +94,7 @@
           <button type="button" class="opcion-menu" id="btn-editar-perfil">✎ Editar perfil</button>
           <button type="button" class="opcion-menu" id="btn-mis-pedidos">📦 Mis pedidos</button>
           <button type="button" class="opcion-menu" id="btn-ajustes">⚙ Ajustes</button>
-          <a class="opcion-menu" href="galeria.html">🛍 Productos</a>
+          <a class="opcion-menu" href="galeria.html">✦ Ir a la tienda</a>
         </nav>
       </article>
 

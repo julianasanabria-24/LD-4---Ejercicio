@@ -1,0 +1,88 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 720" role="img" aria-label="Ventana en arco con un castillo bajo la luna, farolillos en el cielo y una caja de regalo">
+  <defs>
+    <linearGradient id="cielo" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#1b1450"/>
+      <stop offset=".55" stop-color="#5a3a9c"/>
+      <stop offset="1" stop-color="#e9a56a"/>
+    </linearGradient>
+    <linearGradient id="oro" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#f6dc9c"/>
+      <stop offset="1" stop-color="#c3913a"/>
+    </linearGradient>
+    <linearGradient id="caja" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#8b6ff0"/>
+      <stop offset="1" stop-color="#5a3fc0"/>
+    </linearGradient>
+    <radialGradient id="halo">
+      <stop offset="0" stop-color="#ffd77a" stop-opacity=".55"/>
+      <stop offset="1" stop-color="#ffd77a" stop-opacity="0"/>
+    </radialGradient>
+    <!-- Forma de la ventana: rectángulo con la parte de arriba en arco -->
+    <clipPath id="arco">
+      <path d="M60 700V320A260 260 0 0 1 580 320V700Z"/>
+    </clipPath>
+    <g id="farol">
+      <circle r="44" fill="url(#halo)"/>
+      <rect x="-13" y="-30" width="26" height="7" rx="2" fill="#7a3f17"/>
+      <rect x="-17" y="-24" width="34" height="46" rx="9" fill="#ffaf45"/>
+      <rect x="-9" y="-16" width="18" height="30" rx="5" fill="#fff1b8" opacity=".85"/>
+    </g>
+    <path id="destello" d="M0-1C.12-.12.12-.12 1 0C.12.12.12.12 0 1C-.12.12-.12.12-1 0C-.12-.12-.12-.12 0-1Z"/>
+  </defs>
+
+  <!-- Todo lo de adentro de la ventana -->
+  <g clip-path="url(#arco)">
+    <rect width="640" height="720" fill="url(#cielo)"/>
+    <g fill="#fff">
+      <circle cx="150" cy="200" r="2"/><circle cx="230" cy="130" r="1.6"/><circle cx="420" cy="170" r="2.2"/>
+      <circle cx="500" cy="260" r="1.6"/><circle cx="330" cy="100" r="1.8"/><circle cx="120" cy="320" r="1.4"/>
+      <circle cx="540" cy="350" r="1.8"/><circle cx="380" cy="240" r="1.4"/>
+    </g>
+    <!-- Luna -->
+    <circle cx="440" cy="200" r="58" fill="#fff5d6"/>
+    <circle cx="420" cy="186" r="10" fill="#f1e2b4" opacity=".7"/>
+    <circle cx="458" cy="222" r="7" fill="#f1e2b4" opacity=".7"/>
+    <!-- Castillo sobre la colina -->
+    <g fill="#2a1d5e">
+      <path d="M60 560C180 500 300 520 380 500C470 478 540 500 580 490V700H60Z"/>
+      <rect x="240" y="400" width="150" height="120"/>
+      <rect x="220" y="350" width="40" height="170"/>
+      <rect x="370" y="350" width="40" height="170"/>
+      <rect x="296" y="320" width="38" height="110"/>
+      <path d="M216 352L240 296L264 352Z"/>
+      <path d="M366 352L390 296L414 352Z"/>
+      <path d="M292 322L315 250L338 322Z"/>
+    </g>
+    <g fill="#ffd77a">
+      <rect x="306" y="360" width="16" height="22" rx="8"/>
+      <rect x="232" y="390" width="12" height="16" rx="6"/>
+      <rect x="384" y="390" width="12" height="16" rx="6"/>
+      <path d="M300 520V478A15 15 0 0 1 330 478V520Z"/>
+    </g>
+    <!-- Farolillos -->
+    <use href="#farol" transform="translate(140 260) scale(.9)"/>
+    <use href="#farol" transform="translate(520 420) scale(.75)"/>
+    <use href="#farol" transform="translate(190 430) scale(.6)"/>
+    <use href="#farol" transform="translate(470 330) scale(.5)"/>
+  </g>
+  <!-- Marco dorado de la ventana -->
+  <path d="M60 700V320A260 260 0 0 1 580 320V700" fill="none" stroke="url(#oro)" stroke-width="6"/>
+  <path d="M76 700V322A244 244 0 0 1 564 322V700" fill="none" stroke="url(#oro)" stroke-width="1.5" opacity=".7"/>
+
+  <!-- Caja de regalo delante de la ventana -->
+  <ellipse cx="320" cy="704" rx="150" ry="14" fill="#1b1450" opacity=".25"/>
+  <rect x="200" y="590" width="240" height="114" rx="12" fill="url(#caja)"/>
+  <rect x="302" y="590" width="36" height="114" fill="url(#oro)"/>
+  <rect x="186" y="560" width="268" height="44" rx="10" fill="#7c5ee6"/>
+  <rect x="302" y="560" width="36" height="44" fill="url(#oro)"/>
+  <path d="M320 562C280 512 228 522 240 552C248 572 292 570 320 562Z" fill="url(#oro)"/>
+  <path d="M320 562C360 512 412 522 400 552C392 572 348 570 320 562Z" fill="url(#oro)"/>
+  <circle cx="320" cy="562" r="14" fill="#c3913a"/>
+
+  <!-- Destellos fuera de la ventana -->
+  <use href="#destello" fill="#e8c37a" transform="translate(40 200) scale(18)"/>
+  <use href="#destello" fill="#8b6ff0" transform="translate(608 140) scale(14)"/>
+  <use href="#destello" fill="#e8c37a" transform="translate(610 560) scale(12)"/>
+  <use href="#destello" fill="#8b6ff0" transform="translate(30 520) scale(10)"/>
+  <use href="#destello" fill="#fff" transform="translate(320 300) scale(10)"/>
+</svg>

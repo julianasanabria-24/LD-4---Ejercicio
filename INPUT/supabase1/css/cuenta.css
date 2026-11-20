@@ -1,94 +1,14 @@
 /* =================================================================
-   ESTILOS DE "MI CUENTA" (cliente.html)
-   Misma estética que admin.html: variables de color, vidrio,
-   degradados, manchas animadas y granulado.
+   EVERWISH · MI CUENTA (cliente.html)
+   Los colores, las tipografías y el cielo estrellado del fondo vienen
+   de css/everwish.css (se carga antes que este archivo).
    ================================================================= */
 
-/* Variables de color: si quieres cambiar un tono, cámbialo solo aquí */
-:root {
-  --rosa-fondo: #fff0f5;     /* fondo de la página */
-  --rosa-medio: #f06292;     /* detalles */
-  --rosa-fuerte: #d81b60;    /* textos destacados */
-  --texto: #4a1530;          /* texto principal */
-  --texto-suave: #8a5a70;    /* etiquetas y textos de ayuda */
-  --superficie: #fff;        /* fondo del campo activo */
-  --linea: #f3d9e3;          /* bordes finos */
-  --peligro: #c62828;
-  --anillo: rgba(240, 98, 146, 0.18);   /* halo del campo activo */
-  --grano-opacidad: 0.09;    /* intensidad del granulado */
-  --degradado: linear-gradient(135deg, #ff3d7f 0%, #ff7a59 55%, #ffb547 100%);
-  --vidrio: rgba(255, 255, 255, 0.62);       /* tarjetas semitransparentes */
-  --borde-vidrio: rgba(255, 255, 255, 0.85);
-  --campo-vidrio: rgba(255, 255, 255, 0.7);
-  --sombra-color: rgba(216, 27, 96, 0.35);
-  --mancha-1: rgba(255, 61, 127, 0.38);      /* manchas animadas del fondo */
-  --mancha-2: rgba(255, 181, 71, 0.32);
-  --mancha-3: rgba(167, 112, 255, 0.28);
-}
-
-/* MODO OSCURO: solo cambiamos las variables */
-:root[data-tema="oscuro"] {
-  --rosa-fondo: #1c1016;
-  --rosa-medio: #e0557f;
-  --rosa-fuerte: #ff8fb5;
-  --texto: #fbe6ee;
-  --texto-suave: #c9a3b4;
-  --superficie: #241319;
-  --linea: #3a2029;
-  --peligro: #ef5350;
-  --anillo: rgba(224, 85, 127, 0.25);
-  --grano-opacidad: 0.13;
-  --degradado: linear-gradient(135deg, #ff4d8d 0%, #c55cff 55%, #6b7bff 100%);
-  --vidrio: rgba(30, 16, 24, 0.55);
-  --borde-vidrio: rgba(255, 255, 255, 0.08);
-  --campo-vidrio: rgba(255, 255, 255, 0.04);
-  --sombra-color: rgba(0, 0, 0, 0.6);
-  --mancha-1: rgba(255, 77, 141, 0.30);
-  --mancha-2: rgba(107, 123, 255, 0.26);
-  --mancha-3: rgba(197, 92, 255, 0.22);
-  color-scheme: dark;
-}
-
 body {
-  font-family: "Plus Jakarta Sans", system-ui, sans-serif;
-  color: var(--texto);
-  background: var(--rosa-fondo);
   padding: 24px 16px;
   min-height: 100vh;
   margin: 0;
   box-sizing: border-box;
-  transition: background 0.2s, color 0.2s;
-}
-
-/* GRANULADO: capa de "ruido" encima del fondo (SVG dentro del CSS) */
-body::before {
-  content: "";
-  position: fixed;
-  inset: 0;
-  z-index: -1;
-  pointer-events: none;
-  opacity: var(--grano-opacidad);
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-}
-
-/* MANCHAS DE COLOR ANIMADAS detrás de todo */
-body::after {
-  content: "";
-  position: fixed;
-  inset: -20%;
-  z-index: -2;
-  pointer-events: none;
-  background:
-    radial-gradient(circle at 15% 20%, var(--mancha-1), transparent 32%),
-    radial-gradient(circle at 85% 15%, var(--mancha-2), transparent 30%),
-    radial-gradient(circle at 70% 85%, var(--mancha-3), transparent 34%);
-  filter: blur(40px);
-  animation: flotar 22s ease-in-out infinite alternate;
-}
-
-@keyframes flotar {
-  from { transform: translate(0, 0) rotate(0deg); }
-  to   { transform: translate(4%, -3%) rotate(8deg); }
 }
 
 /* Botón de tema fijo arriba a la derecha */
@@ -130,36 +50,30 @@ body::after {
   color: var(--texto-suave);
 }
 
-/* El puntito verde que "late" = conectado a la base de datos */
+/* Destello dorado que "late" al lado de la etiqueta */
 .etiqueta-superior::before {
-  content: "";
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: #22c55e;
-  animation: latido 2s infinite;
+  content: "✦";
+  color: var(--oro);
+  animation: latido 2.4s ease-in-out infinite;
 }
 
 @keyframes latido {
-  0%   { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.6); }
-  70%  { box-shadow: 0 0 0 8px rgba(34, 197, 94, 0); }
-  100% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0); }
+  0%, 100% { text-shadow: 0 0 0 transparent; transform: scale(1); }
+  50%      { text-shadow: 0 0 10px var(--oro-brillo); transform: scale(1.2); }
+}
+
+/* Marca "✦ Everwish" arriba del encabezado: lleva de vuelta al inicio */
+.encabezado .marca {
+  display: flex;
+  width: fit-content;
+  margin: 0 auto 14px;   /* en su propia línea, centrada */
 }
 
 .encabezado h1 {
   margin: 12px 0 6px;
-  font-size: clamp(2rem, 4vw, 3rem);
-  font-weight: 800;
-  letter-spacing: -0.03em;
-  line-height: 1.05;
-}
-
-/* Texto con degradado: el fondo se "recorta" a las letras */
-.texto-degradado {
-  background: var(--degradado);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
+  font-size: clamp(2.6rem, 5vw, 3.8rem);
+  font-weight: 600;
+  line-height: 1.02;
 }
 
 .encabezado p { margin: 0; color: var(--texto-suave); }
@@ -185,7 +99,7 @@ body::after {
   border: 1px solid var(--borde-vidrio);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
-  color: var(--rosa-fuerte);
+  color: var(--acento-fuerte);
   font-weight: 600;
 }
 
@@ -202,10 +116,6 @@ body::after {
 @media (max-width: 760px) {
   .tarjetas { grid-template-columns: minmax(0, 1fr); }
 }
-
-/* hidden deja de funcionar si otra regla le pone display (grid, flex)
-   al mismo elemento; esta regla le devuelve la prioridad */
-[hidden] { display: none !important; }
 
 /* MI PERFIL: una sola tarjeta, centrada y no tan ancha */
 #resumen-perfil {
@@ -288,7 +198,7 @@ body::after {
   border: 1px solid var(--borde-vidrio);
   box-shadow: none;
 }
-.btn-cerrar-sidebar:hover { color: var(--rosa-fuerte); }
+.btn-cerrar-sidebar:hover { color: var(--acento-fuerte); }
 
 /* SIDEBAR DE AJUSTES: título pequeño encima de cada grupo */
 .titulo-ajuste {
@@ -386,22 +296,20 @@ body::after {
   margin: 0 0 8px;
   padding-bottom: 16px;
   border-bottom: 1px solid var(--linea);
-  font-size: 1.4rem;
-  font-weight: 800;
-  letter-spacing: -0.01em;
+  font-size: 1.75rem;
+  font-weight: 600;
 }
+/* Destello dorado ✦ al lado de cada título */
 #form-registro h3::before,
 #form-login h3::before,
 #resumen-perfil h3::before,
 #form-perfil h3::before,
 #sidebar-ajustes h3::before,
 #sidebar-pedidos h3::before {
-  content: "";
-  width: 12px;
-  height: 12px;
-  border-radius: 4px;
-  background: var(--degradado);
-  box-shadow: 0 0 16px var(--rosa-medio);
+  content: "✦";
+  font-size: 0.75em;
+  color: var(--oro);
+  text-shadow: 0 0 12px var(--oro-brillo);
   flex-shrink: 0;
 }
 
@@ -428,8 +336,8 @@ body::after {
 #panel-cuenta input:focus {
   outline: none;
   background: var(--superficie);
-  border-color: var(--rosa-medio);
-  box-shadow: 0 0 0 4px var(--anillo), 0 8px 24px -12px var(--rosa-medio);
+  border-color: var(--acento);
+  box-shadow: 0 0 0 4px var(--anillo), 0 8px 24px -12px var(--acento);
 }
 
 /* BOTONES con degradado, sombra de color y se "levantan" al pasar el mouse */
@@ -442,13 +350,13 @@ button {
   font: inherit;
   font-weight: 700;
   cursor: pointer;
-  box-shadow: 0 10px 24px -12px var(--rosa-medio);
+  box-shadow: 0 10px 24px -12px var(--acento);
   transition: transform 0.15s, box-shadow 0.15s, filter 0.15s, background 0.15s;
 }
 button:hover {
   filter: brightness(1.08);
   transform: translateY(-2px);
-  box-shadow: 0 16px 30px -12px var(--rosa-medio);
+  box-shadow: 0 16px 30px -12px var(--acento);
 }
 button:active { transform: translateY(0) scale(0.98); }
 
@@ -491,8 +399,8 @@ button:active { transform: translateY(0) scale(0.98); }
 }
 .opcion-menu:hover {
   transform: translateX(4px);   /* se corre un poquito a la derecha */
-  color: var(--rosa-fuerte);
-  border-color: var(--rosa-medio);
+  color: var(--acento-fuerte);
+  border-color: var(--acento);
   filter: none;
   box-shadow: none;
 }
@@ -500,7 +408,7 @@ button:active { transform: translateY(0) scale(0.98); }
 .opcion-menu:focus-visible {
   outline: none;
   box-shadow: 0 0 0 4px var(--anillo);
-  border-color: var(--rosa-medio);
+  border-color: var(--acento);
 }
 
 /* CERRAR SESIÓN: botón "de contorno", sin degradado */
@@ -587,13 +495,4 @@ body.con-sesion { padding-left: 324px; }
   body.con-sesion { padding-left: 16px; }
 }
 
-/* Aparecer: sube un poco mientras se hace visible */
-@keyframes aparecer {
-  from { opacity: 0; transform: translateY(12px); }
-  to   { opacity: 1; transform: none; }
-}
-
-/* Si la persona tiene activado "reducir movimiento", apagamos animaciones */
-@media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after { animation: none !important; transition: none !important; }
-}
+/* (La animación "aparecer" y "reducir movimiento" están en everwish.css) */

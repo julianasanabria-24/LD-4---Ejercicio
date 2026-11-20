@@ -1,0 +1,56 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 600" role="img" aria-label="Ocean Dreams Kit: concha, collar de perlas y estrella de mar bajo el agua">
+  <defs>
+    <linearGradient id="fondo" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#86e0dc"/>
+      <stop offset=".55" stop-color="#3f8fc0"/>
+      <stop offset="1" stop-color="#26508f"/>
+    </linearGradient>
+    <linearGradient id="concha" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#ffe0d8"/>
+      <stop offset="1" stop-color="#f08c8a"/>
+    </linearGradient>
+    <radialGradient id="perla" cx="35%" cy="30%" r="70%">
+      <stop offset="0" stop-color="#ffffff"/>
+      <stop offset="1" stop-color="#cfc6e6"/>
+    </radialGradient>
+    <path id="destello" d="M0-1C.12-.12.12-.12 1 0C.12.12.12.12 0 1C-.12.12-.12.12-1 0C-.12-.12-.12-.12 0-1Z"/>
+  </defs>
+
+  <rect width="600" height="600" fill="url(#fondo)"/>
+  <!-- Rayos de luz desde la superficie -->
+  <path d="M120 0L210 0L150 600L40 600Z" fill="#fff" opacity=".08"/>
+  <path d="M330 0L400 0L420 600L320 600Z" fill="#fff" opacity=".07"/>
+  <!-- Algas -->
+  <path d="M70 600C40 540 110 500 70 440C40 400 90 370 80 330" fill="none" stroke="#2f9a7a" stroke-width="16" stroke-linecap="round"/>
+  <path d="M530 600C560 550 500 520 535 470" fill="none" stroke="#2f9a7a" stroke-width="14" stroke-linecap="round"/>
+  <!-- Burbujas -->
+  <g fill="none" stroke="#fff" stroke-width="3" opacity=".7">
+    <circle cx="140" cy="140" r="14"/><circle cx="168" cy="96" r="9"/><circle cx="150" cy="60" r="6"/>
+    <circle cx="430" cy="300" r="10"/><circle cx="452" cy="262" r="6"/>
+  </g>
+
+  <!-- Concha (abanico) -->
+  <path d="M300 420L180 300A170 170 0 0 1 420 300Z" fill="url(#concha)"/>
+  <g stroke="#e07673" stroke-width="4" stroke-linecap="round">
+    <path d="M300 420L215 273M300 420L256 256M300 420V250M300 420L344 256M300 420L385 273"/>
+  </g>
+  <path d="M268 418H332L320 446H280Z" fill="#f08c8a"/>
+
+  <!-- Collar de perlas -->
+  <g fill="url(#perla)">
+    <circle cx="150" cy="470" r="11"/><circle cx="175" cy="485" r="11"/><circle cx="200" cy="498" r="11"/>
+    <circle cx="225" cy="507" r="11"/><circle cx="250" cy="514" r="11"/><circle cx="275" cy="519" r="11"/>
+    <circle cx="300" cy="520" r="14"/><circle cx="325" cy="519" r="11"/><circle cx="350" cy="514" r="11"/>
+    <circle cx="375" cy="507" r="11"/><circle cx="400" cy="498" r="11"/><circle cx="425" cy="485" r="11"/>
+    <circle cx="450" cy="470" r="11"/>
+  </g>
+
+  <!-- Estrella de mar -->
+  <path d="M470 100L482.9 132.2L517.6 134.5L490.9 156.8L499.4 190.5L470 172L440.6 190.5L449.1 156.8L422.4 134.5L457.1 132.2Z" fill="#f7a54c" stroke="#f7a54c" stroke-width="12" stroke-linejoin="round"/>
+  <g fill="#ffd9a8"><circle cx="470" cy="128" r="3"/><circle cx="490" cy="148" r="3"/><circle cx="452" cy="150" r="3"/></g>
+
+  <!-- Destellos -->
+  <use href="#destello" fill="#fff" transform="translate(300 200) scale(16)"/>
+  <use href="#destello" fill="#ffe0d8" transform="translate(110 380) scale(12)"/>
+  <use href="#destello" fill="#fff" transform="translate(520 400) scale(10)"/>
+</svg>

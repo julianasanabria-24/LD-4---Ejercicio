@@ -1,18 +1,21 @@
 <!DOCTYPE html>
-<html>
+<html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>Panel de productos</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Panel · Everwish</title>
   <!-- CDN: trae la librería de Supabase ANTES que nuestros propios
        scripts — sin esta línea, "supabase.createClient" no existiría
        todavía cuando supabaseClient.js intente usarlo -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-  <!-- Tipografía moderna de Google Fonts (si no carga, se usa la del sistema) -->
+  <!-- Tipografías de Everwish: Cormorant Garamond (títulos) y DM Sans (texto) -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
-  <!-- Tarjetas de pedido, pestañas y "Mis clientes" -->
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500;1,600&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700&display=swap" rel="stylesheet">
+  <!-- 1° tema de Everwish (colores, fuentes, cielo estrellado)
+       2° tarjetas de pedido, pestañas y "Mis clientes" -->
+  <link rel="stylesheet" href="css/everwish.css">
   <link rel="stylesheet" href="css/pedidos.css">
 
   <!-- Pone el tema ANTES de dibujar la página (así no "parpadea" en claro).
@@ -25,65 +28,8 @@
   </script>
 
   <style>
-    /* Variables de color: si quieres cambiar un tono, cámbialo solo aquí */
-    :root {
-      --rosa-fondo: #fff0f5;     /* fondo de la página */
-      --rosa-claro: #ffe4ee;     /* fondo de los campos */
-      --rosa-borde: #f8bbd0;     /* bordes */
-      --rosa-medio: #f06292;     /* botón y detalles */
-      --rosa-fuerte: #d81b60;    /* hover y títulos */
-      --texto: #4a1530;          /* texto principal */
-      --superficie: #fff;        /* fondo de tarjetas y formulario */
-      --boton-hover: #d81b60;    /* fondo del botón al pasar el mouse */
-      --sombra: rgba(216, 27, 96, 0.12);
-      --peligro: #c62828;        /* botón Eliminar */
-      --texto-suave: #8a5a70;    /* etiquetas y textos de ayuda */
-      --linea: #f3d9e3;          /* bordes finos del formulario */
-      --campo: #fffafc;          /* fondo de los campos */
-      --anillo: rgba(240, 98, 146, 0.18);   /* halo del campo activo */
-      --brillo-1: rgba(240, 98, 146, 0.16); /* manchas suaves del fondo */
-      --brillo-2: rgba(255, 183, 77, 0.12);
-      --grano-opacidad: 0.09;    /* intensidad del granulado */
-      --degradado: linear-gradient(135deg, #ff3d7f 0%, #ff7a59 55%, #ffb547 100%);
-      --vidrio: rgba(255, 255, 255, 0.62);       /* tarjetas semitransparentes */
-      --borde-vidrio: rgba(255, 255, 255, 0.85);
-      --campo-vidrio: rgba(255, 255, 255, 0.7);
-      --sombra-color: rgba(216, 27, 96, 0.35);
-      --mancha-1: rgba(255, 61, 127, 0.38);      /* manchas animadas del fondo */
-      --mancha-2: rgba(255, 181, 71, 0.32);
-      --mancha-3: rgba(167, 112, 255, 0.28);
-    }
-
-    /* MODO OSCURO: solo cambiamos las variables, el resto del CSS
-       sigue igual porque todo usa var(--...) */
-    :root[data-tema="oscuro"] {
-      --rosa-fondo: #1c1016;
-      --rosa-claro: #2a1720;
-      --rosa-borde: #5c2c42;
-      --rosa-medio: #e0557f;
-      --rosa-fuerte: #ff8fb5;
-      --texto: #fbe6ee;
-      --superficie: #241319;
-      --boton-hover: #c2185b;
-      --sombra: rgba(0, 0, 0, 0.4);
-      --peligro: #ef5350;
-      --texto-suave: #c9a3b4;
-      --linea: #3a2029;
-      --campo: #1f1117;
-      --anillo: rgba(224, 85, 127, 0.25);
-      --brillo-1: rgba(224, 85, 127, 0.14);
-      --brillo-2: rgba(120, 80, 200, 0.10);
-      --grano-opacidad: 0.13;
-      --degradado: linear-gradient(135deg, #ff4d8d 0%, #c55cff 55%, #6b7bff 100%);
-      --vidrio: rgba(30, 16, 24, 0.55);
-      --borde-vidrio: rgba(255, 255, 255, 0.08);
-      --campo-vidrio: rgba(255, 255, 255, 0.04);
-      --sombra-color: rgba(0, 0, 0, 0.6);
-      --mancha-1: rgba(255, 77, 141, 0.30);
-      --mancha-2: rgba(107, 123, 255, 0.26);
-      --mancha-3: rgba(197, 92, 255, 0.22);
-      color-scheme: dark;        /* scrollbars y controles nativos en oscuro */
-    }
+    /* Los colores (claro y oscuro), las fuentes y el cielo estrellado
+       vienen de css/everwish.css, que se carga antes de este <style>. */
 
     /* Botón de tema fijo arriba a la derecha */
     #btn-tema {
@@ -96,38 +42,14 @@
       color: var(--texto);
       border: 1px solid var(--linea);
     }
-    #btn-tema:hover { background: var(--rosa-claro); }
+    #btn-tema:hover { background: var(--campo-suave); }
 
+    /* Fuente, color y fondo estrellado del body: css/everwish.css */
     body {
-      transition: background 0.2s, color 0.2s;
-      font-family: system-ui, sans-serif;
-      color: var(--texto);
       padding: 24px 16px;
       min-height: 100vh;
       margin: 0;
       box-sizing: border-box;
-
-      /* Fondo: dos manchas de color muy suaves sobre el color base */
-      background:
-        radial-gradient(circle at 10% 0%, var(--brillo-1), transparent 45%),
-        radial-gradient(circle at 90% 100%, var(--brillo-2), transparent 45%),
-        var(--rosa-fondo);
-      background-attachment: fixed;
-    }
-
-    /* GRANULADO: una capa de "ruido" encima del fondo, como papel o
-       película fotográfica. El ruido es un SVG con el filtro feTurbulence
-       metido directo en el CSS (data:), así no hace falta ningún archivo.
-       z-index: -1 lo deja DETRÁS del contenido, y pointer-events: none
-       hace que los clics lo atraviesen. */
-    body::before {
-      content: "";
-      position: fixed;
-      inset: 0;
-      z-index: -1;
-      pointer-events: none;
-      opacity: var(--grano-opacidad);
-      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
     }
 
     /* La "tarjeta" del formulario: bordes finos, sombra amplia y suave */
@@ -157,7 +79,7 @@
       font-weight: 700;
       text-transform: uppercase;
       letter-spacing: 0.1em;
-      color: var(--rosa-medio);
+      color: var(--acento);
     }
 
     /* Cada label se vuelve una columna: texto arriba, campo abajo */
@@ -203,7 +125,7 @@
 
     /* Al pasar el mouse el borde se marca un poco */
     #form-producto input:hover,
-    #form-producto textarea:hover { border-color: var(--rosa-borde); }
+    #form-producto textarea:hover { border-color: var(--borde-suave); }
 
     #form-producto textarea {
       min-height: 80px;
@@ -266,7 +188,7 @@
     #form-producto input:focus,
     #form-producto textarea:focus {
       outline: none;
-      border-color: var(--rosa-medio);
+      border-color: var(--acento);
       background: var(--superficie);
       box-shadow: 0 0 0 4px var(--anillo);
     }
@@ -289,13 +211,13 @@
       width: 18px;
       height: 18px;
       margin: 0;
-      accent-color: var(--rosa-medio);  /* colorea la casilla marcada */
+      accent-color: var(--acento);  /* colorea la casilla marcada */
       cursor: pointer;
     }
 
     /* Botones (el del formulario y "Traer productos") */
     button {
-      background: var(--rosa-medio);
+      background: var(--acento);
       color: #fff;
       border: none;
       padding: 12px 20px;
@@ -353,7 +275,7 @@
       font-weight: 700;
       text-transform: uppercase;
       letter-spacing: 0.1em;
-      color: var(--rosa-medio);
+      color: var(--acento);
     }
 
     /* El JSON de #resultado es un texto larguísimo sin espacios:
@@ -368,7 +290,7 @@
       max-width: 480px;
       margin: 0 auto;
       text-align: center;
-      color: var(--rosa-fuerte);
+      color: var(--acento-fuerte);
       font-weight: 600;
     }
 
@@ -429,7 +351,7 @@
 
     #input-busqueda:focus {
       outline: none;
-      border-color: var(--rosa-medio);
+      border-color: var(--acento);
       box-shadow: 0 0 0 3px rgba(240, 98, 146, 0.25);
     }
 
@@ -464,8 +386,8 @@
       position: sticky;
       top: 0;
       z-index: 1;
-      background: var(--rosa-claro);
-      color: var(--rosa-fuerte);
+      background: var(--campo-suave);
+      color: var(--acento-fuerte);
       font-size: 0.8rem;
       text-transform: uppercase;
       letter-spacing: 0.03em;
@@ -475,7 +397,7 @@
     .tabla-productos tbody tr:last-child td { border-bottom: none; }
 
     /* La fila se ilumina al pasar el mouse, para saber en cuál estás */
-    .tabla-productos tbody tr:hover { background: var(--rosa-fondo); }
+    .tabla-productos tbody tr:hover { background: var(--fondo); }
 
     .miniatura {
       display: block;
@@ -487,13 +409,13 @@
     .miniatura.sin-foto {
       display: grid;
       place-items: center;
-      background: var(--rosa-claro);
-      color: var(--rosa-borde);
+      background: var(--campo-suave);
+      color: var(--borde-suave);
     }
 
     /* Nombre arriba y categorías abajo, dentro de la misma celda */
     .nombre-producto { display: block; font-weight: 600; }
-    .tabla-productos .categorias { font-size: 0.8rem; color: var(--rosa-medio); }
+    .tabla-productos .categorias { font-size: 0.8rem; color: var(--acento); }
 
     /* Etiqueta de estado tipo "píldora" */
     .estado {
@@ -504,7 +426,7 @@
       font-weight: 600;
       white-space: nowrap;
     }
-    .estado.disponible { background: var(--rosa-claro); color: var(--rosa-fuerte); }
+    .estado.disponible { background: var(--campo-suave); color: var(--acento-fuerte); }
     .estado.agotado    { border: 1px solid var(--peligro); color: var(--peligro); }
 
 
@@ -514,29 +436,6 @@
        Si algún día quieres volver al estilo simple, borra desde aquí
        hasta el final de la etiqueta style.
        ================================================================= */
-
-    body { font-family: "Plus Jakarta Sans", system-ui, sans-serif; background: var(--rosa-fondo); }
-
-    /* MANCHAS DE COLOR ANIMADAS detrás de todo (debajo del granulado).
-       Son 3 círculos difuminados que se mueven muy despacio. */
-    body::after {
-      content: "";
-      position: fixed;
-      inset: -20%;
-      z-index: -2;
-      pointer-events: none;
-      background:
-        radial-gradient(circle at 15% 20%, var(--mancha-1), transparent 32%),
-        radial-gradient(circle at 85% 15%, var(--mancha-2), transparent 30%),
-        radial-gradient(circle at 70% 85%, var(--mancha-3), transparent 34%);
-      filter: blur(40px);
-      animation: flotar 22s ease-in-out infinite alternate;
-    }
-
-    @keyframes flotar {
-      from { transform: translate(0, 0) rotate(0deg); }
-      to   { transform: translate(4%, -3%) rotate(8deg); }
-    }
 
     /* ENCABEZADO: título grande con texto en degradado + estadísticas */
     .encabezado {
@@ -677,7 +576,7 @@
       height: 12px;
       border-radius: 4px;
       background: var(--degradado);
-      box-shadow: 0 0 16px var(--rosa-medio);
+      box-shadow: 0 0 16px var(--acento);
       flex-shrink: 0;
     }
 
@@ -725,21 +624,21 @@
     #form-producto textarea:focus,
     #input-busqueda:focus {
       background: var(--superficie);
-      border-color: var(--rosa-medio);
-      box-shadow: 0 0 0 4px var(--anillo), 0 8px 24px -12px var(--rosa-medio);
+      border-color: var(--acento);
+      box-shadow: 0 0 0 4px var(--anillo), 0 8px 24px -12px var(--acento);
     }
 
     /* BOTONES con degradado, sombra de color y se "levantan" al pasar el mouse */
     button {
       background: var(--degradado);
-      box-shadow: 0 10px 24px -12px var(--rosa-medio);
+      box-shadow: 0 10px 24px -12px var(--acento);
       transition: transform 0.15s, box-shadow 0.15s, filter 0.15s, background 0.15s;
     }
     button:hover {
       background: var(--degradado);
       filter: brightness(1.08);
       transform: translateY(-2px);
-      box-shadow: 0 16px 30px -12px var(--rosa-medio);
+      box-shadow: 0 16px 30px -12px var(--acento);
     }
     button:active { transform: translateY(0) scale(0.98); }
 
@@ -778,7 +677,7 @@
     }
     .tabla-productos tbody tr:hover {
       background: var(--anillo);
-      box-shadow: inset 3px 0 0 var(--rosa-medio);
+      box-shadow: inset 3px 0 0 var(--acento);
     }
     .miniatura {
       width: 46px;
@@ -860,13 +759,13 @@
       flex-shrink: 0;
       object-fit: cover;
       border-radius: 12px;
-      border: 1px dashed var(--rosa-borde);
+      border: 1px dashed var(--borde-suave);
       background: var(--campo-vidrio);
       transition: border-color 0.2s, box-shadow 0.2s;
     }
     #vista-previa.cargada {
       border: 2px solid transparent;
-      box-shadow: 0 0 0 2px var(--rosa-medio), 0 8px 18px -8px var(--rosa-medio);
+      box-shadow: 0 0 0 2px var(--acento), 0 8px 18px -8px var(--acento);
     }
     #vista-previa.con-error { border: 1.5px solid var(--peligro); }
 
@@ -922,7 +821,7 @@
     }
 
     .tarjeta .nombre-producto { font-size: 0.95rem; line-height: 1.25; }
-    .tarjeta .categorias { font-size: 0.75rem; color: var(--rosa-medio); }
+    .tarjeta .categorias { font-size: 0.75rem; color: var(--acento); }
 
     /* Precio a la izquierda, stock a la derecha */
     .tarjeta-fila {
@@ -972,7 +871,7 @@
     /* En la pastilla de acceso el puntito es rosa y quieto: todavía no
        estamos "conectados" como admin */
     .etiqueta-superior.candado::before {
-      background: var(--rosa-medio);
+      background: var(--acento);
       animation: none;
     }
 
@@ -990,7 +889,7 @@
       border: 1px solid var(--borde-vidrio);
       backdrop-filter: blur(12px);
       -webkit-backdrop-filter: blur(12px);
-      color: var(--rosa-fuerte);
+      color: var(--acento-fuerte);
       font-weight: 600;
     }
 
@@ -1049,7 +948,7 @@
       height: 12px;
       border-radius: 4px;
       background: var(--degradado);
-      box-shadow: 0 0 16px var(--rosa-medio);
+      box-shadow: 0 0 16px var(--acento);
       flex-shrink: 0;
     }
 
@@ -1071,14 +970,14 @@
       font-size: 0.95rem;
       transition: border-color 0.15s, box-shadow 0.15s, background 0.15s;
     }
-    #zona-acceso-admin input:hover { border-color: var(--rosa-borde); }
+    #zona-acceso-admin input:hover { border-color: var(--borde-suave); }
 
     /* :focus = cuando el usuario está escribiendo en ese campo */
     #zona-acceso-admin input:focus {
       outline: none;
       background: var(--superficie);
-      border-color: var(--rosa-medio);
-      box-shadow: 0 0 0 4px var(--anillo), 0 8px 24px -12px var(--rosa-medio);
+      border-color: var(--acento);
+      box-shadow: 0 0 0 4px var(--anillo), 0 8px 24px -12px var(--acento);
     }
 
     /* Botón de cada formulario: ancho completo, esquinas menos redondas */
@@ -1119,13 +1018,13 @@
       padding: 12px 20px;
       font-size: 0.92rem;
       background: transparent;
-      color: var(--rosa-fuerte);
+      color: var(--acento-fuerte);
       border: 1px solid var(--linea);
       box-shadow: none;
     }
     #zona-acceso-admin button.secundario:hover {
       background: var(--campo-vidrio);
-      border-color: var(--rosa-medio);
+      border-color: var(--acento);
     }
 
     /* CERRAR SESIÓN: botón "de contorno" de vidrio, fijo arriba a la
@@ -1161,6 +1060,70 @@
     @media (prefers-reduced-motion: reduce) {
       *, *::before, *::after { animation: none !important; transition: none !important; }
     }
+
+    /* =================================================================
+       CAPA EVERWISH: va al final para ganarle a las reglas de arriba
+       (a igual fuerza gana la última). Cambia los títulos a la serif de
+       cuento y los adornos (cuadraditos, puntito verde) por destellos ✦.
+       ================================================================= */
+    .encabezado h1,
+    .encabezado-acceso h1 {
+      font-size: clamp(2.6rem, 5vw, 3.8rem);
+      font-weight: 600;
+      letter-spacing: 0;
+      line-height: 1.02;
+    }
+    .texto-degradado { font-style: italic; }
+
+    #form-producto h2,
+    #panel-productos h2,
+    #zona-acceso-admin h3 {
+      font-size: 1.75rem;
+      font-weight: 600;
+      letter-spacing: 0;
+    }
+    #form-producto h2::before,
+    #panel-productos h2::before,
+    #zona-acceso-admin h3::before {
+      content: "✦";
+      width: auto;
+      height: auto;
+      border-radius: 0;
+      background: none;
+      box-shadow: none;
+      font-size: 0.75em;
+      color: var(--oro);
+      text-shadow: 0 0 12px var(--oro-brillo);
+    }
+
+    /* Etiqueta de arriba: destello dorado que late (antes, puntito verde) */
+    .etiqueta-superior::before {
+      content: "✦";
+      width: auto;
+      height: auto;
+      border-radius: 0;
+      background: none;
+      box-shadow: none;
+      color: var(--oro);
+      animation: latido-destello 2.4s ease-in-out infinite;
+    }
+    .etiqueta-superior.candado::before { content: "🔒"; animation: none; }
+    @keyframes latido-destello {
+      0%, 100% { text-shadow: 0 0 0 transparent; transform: scale(1); }
+      50%      { text-shadow: 0 0 10px var(--oro-brillo); transform: scale(1.2); }
+    }
+
+    /* Marca "✦ Everwish" encima de los títulos: lleva al inicio */
+    .encabezado .marca,
+    .encabezado-acceso .marca {
+      display: flex;
+      width: fit-content;
+      margin-bottom: 10px;
+    }
+    .encabezado-acceso .marca { margin-inline: auto; }
+
+    /* Precios y estadísticas en dorado/violeta de la marca */
+    .estadistica strong { font-family: var(--fuente-titulos); font-size: 2rem; font-weight: 700; }
   </style>
 
 </head>
@@ -1177,9 +1140,10 @@
   <!-- ACCESO: se ve mientras NO haya un admin confirmado -->
   <section id="zona-acceso-admin">
   <header class="encabezado-acceso">
+    <a href="index.html" class="marca">Everwish</a>
     <span class="etiqueta-superior candado">Acceso restringido</span>
-    <h1>Panel de <span class="texto-degradado">administración</span></h1>
-    <p>Inicia sesión con tu cuenta de administrador para gestionar los productos.</p>
+    <h1>Taller de <span class="texto-degradado">deseos</span></h1>
+    <p>Inicia sesión con tu cuenta de administrador para gestionar el catálogo, los pedidos y los clientes.</p>
   </header>
 
   <!-- Solo hay login. Ya NO hay registro de administradores desde la
@@ -1216,9 +1180,10 @@
   <!-- ENCABEZADO: título y estadísticas (los números los llena admin.js) -->
   <header class="encabezado">
     <div>
-      <span class="etiqueta-superior">Conectado a Supabase</span>
-      <h1>Panel de <span class="texto-degradado">productos</span></h1>
-      <p>Agrega, busca, edita y elimina productos de tu tienda.</p>
+      <a href="index.html" class="marca">Everwish</a>
+      <span class="etiqueta-superior">Panel de administración</span>
+      <h1>Taller de <span class="texto-degradado">deseos</span></h1>
+      <p>Crea y edita los kits del catálogo, atiende los pedidos y conoce a tus clientes.</p>
     </div>
     <div class="estadisticas">
       <div class="estadistica"><strong id="stat-total">–</strong><span>Productos</span></div>
@@ -1303,13 +1268,13 @@
     <p class="grupo grupo-1">Información básica</p>
 
     <label>Nombre
-      <input type="text" name="nombre" placeholder="Ej: Audífonos Bluetooth" required>
+      <input type="text" name="nombre" placeholder="Ej: Cinderella Dream Kit" required>
     </label>
 
     <!-- Las categorías se escriben separadas por coma y en el JS
          las convertimos en un array: "tecnologia, audio" → ["tecnologia", "audio"] -->
     <label>Categorías
-      <input type="text" name="categorias" placeholder="tecnologia, audio">
+      <input type="text" name="categorias" placeholder="kits, princesas">
       <small>Separadas por coma</small>
     </label>
 
@@ -1333,13 +1298,15 @@
     <p class="grupo grupo-3">Detalles</p>
 
     <label>Descripción
-      <textarea name="description" placeholder="Describe el producto..." required></textarea>
+      <textarea name="description" placeholder="¿Qué trae el kit y qué cuento evoca?" required></textarea>
     </label>
 
     <label>URL de la imagen
       <!-- Campo + cuadrito con la vista previa de la imagen al lado -->
       <span class="campo-imagen">
-        <input type="url" name="imagen_url" placeholder="https://...jpg">
+        <!-- type="text" (no "url"): así acepta también rutas del proyecto
+             como img/productos/mickey-magic-box.svg, que no empiezan con https -->
+        <input type="text" name="imagen_url" placeholder="img/productos/....svg o https://...jpg">
         <img id="vista-previa" alt="">
       </span>
       <small id="ayuda-imagen"></small>

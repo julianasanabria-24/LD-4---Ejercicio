@@ -1,0 +1,202 @@
+/* =================================================================
+   EVERWISH · TEMA COMPARTIDO
+   Lo cargan TODAS las páginas de la tienda (index, galeria, cliente,
+   admin) ANTES de su propio CSS. Aquí viven:
+     - los colores (variables) de día "Aurora" y de noche "Medianoche"
+     - las tipografías
+     - el fondo: cielo con estrellas y una aurora que se mueve despacio
+   Para cambiar un color de toda la tienda, se cambia SOLO aquí.
+   ================================================================= */
+
+/* ===================== COLORES · DÍA (Aurora) ===================== */
+:root {
+  /* Tipografías: títulos con serif de cuento, texto con sans legible */
+  --fuente-titulos: "Cormorant Garamond", Georgia, "Times New Roman", serif;
+  --fuente-texto: "DM Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+
+  --fondo: #f6f2ff;           /* fondo de la página (perla lavanda) */
+  --superficie: #ffffff;      /* tarjetas y campos activos */
+  --texto: #221a45;           /* texto principal (índigo profundo) */
+  --texto-suave: #675f8c;     /* etiquetas y ayudas */
+  --acento: #7052dc;          /* botones, detalles, foco */
+  --acento-fuerte: #4c33b0;   /* precios, títulos destacados */
+  --oro: #9c6f1e;             /* texto dorado (legible sobre claro) */
+  --oro-brillo: #e3bd72;      /* destellos y bordes dorados */
+  --borde-suave: #d8cdf6;
+  --campo-suave: #efe9ff;     /* fondo de encabezados de tabla, etc. */
+  --campo: #fbf9ff;           /* fondo de campos de formulario */
+  --linea: #e5ddf9;           /* bordes finos */
+  --peligro: #c2304d;
+  --exito: #1d7f55;
+  --anillo: rgba(112, 82, 220, 0.2);           /* halo del campo activo */
+  --sombra: rgba(52, 33, 120, 0.1);
+  --sombra-color: rgba(60, 38, 140, 0.3);
+  --boton-hover: #4c33b0;
+  --degradado: linear-gradient(135deg, #6a4be0 0%, #9d5bd2 55%, #c98c45 100%);
+  --degradado-oro: linear-gradient(135deg, #b88a3a 0%, #e8c57d 50%, #b88a3a 100%);
+  --vidrio: rgba(255, 255, 255, 0.72);         /* tarjetas semitransparentes */
+  --borde-vidrio: rgba(255, 255, 255, 0.92);
+  --campo-vidrio: rgba(255, 255, 255, 0.78);
+  --aurora-1: rgba(122, 92, 255, 0.22);        /* luces de fondo */
+  --aurora-2: rgba(232, 182, 98, 0.22);
+  --aurora-3: rgba(96, 168, 230, 0.16);
+  --brillo-1: rgba(122, 92, 255, 0.12);
+  --brillo-2: rgba(232, 182, 98, 0.12);
+  --estrella: rgba(112, 82, 220, 0.38);        /* puntitos del cielo */
+  --estrellas-opacidad: 0.55;
+}
+
+/* ===================== COLORES · NOCHE (Medianoche) ===================== */
+:root[data-tema="oscuro"] {
+  --fondo: #0d0a24;
+  --superficie: #1a1540;
+  --texto: #f2edff;
+  --texto-suave: #b3a8d8;
+  --acento: #a48bff;
+  --acento-fuerte: #cdbcff;
+  --oro: #ecc873;
+  --oro-brillo: #f3d896;
+  --borde-suave: #3c3274;
+  --campo-suave: #231c4d;
+  --campo: #140f31;
+  --linea: #2c2559;
+  --peligro: #ff7088;
+  --exito: #5fd39a;
+  --anillo: rgba(164, 139, 255, 0.28);
+  --sombra: rgba(0, 0, 0, 0.45);
+  --sombra-color: rgba(0, 0, 0, 0.65);
+  --boton-hover: #7b5cf0;
+  --degradado: linear-gradient(135deg, #7a5cff 0%, #b866df 55%, #e0a95b 100%);
+  --degradado-oro: linear-gradient(135deg, #c99a45 0%, #f3d896 50%, #c99a45 100%);
+  --vidrio: rgba(26, 21, 64, 0.64);
+  --borde-vidrio: rgba(255, 255, 255, 0.1);
+  --campo-vidrio: rgba(255, 255, 255, 0.05);
+  --aurora-1: rgba(122, 92, 255, 0.3);
+  --aurora-2: rgba(236, 200, 115, 0.13);
+  --aurora-3: rgba(70, 150, 230, 0.2);
+  --brillo-1: rgba(122, 92, 255, 0.16);
+  --brillo-2: rgba(236, 200, 115, 0.08);
+  --estrella: rgba(255, 255, 255, 0.8);
+  --estrellas-opacidad: 0.8;
+  color-scheme: dark;   /* barras de scroll y controles nativos en oscuro */
+}
+
+
+/* ===================== BASE ===================== */
+
+/* hidden deja de funcionar si otra regla le pone display (grid, flex);
+   esta regla le devuelve la prioridad */
+[hidden] { display: none !important; }
+
+body {
+  font-family: var(--fuente-texto);
+  color: var(--texto);
+  background: var(--fondo);
+  transition: background 0.3s, color 0.3s;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Títulos con la serif de cuento */
+h1, h2, h3,
+.fuente-titulos {
+  font-family: var(--fuente-titulos);
+  font-weight: 600;
+  letter-spacing: 0;
+}
+
+/* CIELO ESTRELLADO: puntitos de distintos tamaños repetidos en mosaico.
+   Cada radial-gradient es una estrella; background-size repite el
+   dibujo. z-index -1 lo deja detrás del contenido y pointer-events:
+   none hace que los clics lo atraviesen. */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  opacity: var(--estrellas-opacidad);
+  background-image:
+    radial-gradient(1.6px 1.6px at 22px 34px,  var(--estrella), transparent 70%),
+    radial-gradient(1.2px 1.2px at 140px 80px, var(--estrella), transparent 70%),
+    radial-gradient(2px 2px     at 90px 170px, var(--estrella), transparent 70%),
+    radial-gradient(1px 1px     at 200px 20px, var(--estrella), transparent 70%),
+    radial-gradient(1.4px 1.4px at 250px 210px, var(--estrella), transparent 70%),
+    radial-gradient(1px 1px     at 60px 250px, var(--estrella), transparent 70%);
+  background-size: 290px 290px;
+  animation: titilar 7s ease-in-out infinite alternate;
+}
+
+/* AURORA: tres luces difuminadas que se mueven muy despacio */
+body::after {
+  content: "";
+  position: fixed;
+  inset: -20%;
+  z-index: -2;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at 15% 18%, var(--aurora-1), transparent 34%),
+    radial-gradient(circle at 85% 12%, var(--aurora-2), transparent 30%),
+    radial-gradient(circle at 70% 88%, var(--aurora-3), transparent 36%);
+  filter: blur(46px);
+  animation: flotar 26s ease-in-out infinite alternate;
+}
+
+@keyframes titilar {
+  from { opacity: calc(var(--estrellas-opacidad) * 0.6); }
+  to   { opacity: var(--estrellas-opacidad); }
+}
+@keyframes flotar {
+  from { transform: translate(0, 0) rotate(0deg); }
+  to   { transform: translate(4%, -3%) rotate(8deg); }
+}
+
+/* Texto con degradado (violeta → oro): el fondo se recorta a las letras */
+.texto-degradado {
+  background: var(--degradado);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  font-style: italic;
+}
+
+/* Destello ✦ dorado que se usa como adorno en títulos y etiquetas */
+.destello { color: var(--oro); }
+
+/* Marca "✦ Everwish" (barra superior y encabezados) */
+.marca {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--fuente-titulos);
+  font-size: 1.65rem;
+  font-weight: 700;
+  font-style: italic;
+  letter-spacing: 0.01em;
+  color: var(--texto);
+  text-decoration: none;
+  white-space: nowrap;
+}
+.marca::before {
+  content: "✦";
+  font-style: normal;
+  font-size: 0.8em;
+  color: var(--oro);
+  text-shadow: 0 0 12px var(--oro-brillo);
+}
+
+/* Foco visible con el color de acento (teclado) */
+:focus-visible {
+  outline: 2px solid var(--acento);
+  outline-offset: 2px;
+}
+
+/* Aparecer: sube un poco mientras se hace visible */
+@keyframes aparecer {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: none; }
+}
+
+/* Si la persona tiene activado "reducir movimiento", apagamos animaciones */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; }
+}

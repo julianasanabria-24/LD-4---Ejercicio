@@ -2,7 +2,7 @@
    PEDIDOS: estilos compartidos por cliente.html ("Mis pedidos") y
    admin.html ("Pedidos" y "Mis clientes").
    Solo usa variables que existen en las DOS páginas (--vidrio, --linea,
-   --texto-suave, --rosa-medio...), así cada una le pone sus colores
+   --texto-suave, --acento...), así cada una le pone sus colores
    y el modo oscuro funciona solo.
    ================================================================= */
 
@@ -26,7 +26,7 @@
   justify-content: space-between;
   gap: 12px;
 }
-.pedido-cabecera strong { font-size: 1.05rem; font-weight: 800; }
+.pedido-cabecera strong { font-family: var(--fuente-titulos); font-size: 1.35rem; font-weight: 700; }
 .pedido-fecha {
   display: block;
   font-size: 0.78rem;
@@ -81,8 +81,8 @@
   color: var(--texto-suave);
 }
 .pedido-progreso li.hecho {
-  border-top-color: var(--rosa-medio);
-  color: var(--rosa-fuerte);
+  border-top-color: var(--acento);
+  color: var(--acento-fuerte);
 }
 
 /* Productos: "2 × Audífonos ........ $270.000" */
@@ -119,7 +119,7 @@
   font-size: 0.9rem;
   color: var(--texto-suave);
 }
-.pedido-total strong { font-size: 1.15rem; font-weight: 800; color: var(--texto); }
+.pedido-total strong { font-size: 1.15rem; font-weight: 700; color: var(--acento-fuerte); }
 
 /* Mensaje de "cargando" / "no hay pedidos" */
 .pedidos-vacio {
@@ -128,7 +128,7 @@
   text-align: center;
   color: var(--texto-suave);
 }
-.pedidos-vacio a { color: var(--rosa-fuerte); font-weight: 700; }
+.pedidos-vacio a { color: var(--acento-fuerte); font-weight: 700; }
 
 /* Sidebar "Mis pedidos" del cliente */
 #lista-mis-pedidos { margin-top: 16px; }
@@ -162,7 +162,7 @@
   color: #fff;
   background: var(--degradado);
   border-color: transparent;
-  box-shadow: 0 10px 24px -12px var(--rosa-medio);
+  box-shadow: 0 10px 24px -12px var(--acento);
 }
 
 /* Tarjeta de vidrio de cada sección (igual que #panel-productos) */
@@ -207,17 +207,14 @@
   align-items: center;
   gap: 12px;
   margin: 0;
-  font-size: 1.4rem;
-  font-weight: 800;
-  letter-spacing: -0.01em;
+  font-size: 1.75rem;
+  font-weight: 600;
 }
 .barra-seccion h2::before {
-  content: "";
-  width: 12px;
-  height: 12px;
-  border-radius: 4px;
-  background: var(--degradado);
-  box-shadow: 0 0 16px var(--rosa-medio);
+  content: "✦";
+  font-size: 0.75em;
+  color: var(--oro);
+  text-shadow: 0 0 12px var(--oro-brillo);
   flex-shrink: 0;
 }
 .barra-seccion .filtro {
@@ -254,7 +251,7 @@
 .seccion-admin select:focus,
 .seccion-admin input[type="search"]:focus {
   outline: none;
-  border-color: var(--rosa-medio);
+  border-color: var(--acento);
   box-shadow: 0 0 0 4px var(--anillo);
 }
 #buscar-cliente { width: min(360px, 100%); }
@@ -269,7 +266,7 @@
 .mensaje-seccion {
   margin: 0 0 12px;
   font-weight: 600;
-  color: var(--rosa-fuerte);
+  color: var(--acento-fuerte);
 }
 .mensaje-seccion:empty { display: none; }
 

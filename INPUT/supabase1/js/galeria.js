@@ -385,10 +385,10 @@ function mostrarProductos() {
   const grilla = document.getElementById("grilla-productos");
   grilla.innerHTML = visibles.length
     ? visibles.map(tarjetaProducto).join("")
-    : `<p class="sin-resultados">No encontramos productos con ese filtro 🔍</p>`;
+    : `<p class="sin-resultados">Ningún kit coincide con ese deseo… prueba otra búsqueda ✦</p>`;
 
   document.getElementById("conteo-resultados").innerText =
-    `${visibles.length} de ${productos.length} productos`;
+    `${visibles.length} de ${productos.length} kits y accesorios`;
 }
 
 
@@ -408,8 +408,8 @@ function mostrarChips() {
       if (clave && !categorias.has(clave)) categorias.set(clave, c.trim());
     });
 
-  // Ordenamos por la clave, y "todas" siempre va primero
-  const chips = [["todas", "todas"], ...[...categorias].sort(([a], [b]) => a.localeCompare(b))];
+  // Ordenamos por la clave, y "todas" siempre va primero (se muestra como "todo")
+  const chips = [["todas", "todo"], ...[...categorias].sort(([a], [b]) => a.localeCompare(b))];
 
   document.getElementById("chips-categorias").innerHTML = chips
     .map(([clave, texto]) => `
@@ -503,8 +503,8 @@ function pintarCarrito() {
     btnCheckout.hidden = false;
     lista.innerHTML = `
       <div class="carrito-vacio">
-        <span>🛒</span>
-        Tu carrito está vacío.<br>Agrega algo desde la galería.
+        <span>🧺</span>
+        Tu carrito está vacío.<br>Elige un kit y empieza tu cuento.
       </div>`;
     return;
   }
@@ -582,7 +582,7 @@ btnCheckout.addEventListener("click", async () => {
 
   const usuario = await obtenerUsuario();
   if (!usuario) {
-    mensajeCarrito.textContent = "Para comprar, inicia sesión en Mi perfil (cliente.html).";
+    mensajeCarrito.textContent = "Para comprar, inicia sesión en Mi cuenta (botón 👤 de arriba).";
     return;
   }
 
@@ -709,7 +709,7 @@ async function cargarProductos() {
   if (error) {
     console.log("Error al traer productos:", error);
     document.getElementById("grilla-productos").innerHTML =
-      `<p class="sin-resultados">No pudimos cargar los productos 😕<br>Revisa la consola (F12).</p>`;
+      `<p class="sin-resultados">No pudimos abrir el catálogo 😕<br>Revisa la consola (F12).</p>`;
     document.getElementById("conteo-resultados").innerText = "";
     return;
   }
@@ -723,6 +723,13 @@ async function cargarProductos() {
     unidades: Number(p.unidades) || 0,
     descuento: Number(p.descuento) || 0,
   }));
+
+  // Si se llegó desde una colección de la portada (galeria.html?categoria=princesas),
+  // ese chip empieza activo. Solo si esa categoría existe en los productos.
+  const enUrl = new URLSearchParams(location.search).get("categoria");
+  if (enUrl && productos.some((p) => (p.categorias || []).some((c) => normalizar(c) === normalizar(enUrl)))) {
+    categoriaActiva = normalizar(enUrl);
+  }
 
   limpiarCarrito();
   mostrarChips();

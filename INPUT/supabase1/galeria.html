@@ -3,12 +3,13 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Mi Tienda</title>
+    <title>Tienda · Everwish</title>
+    <meta name="description" content="Kits y accesorios inspirados en películas animadas, mundos de fantasía y cuentos de hadas." />
 
-    <!-- Misma tipografía que admin.html y cliente.html -->
+    <!-- Tipografías de Everwish: Cormorant Garamond (títulos) y DM Sans (texto) -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500;1,600&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700&display=swap" rel="stylesheet" />
 
     <!-- Pone el tema ANTES de dibujar la página (así no "parpadea" en claro) -->
     <script>
@@ -18,13 +19,23 @@
         (matchMedia("(prefers-color-scheme: dark)").matches ? "oscuro" : "claro");
     </script>
 
+    <!-- 1° tema de Everwish (colores, fuentes, cielo estrellado)
+         2° estilos de la tienda (barra, tarjetas, carrito, pie) -->
+    <link rel="stylesheet" href="css/everwish.css" />
     <link rel="stylesheet" href="css/galeria.css" />
   </head>
   <body>
 
     <!-- BARRA SUPERIOR: queda pegada arriba al bajar (position: sticky) -->
-    <nav class="barra">
-      <a href="galeria.html" class="logo">🛍️ <span class="texto-degradado">Mi Tienda</span></a>
+    <nav class="barra" aria-label="Principal">
+      <a href="index.html" class="marca">Everwish</a>
+
+      <!-- aria-current="page" marca la página en la que estás -->
+      <ul class="nav-enlaces">
+        <li><a href="index.html">Inicio</a></li>
+        <li><a href="galeria.html" aria-current="page">Tienda</a></li>
+        <li><a href="index.html#colecciones">Colecciones</a></li>
+      </ul>
 
       <div class="barra-acciones">
         <button type="button" id="btn-tema">🌙 Modo oscuro</button>
@@ -32,29 +43,29 @@
         <!-- Es <a> y no <button> porque lleva a OTRA página (cliente.html).
              El texto va en un <span> para poder ocultarlo en celular y
              dejar solo el ícono; aria-label mantiene el nombre completo -->
-        <a href="cliente.html" id="btn-perfil" aria-label="Ir a mi perfil">
-          👤 <span class="texto-boton">Mi perfil</span>
+        <a href="cliente.html" id="btn-perfil" aria-label="Ir a mi cuenta">
+          👤 <span class="texto-boton">Mi cuenta</span>
         </a>
 
         <!-- aria-label: lo que lee un lector de pantalla, porque el
              botón muestra un ícono y un número, no una frase -->
         <button type="button" id="btn-carrito" aria-label="Abrir carrito">
-          🛒 Carrito <span id="contador-carrito">0</span>
+          🧺 <span class="texto-boton">Carrito</span> <span id="contador-carrito">0</span>
         </button>
       </div>
     </nav>
 
     <header class="encabezado">
-      <span class="etiqueta-superior">Catálogo</span>
-      <h1>Encuentra lo que <span class="texto-degradado">buscas</span></h1>
-      <p>Agrega productos a tu carrito; se guarda aunque recargues la página.</p>
+      <span class="etiqueta-superior">La tienda</span>
+      <h1>Elige el <span class="texto-degradado">cuento</span> que quieres llevar contigo</h1>
+      <p>Kits y accesorios inspirados en películas animadas, mundos de fantasía y cuentos de hadas.</p>
     </header>
 
-    <!-- FILTROS: buscador + "chips" de categoría (galeria.js los crea
+    <!-- FILTROS: buscador + "chips" de colección (galeria.js los crea
          a partir de las categorías que existen en los productos) -->
-    <section class="filtros">
-      <input type="search" id="input-busqueda" placeholder="Buscar productos..." />
-      <div id="chips-categorias" role="group" aria-label="Filtrar por categoría"></div>
+    <section class="filtros" aria-label="Buscar y filtrar">
+      <input type="search" id="input-busqueda" placeholder="Busca un kit, un personaje o un mundo…" aria-label="Buscar en la tienda" />
+      <div id="chips-categorias" role="group" aria-label="Filtrar por colección"></div>
     </section>
 
     <p id="conteo-resultados" role="status"></p>
@@ -62,8 +73,20 @@
     <!-- GRILLA: galeria.js dibuja aquí una tarjeta por producto -->
     <main id="grilla-productos">
       <!-- Se ve mientras llega la respuesta de Supabase; galeria.js lo reemplaza -->
-      <p class="sin-resultados">Cargando productos…</p>
+      <p class="sin-resultados">Abriendo el cofre de deseos…</p>
     </main>
+
+    <!-- PIE DE PÁGINA -->
+    <footer class="pie-pagina">
+      <a href="index.html" class="marca">Everwish</a>
+      <p>Kits y accesorios para vivir tus cuentos favoritos.</p>
+      <ul class="pie-enlaces">
+        <li><a href="index.html">Inicio</a></li>
+        <li><a href="galeria.html">Tienda</a></li>
+        <li><a href="cliente.html">Mi cuenta</a></li>
+      </ul>
+      <small>Proyecto académico de Lenguajes Digitales. Los kits son conceptos inspirados en clásicos animados; Everwish no está afiliada a sus estudios.</small>
+    </footer>
 
     <!-- Capa oscura detrás del carrito: al hacer clic, se cierra -->
     <div id="fondo-carrito"></div>
@@ -106,7 +129,7 @@
           <input id="checkout-telefono" type="tel" placeholder="Ej: 300 123 4567" autocomplete="tel" />
 
           <label for="checkout-observacion">Observaciones</label>
-          <textarea id="checkout-observacion" rows="2" placeholder="Opcional: indicaciones para la entrega"></textarea>
+          <textarea id="checkout-observacion" rows="2" placeholder="Opcional: una dedicatoria o indicaciones para la entrega"></textarea>
 
           <button type="submit" id="btn-confirmar">Confirmar pedido</button>
           <button type="button" id="btn-cancelar-checkout" class="secundario">Volver al carrito</button>

@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 600" role="img" aria-label="Dos pinzas para el pelo con forma de concha y perlas">
+  <defs>
+    <linearGradient id="fondo" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#fff0ea"/>
+      <stop offset="1" stop-color="#f3bcc7"/>
+    </linearGradient>
+    <linearGradient id="concha" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#ffe6df"/>
+      <stop offset="1" stop-color="#ee8f95"/>
+    </linearGradient>
+    <radialGradient id="perla" cx="35%" cy="30%" r="70%">
+      <stop offset="0" stop-color="#ffffff"/>
+      <stop offset="1" stop-color="#d6cdea"/>
+    </radialGradient>
+    <!-- Una pinza: barra dorada + concha + perla -->
+    <g id="pinza">
+      <rect x="-120" y="-14" width="240" height="28" rx="14" fill="#e3bd72"/>
+      <path d="M0 110L-100 10A140 140 0 0 1 100 10Z" fill="url(#concha)"/>
+      <g fill="none" stroke="#df7882" stroke-width="4" stroke-linecap="round">
+        <path d="M0 110L-70-14M0 110L-36-28M0 110V-30M0 110L36-28M0 110L70-14"/>
+      </g>
+      <circle cy="96" r="16" fill="url(#perla)"/>
+    </g>
+    <path id="destello" d="M0-1C.12-.12.12-.12 1 0C.12.12.12.12 0 1C-.12.12-.12.12-1 0C-.12-.12-.12-.12 0-1Z"/>
+  </defs>
+
+  <rect width="600" height="600" fill="url(#fondo)"/>
+  <!-- Arena -->
+  <path d="M0 480C160 450 420 500 600 470V600H0Z" fill="#f7d9c4" opacity=".7"/>
+
+  <use href="#pinza" transform="translate(220 230) rotate(-16)"/>
+  <use href="#pinza" transform="translate(390 360) rotate(14) scale(.9)"/>
+
+  <!-- Perlas sueltas -->
+  <circle cx="120" cy="470" r="13" fill="url(#perla)"/>
+  <circle cx="150" cy="490" r="10" fill="url(#perla)"/>
+  <circle cx="480" cy="160" r="12" fill="url(#perla)"/>
+  <circle cx="505" cy="185" r="8" fill="url(#perla)"/>
+
+  <!-- Destellos -->
+  <use href="#destello" fill="#fff" transform="translate(300 120) scale(16)"/>
+  <use href="#destello" fill="#c99a45" transform="translate(110 150) scale(12)"/>
+  <use href="#destello" fill="#fff" transform="translate(520 520) scale(11)"/>
+</svg>
