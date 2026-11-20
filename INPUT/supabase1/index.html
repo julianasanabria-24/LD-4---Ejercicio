@@ -3,166 +3,258 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Everwish · Kits y accesorios de cuento</title>
-  <meta name="description" content="Everwish: kits y accesorios inspirados en películas animadas, mundos de fantasía y cuentos de hadas.">
+  <title>Everwish · Joyería de fantasía</title>
+  <meta name="description" content="Everwish: joyería de fantasía inspirada en películas y animaciones de Disney, Warner Bros. y Universal.">
 
-  <!-- Tipografías de Everwish: Cormorant Garamond (títulos) y DM Sans (texto) -->
+  <!-- Tipografías: Fraunces (títulos) y Plus Jakarta Sans (texto) -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500;1,600&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500;1,9..144,600&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
-  <!-- Pone el tema ANTES de dibujar la página (así no "parpadea" en claro) -->
+  <!-- Tema antes de dibujar (sin parpadeo) + clase "js" para las animaciones -->
   <script>
+    document.documentElement.classList.add("js");
     let temaGuardado = null;
     try { temaGuardado = localStorage.getItem("tema"); } catch (e) {}
     document.documentElement.dataset.tema = temaGuardado ||
       (matchMedia("(prefers-color-scheme: dark)").matches ? "oscuro" : "claro");
   </script>
 
-  <!-- 1° tema de Everwish  2° barra, tarjetas y pie (los mismos de la
-       tienda)  3° lo propio de la portada -->
+  <!-- 1° sistema visual  2° tarjetas de la tienda  3° lo propio de la portada -->
   <link rel="stylesheet" href="css/everwish.css">
   <link rel="stylesheet" href="css/galeria.css">
   <link rel="stylesheet" href="css/inicio.css">
 </head>
 <body>
 
-  <!-- BARRA SUPERIOR (la misma de la tienda) -->
+  <div class="barra-promo" aria-label="Anuncios">
+    <div class="barra-promo-pista">
+      <span>Envío gratis desde $200.000</span><span>Empaque de regalo en cada pedido</span>
+      <span>Nuevos mundos: Villanos, Mundo mágico y Aventuras</span><span>Recoge gratis en tienda</span>
+      <span aria-hidden="true">Envío gratis desde $200.000</span><span aria-hidden="true">Empaque de regalo en cada pedido</span>
+      <span aria-hidden="true">Nuevos mundos: Villanos, Mundo mágico y Aventuras</span><span aria-hidden="true">Recoge gratis en tienda</span>
+    </div>
+  </div>
+
   <nav class="barra" aria-label="Principal">
-    <a href="index.html" class="marca">Everwish</a>
+    <div class="contenedor barra-interior">
+      <a href="index.html" class="marca">Everwish</a>
 
-    <ul class="nav-enlaces">
-      <li><a href="index.html" aria-current="page">Inicio</a></li>
-      <li><a href="galeria.html">Tienda</a></li>
-      <li><a href="#colecciones">Colecciones</a></li>
-    </ul>
+      <ul class="nav-enlaces">
+        <li><a href="index.html" aria-current="page">Inicio</a></li>
+        <li><a href="galeria.html">Tienda</a></li>
+        <li><a href="#mundos">Mundos</a></li>
+        <li><a href="galeria.html?oferta=1">Ofertas</a></li>
+      </ul>
 
-    <div class="barra-acciones">
-      <button type="button" id="btn-tema">🌙 Modo oscuro</button>
-      <a href="cliente.html" id="btn-perfil" aria-label="Ir a mi cuenta">
-        👤 <span class="texto-boton">Mi cuenta</span>
-      </a>
+      <div class="barra-acciones">
+        <button type="button" id="btn-tema" aria-label="Cambiar tema">🌙</button>
+        <a href="cliente.html" class="boton-barra" aria-label="Ir a mi cuenta">👤 <span class="texto-boton">Mi cuenta</span></a>
+        <a href="galeria.html" class="boton-barra principal" aria-label="Ir a la tienda">🛍️ <span class="texto-boton">Comprar</span></a>
+      </div>
     </div>
   </nav>
 
   <main>
-    <!-- PORTADA: texto a la izquierda, ilustración a la derecha -->
-    <section class="portada">
-      <div class="portada-texto">
-        <span class="etiqueta-superior">Kits y accesorios de cuento</span>
-        <h1>Donde los <span class="texto-degradado">cuentos</span> se convierten en regalos</h1>
-        <p>
-          En Everwish armamos kits temáticos inspirados en películas animadas,
-          mundos de fantasía y cuentos de hadas: para regalar, para coleccionar
-          o para volver a sentir la magia de tu historia favorita.
-        </p>
-        <div class="portada-botones">
-          <a href="galeria.html" class="boton">Explorar la tienda ✦</a>
-          <a href="#colecciones" class="boton secundario">Ver colecciones</a>
+    <!-- HERO: banda nocturna con el arte flotando a la derecha -->
+    <section class="contenedor">
+      <div class="hero">
+        <div class="hero-texto">
+          <span class="etiqueta-superior">Joyería de fantasía</span>
+          <h1>Joyas que guardan la <span class="texto-degradado">magia</span> de tus películas</h1>
+          <p>Collares, aretes, anillos y kits inspirados en las princesas, los villanos y los mundos mágicos de Disney, Warner Bros. y Universal.</p>
+          <div class="hero-botones">
+            <a href="galeria.html" class="boton claro">Explorar la tienda ✦</a>
+            <a href="#mundos" class="boton contorno-claro">Elige tu mundo</a>
+          </div>
+          <dl class="hero-datos">
+            <div><dt id="dato-joyas">70</dt><dd>joyas</dd></div>
+            <div><dt>7</dt><dd>mundos</dd></div>
+            <div><dt>3</dt><dd>estudios</dd></div>
+          </dl>
         </div>
-        <ul class="portada-datos">
-          <li><strong>🚚</strong> Envío a domicilio</li>
-          <li><strong>🏬</strong> o recoge en tienda</li>
-          <li><strong>🎁</strong> Listo para regalar</li>
-        </ul>
-      </div>
 
-      <div class="portada-arte">
-        <img src="img/everwish-portada.svg" alt="Ventana en arco con un castillo bajo la luna, farolillos y una caja de regalo" width="640" height="720">
+        <div class="hero-arte" aria-hidden="true">
+          <div class="hero-arco"><img src="img/everwish-portada.svg" alt="" width="640" height="720"></div>
+          <img class="hero-flotante f1" src="img/productos/tiara-rosa-encantada.svg" alt="">
+          <img class="hero-flotante f2" src="img/productos/collar-manzana-envenenada.svg" alt="">
+          <img class="hero-flotante f3" src="img/productos/anillo-alas-doradas.svg" alt="">
+          <span class="chispa c1">✦</span><span class="chispa c2">✦</span><span class="chispa c3">✧</span>
+        </div>
       </div>
     </section>
 
-    <!-- COLECCIONES: cada una abre la tienda ya filtrada
-         (galeria.html?categoria=... lo lee galeria.js) -->
-    <section id="colecciones" class="seccion">
-      <header class="seccion-titulo">
-        <span class="etiqueta-superior">Colecciones</span>
-        <h2>Elige tu mundo</h2>
-        <p>Cada colección reúne kits y accesorios de un mismo cuento.</p>
+    <!-- CONFIANZA -->
+    <section class="contenedor">
+      <ul class="confianza" data-revelar>
+        <li><span>🚚</span><div><strong>Envío a domicilio</strong>Gratis desde $200.000</div></li>
+        <li><span>🏬</span><div><strong>Recoge en tienda</strong>Sin costo adicional</div></li>
+        <li><span>🎁</span><div><strong>Listo para regalar</strong>Empaque de cuento</div></li>
+        <li><span>📦</span><div><strong>Sigue tu pedido</strong>Desde Mi cuenta</div></li>
+      </ul>
+    </section>
+
+    <!-- MUNDOS: inicio.js dibuja las tarjetas con la cantidad de joyas -->
+    <section id="mundos" class="seccion contenedor">
+      <header class="seccion-cabecera" data-revelar>
+        <div>
+          <span class="etiqueta-superior">Colecciones</span>
+          <h2>Elige tu <span class="texto-degradado">mundo</span></h2>
+          <p>Diez joyas en cada mundo, inspiradas en las películas que te hicieron soñar.</p>
+        </div>
+        <a href="galeria.html" class="enlace-flecha">Ver toda la tienda</a>
       </header>
-
-      <div class="colecciones">
-        <a class="coleccion" href="galeria.html?categoria=cl%C3%A1sicos">
-          <img src="img/productos/mickey-magic-box.svg" alt="" loading="lazy">
-          <h3>Clásicos</h3>
-          <p>Lunares, lazos y la magia de siempre.</p>
-        </a>
-        <a class="coleccion" href="galeria.html?categoria=princesas">
-          <img src="img/productos/cinderella-dream-kit.svg" alt="" loading="lazy">
-          <h3>Princesas</h3>
-          <p>Zapatillas de cristal, tiaras y farolillos.</p>
-        </a>
-        <a class="coleccion" href="galeria.html?categoria=bajo%20el%20mar">
-          <img src="img/productos/ocean-dreams-kit.svg" alt="" loading="lazy">
-          <h3>Bajo el mar</h3>
-          <p>Conchas, perlas y estrellas de mar.</p>
-        </a>
-        <a class="coleccion" href="galeria.html?categoria=pa%C3%ADs%20de%20las%20maravillas">
-          <img src="img/productos/wonderland-box.svg" alt="" loading="lazy">
-          <h3>País de las Maravillas</h3>
-          <p>Tazas de té, naipes y relojes que llegan tarde.</p>
-        </a>
-      </div>
+      <div id="lista-mundos" class="mundos-grilla"></div>
     </section>
 
-    <!-- DESTACADOS: inicio.js los trae de Supabase (products_practice) -->
-    <section class="seccion">
-      <header class="seccion-titulo">
-        <span class="etiqueta-superior">Destacados</span>
-        <h2>Deseos de la temporada</h2>
-        <p>Los kits disponibles con mejor precio en este momento.</p>
+    <!-- NOVEDADES (carrusel) -->
+    <section class="seccion contenedor">
+      <header class="seccion-cabecera" data-revelar>
+        <div>
+          <span class="etiqueta-superior">Recién llegadas</span>
+          <h2>Novedades</h2>
+        </div>
+        <div class="flechas">
+          <button type="button" class="boton-icono" data-carrusel="carrusel-novedades" data-direccion="-1" aria-label="Anteriores">←</button>
+          <button type="button" class="boton-icono" data-carrusel="carrusel-novedades" data-direccion="1" aria-label="Siguientes">→</button>
+        </div>
       </header>
-
-      <div id="destacados" class="grilla-productos">
-        <p class="sin-resultados">Abriendo el cofre de deseos…</p>
+      <div id="carrusel-novedades" class="carrusel">
+        <p class="sin-resultados">Abriendo el cofre de joyas…</p>
       </div>
-
-      <p class="seccion-accion"><a href="galeria.html" class="boton secundario">Ver todo el catálogo</a></p>
     </section>
 
-    <!-- CÓMO FUNCIONA: los pasos reales de la compra en la tienda -->
-    <section class="seccion">
-      <header class="seccion-titulo">
+    <!-- BANNER: VILLANOS -->
+    <section class="seccion contenedor">
+      <a class="banner banner-villanos" href="galeria.html?mundo=villanos" data-revelar>
+        <div class="banner-texto">
+          <span class="etiqueta-superior">Nuevo mundo</span>
+          <h2>El lado oscuro también <em>brilla</em></h2>
+          <p>Manzanas envenenadas, espejos mágicos y rosas marchitas para quien prefiere a los villanos.</p>
+          <span class="boton claro">Ver Villanos →</span>
+        </div>
+        <img src="img/mundos/villanos.svg" alt="" loading="lazy">
+      </a>
+    </section>
+
+    <!-- TIPOS DE JOYA -->
+    <section class="seccion contenedor">
+      <header class="seccion-cabecera centrada" data-revelar>
+        <span class="etiqueta-superior">Compra por tipo</span>
+        <h2>¿Qué joya buscas hoy?</h2>
+      </header>
+      <div id="lista-tipos" class="tipos-grilla"></div>
+    </section>
+
+    <!-- OFERTAS (carrusel) -->
+    <section class="seccion contenedor">
+      <header class="seccion-cabecera" data-revelar>
+        <div>
+          <span class="etiqueta-superior">Precios encantados</span>
+          <h2>Ofertas <span class="texto-degradado">mágicas</span></h2>
+        </div>
+        <div class="flechas">
+          <button type="button" class="boton-icono" data-carrusel="carrusel-ofertas" data-direccion="-1" aria-label="Anteriores">←</button>
+          <button type="button" class="boton-icono" data-carrusel="carrusel-ofertas" data-direccion="1" aria-label="Siguientes">→</button>
+        </div>
+      </header>
+      <div id="carrusel-ofertas" class="carrusel">
+        <p class="sin-resultados">Buscando descuentos…</p>
+      </div>
+    </section>
+
+    <!-- DOS BANNERS: WARNER Y UNIVERSAL -->
+    <section class="seccion contenedor">
+      <div class="banners-duo">
+        <a class="banner banner-magico" href="galeria.html?mundo=mundo%20magico" data-revelar>
+          <div class="banner-texto">
+            <span class="banner-estudio">Inspiración Warner Bros.</span>
+            <h3>Mundo mágico</h3>
+            <p>Varitas, lechuzas y relojes de arena.</p>
+            <span class="enlace-flecha">Descubrir</span>
+          </div>
+          <img src="img/mundos/mundo-magico.svg" alt="" loading="lazy">
+        </a>
+        <a class="banner banner-aventuras" href="galeria.html?mundo=aventuras" data-revelar style="--retraso: 1">
+          <div class="banner-texto">
+            <span class="banner-estudio">Inspiración Universal</span>
+            <h3>Aventuras</h3>
+            <p>Dinosaurios, dragones y bicicletas a la luna.</p>
+            <span class="enlace-flecha">Descubrir</span>
+          </div>
+          <img src="img/mundos/aventuras.svg" alt="" loading="lazy">
+        </a>
+      </div>
+    </section>
+
+    <!-- CÓMO FUNCIONA -->
+    <section class="seccion contenedor">
+      <header class="seccion-cabecera centrada" data-revelar>
         <span class="etiqueta-superior">Cómo funciona</span>
         <h2>Tu deseo, en tres pasos</h2>
       </header>
-
       <ol class="pasos">
-        <li>
-          <span class="paso-numero">I</span>
-          <h3>Elige tu cuento</h3>
-          <p>Busca por personaje o filtra por colección en la tienda.</p>
-        </li>
-        <li>
-          <span class="paso-numero">II</span>
-          <h3>Arma tu carrito</h3>
-          <p>Crea tu cuenta y agrega kits y accesorios: tu carrito te espera aunque cierres la página.</p>
-        </li>
-        <li>
-          <span class="paso-numero">III</span>
-          <h3>Recíbelo con magia</h3>
-          <p>Confirma el pedido con envío a domicilio o recogida en tienda, y síguelo desde Mi cuenta.</p>
-        </li>
+        <li data-revelar><span class="paso-numero">I</span><h3>Elige tu mundo</h3><p>Filtra por película, tipo de joya o precio en la tienda.</p></li>
+        <li data-revelar style="--retraso: 1"><span class="paso-numero">II</span><h3>Arma tu carrito</h3><p>Crea tu cuenta: tu carrito te espera aunque cierres la página.</p></li>
+        <li data-revelar style="--retraso: 2"><span class="paso-numero">III</span><h3>Recíbelo con magia</h3><p>Envío a domicilio o recogida en tienda, y síguelo desde Mi cuenta.</p></li>
       </ol>
+    </section>
+
+    <!-- CLUB: invitación a crear cuenta -->
+    <section class="seccion contenedor">
+      <div class="club" data-revelar>
+        <div>
+          <span class="etiqueta-superior">Club Everwish</span>
+          <h2>Guarda tu carrito y sigue tus pedidos</h2>
+          <p>Con tu cuenta ves el catálogo completo con filtros, tu carrito y el estado de cada pedido en un solo lugar.</p>
+        </div>
+        <a href="cliente.html" class="boton">Crear mi cuenta ✦</a>
+      </div>
     </section>
   </main>
 
-  <!-- PIE DE PÁGINA (el mismo de la tienda) -->
   <footer class="pie-pagina">
-    <a href="index.html" class="marca">Everwish</a>
-    <p>Kits y accesorios para vivir tus cuentos favoritos.</p>
-    <ul class="pie-enlaces">
-      <li><a href="index.html">Inicio</a></li>
-      <li><a href="galeria.html">Tienda</a></li>
-      <li><a href="cliente.html">Mi cuenta</a></li>
-    </ul>
-    <small>Proyecto académico de Lenguajes Digitales. Los kits son conceptos inspirados en clásicos animados; Everwish no está afiliada a sus estudios.</small>
+    <div class="contenedor pie-grilla">
+      <div>
+        <a href="index.html" class="marca">Everwish</a>
+        <p>Joyería de fantasía para llevar contigo la magia de tus películas favoritas.</p>
+      </div>
+      <div>
+        <h4>Tienda</h4>
+        <ul class="pie-enlaces">
+          <li><a href="galeria.html">Todas las joyas</a></li>
+          <li><a href="galeria.html?orden=nuevos">Novedades</a></li>
+          <li><a href="galeria.html?oferta=1">Ofertas</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Mundos</h4>
+        <ul class="pie-enlaces">
+          <li><a href="galeria.html?mundo=princesas">Princesas</a></li>
+          <li><a href="galeria.html?mundo=villanos">Villanos</a></li>
+          <li><a href="galeria.html?mundo=mundo%20magico">Mundo mágico</a></li>
+          <li><a href="galeria.html?mundo=aventuras">Aventuras</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Mi cuenta</h4>
+        <ul class="pie-enlaces">
+          <li><a href="cliente.html">Iniciar sesión</a></li>
+          <li><a href="cliente.html">Mis pedidos</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="contenedor pie-legal">
+      Proyecto académico de Lenguajes Digitales. Las joyas son conceptos inspirados en películas de Disney, Warner Bros. y Universal; Everwish no está afiliada a esos estudios.
+    </div>
   </footer>
 
-  <!-- 1° librería de Supabase  2° cliente "db"  3° tema  4° portada -->
+  <!-- 1° Supabase  2° "db"  3° tema  4° mundos  5° efectos  6° portada -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="js/supabaseClient.js"></script>
   <script src="js/tema.js"></script>
+  <script src="js/mundos.js"></script>
+  <script src="js/efectos.js"></script>
   <script src="js/inicio.js"></script>
 </body>
 </html>

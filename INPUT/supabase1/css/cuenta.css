@@ -1,498 +1,223 @@
 /* =================================================================
    EVERWISH · MI CUENTA (cliente.html)
-   Los colores, las tipografías y el cielo estrellado del fondo vienen
-   de css/everwish.css (se carga antes que este archivo).
+   Se carga después de everwish.css (acceso, botones, barra),
+   galeria.css (catálogo y carrito) y pedidos.css (tarjetas de pedido).
+   Aquí: el botón de tema flotante, las pestañas de la cuenta y las
+   vistas Inicio, Mundos, Mis pedidos y Mi perfil.
    ================================================================= */
 
-body {
-  padding: 24px 16px;
-  min-height: 100vh;
-  margin: 0;
-  box-sizing: border-box;
+/* Botón de tema en la pantalla de acceso (sin sesión) */
+#btn-tema.tema-flotante {
+  position: fixed;
+  top: 16px;
+  right: 16px;
+  z-index: 20;
 }
 
-/* Botón de tema fijo arriba a la derecha */
-#btn-tema {
-  position: fixed;
-  top: 12px;
-  right: 12px;
-  z-index: 10;
+/* ===================== PESTAÑAS EN LA BARRA ===================== */
+/* Son <button>, pero se ven como los enlaces de la barra de la tienda */
+.nav-cuenta button {
+  position: relative;
   padding: 8px 14px;
-  color: var(--texto);
-  background: var(--vidrio);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid var(--borde-vidrio);
+  background: transparent;
+  color: var(--texto-suave);
   box-shadow: none;
-}
-#btn-tema:hover { background: var(--campo-vidrio); }
-
-/* ENCABEZADO: pastilla + título con degradado */
-.encabezado {
-  max-width: 960px;
-  margin: 40px auto 28px;
-  text-align: center;        /* centra el título, el texto y la pastilla */
-  animation: aparecer 0.6s ease both;
-}
-
-.etiqueta-superior {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 6px 12px;
-  border-radius: 999px;
-  background: var(--vidrio);
-  border: 1px solid var(--linea);
-  font-size: 0.75rem;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--texto-suave);
-}
-
-/* Destello dorado que "late" al lado de la etiqueta */
-.etiqueta-superior::before {
-  content: "✦";
-  color: var(--oro);
-  animation: latido 2.4s ease-in-out infinite;
-}
-
-@keyframes latido {
-  0%, 100% { text-shadow: 0 0 0 transparent; transform: scale(1); }
-  50%      { text-shadow: 0 0 10px var(--oro-brillo); transform: scale(1.2); }
-}
-
-/* Marca "✦ Everwish" arriba del encabezado: lleva de vuelta al inicio */
-.encabezado .marca {
-  display: flex;
-  width: fit-content;
-  margin: 0 auto 14px;   /* en su propia línea, centrada */
-}
-
-.encabezado h1 {
-  margin: 12px 0 6px;
-  font-size: clamp(2.6rem, 5vw, 3.8rem);
   font-weight: 600;
-  line-height: 1.02;
+  font-size: 0.92rem;
+  white-space: nowrap;
 }
+.nav-cuenta button:hover { color: var(--texto); background: var(--acento-suave); transform: none; box-shadow: none; }
+.nav-cuenta button[aria-current="page"] { color: var(--acento-fuerte); background: var(--acento-suave); }
 
-.encabezado p { margin: 0; color: var(--texto-suave); }
+.vista { padding-top: 24px; animation: aparecer 0.4s ease both; }
+.seccion-cuenta { margin-top: 40px; }
 
-/* El <section> solo agrupa: el ancho lo controla .tarjetas */
-#panel-cuenta {
-  max-width: 960px;
-  margin: 0 auto;
-}
 
-/* ESTADO DE SESIÓN como "pastilla" de vidrio */
-#estado-sesion {
-  /* fit-content = el cuadro mide lo que mide el texto, no todo el ancho;
-     margin auto a los lados lo centra */
-  width: fit-content;
-  max-width: 100%;
-  box-sizing: border-box;
-  margin: 0 auto 20px;
-  text-align: center;
-  padding: 12px 18px;
-  border-radius: 14px;
-  background: var(--vidrio);
-  border: 1px solid var(--borde-vidrio);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  color: var(--acento-fuerte);
-  font-weight: 600;
-}
-
-/* DOS COLUMNAS: Registrarme | Iniciar sesión.
-   minmax(0, 1fr) evita que un contenido largo ensanche la columna */
-.tarjetas {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-  gap: 24px;
-  align-items: start;
-}
-
-/* En celular: una tarjeta debajo de la otra */
-@media (max-width: 760px) {
-  .tarjetas { grid-template-columns: minmax(0, 1fr); }
-}
-
-/* MI PERFIL: una sola tarjeta, centrada y no tan ancha */
-#resumen-perfil {
-  max-width: 560px;
-  margin: 0 auto;
-}
-
-/* Lista de datos: término a la izquierda, valor a la derecha */
-.datos-perfil {
-  display: grid;
-  grid-template-columns: auto 1fr;
-  gap: 12px 20px;
-  margin: 8px 0 0;
-}
-.datos-perfil dt {
-  font-size: 0.72rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  color: var(--texto-suave);
-  align-self: center;
-}
-.datos-perfil dd {
-  margin: 0;
-  font-weight: 600;
-  overflow-wrap: anywhere;   /* un correo largo no se sale de la tarjeta */
-}
-
-/* SIDEBAR: panel fijo a la derecha, del alto de la pantalla.
-   Cerrado: translateX(100%) lo corre su propio ancho hacia la derecha,
-   o sea, justo afuera de la pantalla. Abierto: vuelve a su lugar. */
-.sidebar {
-  position: fixed;
-  top: 0;
-  right: 0;
-  z-index: 30;
-  width: min(420px, 100%);   /* 420px, o toda la pantalla en celular */
-  height: 100dvh;
-  box-sizing: border-box;
-  overflow-y: auto;          /* si no cabe, hace scroll por dentro */
-  padding: 32px;
-  background: var(--vidrio);
-  backdrop-filter: blur(24px) saturate(150%);
-  -webkit-backdrop-filter: blur(24px) saturate(150%);
-  border-left: 1px solid var(--borde-vidrio);
-  box-shadow: -30px 0 60px -30px var(--sombra-color);
-  transform: translateX(100%);
-  transition: transform 0.35s ease;
-}
-.sidebar.abierto { transform: none; }
-
-/* Franja de degradado en el borde izquierdo del sidebar */
-.sidebar::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  left: 0;
-  width: 4px;
-  background: var(--degradado);
-}
-
-/* En el sidebar el formulario no necesita su propia tarjeta */
-#form-perfil {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-/* Botón ✕: arriba a la derecha, sin degradado */
-.btn-cerrar-sidebar {
-  position: absolute;
-  top: 20px;
-  right: 20px;
-  width: 36px;
-  height: 36px;
-  padding: 0;
-  background: var(--campo-vidrio);
-  color: var(--texto-suave);
-  border: 1px solid var(--borde-vidrio);
-  box-shadow: none;
-}
-.btn-cerrar-sidebar:hover { color: var(--acento-fuerte); }
-
-/* SIDEBAR DE AJUSTES: título pequeño encima de cada grupo */
-.titulo-ajuste {
-  margin: 20px 0 8px;
-  font-size: 0.72rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  color: var(--texto-suave);
-}
-
-/* El botón de tema, cuando cliente.js lo mete en Ajustes, deja de ser
-   flotante. ".sidebar #btn-tema" pesa más que "#btn-tema" solo
-   (clase + id > id), por eso gana sin !important */
-.sidebar #btn-tema {
-  position: static;
-  width: 100%;
-  padding: 13px 20px;
-  border-radius: 12px;
-}
-
-/* Capa oscura detrás del sidebar. Invisible y "transparente a los
-   clics" (pointer-events: none) hasta que se abre el sidebar */
-#fondo-sidebar {
-  position: fixed;
-  inset: 0;
-  z-index: 25;
-  background: rgba(0, 0, 0, 0.3);
-  backdrop-filter: blur(2px);
-  -webkit-backdrop-filter: blur(2px);
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.35s ease;
-}
-#fondo-sidebar.visible {
-  opacity: 1;
-  pointer-events: auto;
-}
-
-/* Correo de solo lectura: se nota que no se puede editar */
-#panel-cuenta input[readonly] {
-  opacity: 0.65;
-  cursor: not-allowed;
-}
-#panel-cuenta input[readonly]:focus {
-  box-shadow: none;
-  border-color: var(--borde-vidrio);
-  background: var(--campo-vidrio);
-}
-
-/* VIDRIO ("glassmorphism"): tarjetas semitransparentes que
-   difuminan lo que hay detrás */
-#form-registro,
-#form-login,
-#resumen-perfil {
+/* ===================== INICIO ===================== */
+.saludo {
   position: relative;
   overflow: hidden;
   display: flex;
-  flex-direction: column;
-  gap: 8px;
-  padding: 32px;
-  background: var(--vidrio);
-  backdrop-filter: blur(20px) saturate(150%);
-  -webkit-backdrop-filter: blur(20px) saturate(150%);
-  border: 1px solid var(--borde-vidrio);
-  border-radius: 24px;
-  box-shadow: 0 30px 60px -30px var(--sombra-color), inset 0 1px 0 var(--borde-vidrio);
-  animation: aparecer 0.6s ease both;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 24px;
+  padding: clamp(28px, 5vw, 48px);
+  border-radius: var(--radio-l);
+  background: var(--degradado-noche);
+  color: #fff;
 }
-#form-login { animation-delay: 0.1s; }
-
-/* Franja de color arriba de cada tarjeta */
-#form-registro::before,
-#form-login::before,
-#resumen-perfil::before {
+.saludo::before {
   content: "";
   position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 4px;
-  background: var(--degradado);
+  inset: 0;
+  background-image:
+    radial-gradient(2px 2px at 40px 30px, #fff, transparent 70%),
+    radial-gradient(1.5px 1.5px at 200px 90px, #f3d896, transparent 70%),
+    radial-gradient(1px 1px at 120px 140px, #ffb3d1, transparent 70%);
+  background-size: 260px 180px;
+  opacity: 0.55;
+  pointer-events: none;
 }
+.saludo > * { position: relative; }
+.saludo .etiqueta-superior { background: rgba(255, 255, 255, 0.1); color: #f3d896; }
+.saludo .etiqueta-superior::before { color: #f3d896; }
+.saludo h1 { margin-top: 14px; font-size: clamp(2rem, 4vw, 3rem); color: #fff; }
+.saludo .texto-degradado { background: linear-gradient(120deg, #f0d48c, #ff9cc2); -webkit-background-clip: text; background-clip: text; }
+.saludo p { margin-top: 8px; color: #cfc6ef; }
+.saludo-botones { display: flex; flex-wrap: wrap; gap: 10px; }
 
-/* Título con línea fina debajo y un cuadradito de color al lado */
-#form-registro h3,
-#form-login h3,
-#resumen-perfil h3,
-#form-perfil h3,
-#sidebar-ajustes h3,
-#sidebar-pedidos h3 {
+/* Cuatro números de la cuenta */
+.datos-cuenta {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+  margin-top: 18px;
+}
+.dato-cuenta {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  grid-template-rows: auto auto;
+  column-gap: 14px;
+  align-items: center;
+  padding: 18px;
+  border-radius: 20px;
+  background: var(--superficie);
+  border: 1px solid var(--linea);
+  box-shadow: var(--sombra-1);
+}
+.dato-cuenta span {
+  grid-row: span 2;
+  display: grid;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+  background: var(--acento-suave);
+  font-size: 1.4rem;
+}
+.dato-cuenta strong { font-family: var(--fuente-titulos); font-size: 1.6rem; font-weight: 600; line-height: 1.1; }
+.dato-cuenta small { color: var(--texto-suave); font-size: 0.8rem; }
+@media (max-width: 860px) { .datos-cuenta { grid-template-columns: 1fr 1fr; } }
+
+.inicio-columnas {
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+  gap: 18px;
+  margin-top: 18px;
+}
+@media (max-width: 860px) { .inicio-columnas { grid-template-columns: 1fr; } }
+
+/* Tarjeta blanca genérica de la cuenta */
+.panel-cuenta {
+  padding: 22px;
+  border-radius: 22px;
+  background: var(--superficie);
+  border: 1px solid var(--linea);
+  box-shadow: var(--sombra-1);
+}
+.panel-titulo {
   display: flex;
   align-items: center;
+  justify-content: space-between;
   gap: 12px;
-  margin: 0 0 8px;
-  padding-bottom: 16px;
-  border-bottom: 1px solid var(--linea);
-  font-size: 1.75rem;
-  font-weight: 600;
+  margin-bottom: 14px;
 }
-/* Destello dorado ✦ al lado de cada título */
-#form-registro h3::before,
-#form-login h3::before,
-#resumen-perfil h3::before,
-#form-perfil h3::before,
-#sidebar-ajustes h3::before,
-#sidebar-pedidos h3::before {
-  content: "✦";
-  font-size: 0.75em;
-  color: var(--oro);
-  text-shadow: 0 0 12px var(--oro-brillo);
-  flex-shrink: 0;
-}
+.panel-titulo h2 { font-size: 1.35rem; }
+#ultimo-pedido .pedido { margin: 0; box-shadow: none; }
 
-/* Etiquetas pequeñas encima de cada campo */
-#panel-cuenta label {
-  margin-top: 6px;
-  font-weight: 600;
-  font-size: 0.82rem;
-  color: var(--texto-suave);
+/* Mundos pequeños (Inicio) */
+.mundos-mini {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(96px, 1fr));
+  gap: 10px;
 }
-
-#panel-cuenta input {
-  padding: 11px 14px;
-  border: 1px solid var(--borde-vidrio);
-  border-radius: 12px;
-  background: var(--campo-vidrio);
-  color: var(--texto);
-  font: inherit;
-  font-size: 0.95rem;
-  transition: border-color 0.15s, box-shadow 0.15s, background 0.15s;
-}
-
-/* :focus = cuando el usuario está escribiendo en ese campo */
-#panel-cuenta input:focus {
-  outline: none;
-  background: var(--superficie);
-  border-color: var(--acento);
-  box-shadow: 0 0 0 4px var(--anillo), 0 8px 24px -12px var(--acento);
-}
-
-/* BOTONES con degradado, sombra de color y se "levantan" al pasar el mouse */
-button {
-  background: var(--degradado);
-  color: #fff;
-  border: none;
-  padding: 12px 20px;
-  border-radius: 999px;
-  font: inherit;
-  font-weight: 700;
-  cursor: pointer;
-  box-shadow: 0 10px 24px -12px var(--acento);
-  transition: transform 0.15s, box-shadow 0.15s, filter 0.15s, background 0.15s;
-}
-button:hover {
-  filter: brightness(1.08);
-  transform: translateY(-2px);
-  box-shadow: 0 16px 30px -12px var(--acento);
-}
-button:active { transform: translateY(0) scale(0.98); }
-
-/* Botón de cada formulario: ancho completo, esquinas menos redondas */
-#form-registro button,
-#form-login button,
-#form-perfil button {
-  margin-top: 16px;
-  padding: 15px 20px;
-  border-radius: 12px;
-  font-size: 1rem;
-}
-
-/* MENÚ DE LA CUENTA (Editar perfil / Ajustes / Productos) */
-.menu-cuenta {
-  display: flex;
+.mundo-mini {
   flex-direction: column;
-  gap: 8px;
-  margin-top: 20px;
-  padding-top: 16px;
-  border-top: 1px solid var(--linea);
-}
-
-/* Botones y el link se ven iguales: de contorno, texto a la izquierda.
-   El <a> necesita display:block y text-decoration:none para parecer botón */
-.opcion-menu {
-  display: block;
-  width: 100%;
-  box-sizing: border-box;
-  padding: 13px 16px;
-  border-radius: 12px;
-  text-align: left;
-  text-decoration: none;
-  font-weight: 700;
+  gap: 6px;
+  padding: 6px 6px 10px;
+  border-radius: 16px;
+  background: var(--campo-suave);
   color: var(--texto);
-  background: var(--campo-vidrio);
-  border: 1px solid var(--borde-vidrio);
   box-shadow: none;
-  transition: transform 0.15s, border-color 0.15s, color 0.15s;
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-align: center;
 }
-.opcion-menu:hover {
-  transform: translateX(4px);   /* se corre un poquito a la derecha */
-  color: var(--acento-fuerte);
-  border-color: var(--acento);
-  filter: none;
-  box-shadow: none;
-}
-/* Anillo visible cuando se llega con Tab (el <a> no hereda el de button) */
-.opcion-menu:focus-visible {
-  outline: none;
-  box-shadow: 0 0 0 4px var(--anillo);
-  border-color: var(--acento);
-}
+.mundo-mini img { width: 100%; aspect-ratio: 1; object-fit: cover; border-radius: 12px; }
+.mundo-mini:hover { background: var(--acento-suave); box-shadow: none; transform: translateY(-3px); }
 
-/* CERRAR SESIÓN: botón "de contorno", sin degradado */
-#btn-logout {
-  display: block;
-  margin: 24px auto 0;
+/* Mundos grandes (pestaña Mundos): misma tarjeta que la portada */
+.mundos-grandes { grid-template-columns: repeat(auto-fill, minmax(min(220px, 100%), 1fr)); }
+.mundos-grandes .mundo-tarjeta { animation: aparecer 0.5s ease both; animation-delay: calc(var(--i) * 60ms); }
+.mundos-grandes .mundo-nombre { font-size: 1.6rem; }
+
+
+/* ===================== MIS PEDIDOS ===================== */
+.filtro-pedidos {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  padding: 4px;
+  border-radius: 999px;
+  background: var(--campo-suave);
+  border: 1px solid var(--linea);
+}
+.filtro-pedidos button {
+  padding: 8px 14px;
   background: transparent;
   color: var(--texto-suave);
-  border: 1px solid var(--linea);
   box-shadow: none;
+  font-size: 0.85rem;
 }
-#btn-logout:hover {
-  background: var(--campo-vidrio);
-  color: var(--peligro);
-  border-color: var(--peligro);
-}
+.filtro-pedidos button:hover { color: var(--texto); transform: none; box-shadow: none; }
+.filtro-pedidos button[aria-pressed="true"] { background: var(--superficie); color: var(--texto); box-shadow: var(--sombra-1); }
 
-/* =================================================================
-   MI PERFIL COMO COLUMNA LATERAL FIJA (cuando hay sesión iniciada)
-   Va al final a propósito: a igual fuerza gana la última regla, y así
-   le gana al "position: relative" de las tarjetas de vidrio.
-   ================================================================= */
-#resumen-perfil {
-  position: fixed;
-  top: 0;
-  bottom: 0;                 /* top 0 + bottom 0 = todo el alto de la pantalla */
-  left: 0;
-  z-index: 20;
-  width: 300px;
-  max-width: none;
-  margin: 0;
-  box-sizing: border-box;
-  overflow-y: auto;          /* si no cabe, hace scroll por dentro */
-  border-radius: 0 24px 24px 0;   /* redondeado solo del lado derecho */
-  border-left: none;
-}
 
-/* Con sesión, el contenido de la página se corre a la derecha para
-   no quedar debajo de la columna (300px + un respiro de 24px).
-   La clase "con-sesion" la pone cliente.js en mostrarEstadoSesion() */
-body.con-sesion { padding-left: 324px; }
-
-/* CERRAR SESIÓN arriba a la derecha: mismo vidrio que #btn-tema (que
-   ocupaba este lugar antes de iniciar sesión). Se pone rojo al pasar
-   el mouse, igual que el de Ajustes. */
-#btn-logout-superior {
-  position: fixed;
-  top: 12px;
-  right: 12px;
-  z-index: 10;               /* debajo del fondo del sidebar (25) */
-  padding: 8px 14px;
-  color: var(--texto);
-  background: var(--vidrio);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid var(--borde-vidrio);
-  box-shadow: none;
+/* ===================== MI PERFIL ===================== */
+.perfil-columnas {
+  display: grid;
+  grid-template-columns: minmax(0, 340px) minmax(0, 1fr);
+  gap: 18px;
+  align-items: start;
 }
-#btn-logout-superior:hover {
-  background: var(--campo-vidrio);
-  color: var(--peligro);
-  border-color: var(--peligro);
-}
-/* [hidden] debe ganarle al display de los estilos de botón */
-#btn-logout-superior[hidden] { display: none; }
+@media (max-width: 860px) { .perfil-columnas { grid-template-columns: 1fr; } }
 
-/* Cerrar sesión dentro de Ajustes: ancho completo como los demás */
-#sidebar-ajustes #btn-logout {
-  margin: 0;
+.tarjeta-perfil { display: flex; flex-direction: column; align-items: center; gap: 12px; text-align: center; }
+.avatar {
+  display: grid;
+  place-items: center;
+  width: 88px;
+  height: 88px;
+  border-radius: 50%;
+  background: var(--degradado);
+  color: #fff;
+  font-family: var(--fuente-titulos);
+  font-size: 2.4rem;
+  font-style: italic;
+  box-shadow: 0 0 0 6px var(--acento-suave);
+}
+.tarjeta-perfil h3 { font-size: 1.5rem; }
+.datos-perfil {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 10px 16px;
   width: 100%;
-  border-radius: 12px;
+  margin: 8px 0;
+  padding: 16px 0;
+  border-block: 1px solid var(--linea);
+  text-align: left;
+  font-size: 0.9rem;
 }
+.datos-perfil dt { color: var(--texto-suave); font-weight: 600; }
+.datos-perfil dd { margin: 0; overflow-wrap: anywhere; }
+.tarjeta-perfil button { width: 100%; }
 
-/* En celular no cabe una columna fija: vuelve a ser una tarjeta normal */
-@media (max-width: 760px) {
-  #resumen-perfil {
-    position: relative;
-    width: auto;
-    max-width: 560px;
-    margin: 0 auto;
-    border-radius: 24px;
-    border-left: 1px solid var(--borde-vidrio);
-  }
-  body.con-sesion { padding-left: 16px; }
-}
+.formulario-perfil { display: flex; flex-direction: column; gap: 14px; }
+.formulario-perfil h3 { font-size: 1.4rem; }
+.formulario-perfil .ayuda { color: var(--texto-suave); font-size: 0.88rem; margin-top: -8px; }
+.formulario-perfil button[type="submit"] { align-self: flex-start; }
+.fila-campos { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+@media (max-width: 560px) { .fila-campos { grid-template-columns: 1fr; } }
 
-/* (La animación "aparecer" y "reducir movimiento" están en everwish.css) */
+.pie-compacto { margin-top: 72px; }

@@ -74,8 +74,12 @@ document.getElementById('form-registro').addEventListener('submit', async (event
   );
 
   if (cliente) {
+    // Pasamos a la pestaña "Iniciar sesión" con el correo ya escrito
+    // (el clic borra el mensaje, por eso el texto va después)
+    document.querySelector('[data-acceso="form-login"]').click();
+    document.getElementById('login-correo').value = document.getElementById('registro-correo').value.trim();
     document.getElementById('estado-sesion').textContent =
-      'Cuenta creada. Ahora inicia sesión con ese correo y contraseña.';
+      'Cuenta creada ✦ Ahora escribe tu contraseña para entrar.';
     form.reset(); // vacía los 3 campos del formulario, para la próxima persona
   } else {
     document.getElementById('estado-sesion').textContent =
@@ -135,99 +139,142 @@ document.getElementById('form-login').addEventListener('submit', async (event) =
 });
 
 
+// ===================== PESTAÑAS DEL ACCESO =====================
+// "Iniciar sesión | Crear cuenta": muestra un formulario y oculta el otro
+document.querySelector('.selector-acceso').addEventListener('click', (event) => {
+  const pestana = event.target.closest('[data-acceso]');
+  if (!pestana) return;
+  document.querySelectorAll('[data-acceso]').forEach((b) => {
+    const activa = b === pestana;
+    b.setAttribute('aria-selected', activa);
+    document.getElementById(b.dataset.acceso).hidden = !activa;
+  });
+  document.getElementById('estado-sesion').textContent = '';
+});
+
+
 // ===================== ESTADO DE LA SESIÓN =====================
 // Va AFUERA del listener del login: si estuviera adentro, solo existiría
 // dentro de esa función y el botón de cerrar sesión no la encontraría.
-// Según quién tenga la sesión, muestra Mi perfil o los formularios de
-// registro/login.
+// Sin sesión: pantalla de acceso. Con sesión: el panel de la cuenta.
 async function mostrarEstadoSesion() {
   const { data } = await db.auth.getUser();
-  const estado = document.getElementById('estado-sesion');
+  const conSesion = Boolean(data.user);
 
-  // hidden = true oculta el elemento; hidden = false lo muestra
-  document.querySelector('.tarjetas').hidden = Boolean(data.user);
-  document.getElementById('resumen-perfil').hidden = !data.user;
-  document.getElementById('btn-logout').hidden = !data.user;
-  document.getElementById('btn-logout-superior').hidden = !data.user;
+  document.getElementById('zona-acceso').hidden = conSesion;
+  document.getElementById('zona-cuenta').hidden = !conSesion;
 
-  // classList.toggle(clase, condición): pone la clase si es true y la
-  // quita si es false. El CSS usa body.con-sesion para hacer espacio
-  // a la columna fija de Mi perfil.
-  document.body.classList.toggle('con-sesion', Boolean(data.user));
-
-  // MOVER el botón de tema: append() / prepend() con un elemento que YA
-  // existe no lo copia, lo cambia de lugar. Su listener (el de tema.js)
-  // viaja con él, así que sigue funcionando sin tocar tema.js.
+  // El botón de tema es UNO solo: con sesión va en la barra; sin sesión
+  // flota arriba a la derecha de la pantalla de acceso
   const botonTema = document.getElementById('btn-tema');
-  if (data.user) {
-    document.getElementById('ajustes-tema').append(botonTema); // dentro de Ajustes
+  if (conSesion) {
+    document.querySelector('#zona-cuenta .barra-acciones').prepend(botonTema);
+    botonTema.classList.remove('tema-flotante');
   } else {
-    document.body.prepend(botonTema); // de vuelta arriba a la derecha
+    document.body.append(botonTema);
+    botonTema.classList.add('tema-flotante');
   }
 
-  if (data.user) {
-    estado.textContent = `Sesión iniciada como ${data.user.email}`;
-    cargarPerfil(data.user.id);
-  } else {
-    estado.textContent = 'No has iniciado sesión.';
-    cerrarSidebar(); // si cerró sesión con el sidebar abierto
-  }
+  if (!conSesion) return;
+
+  cargarPerfil(data.user.id);
+  cargarCarritoDesdeBD();          // galeria.js: el carrito guardado en Supabase
+  mostrarVista(vistaDesdeUrl());   // la pestaña que diga la URL (#pedidos...) o Inicio
 }
 
 
-// ===================== SIDEBARS =====================
-// Abrir y cerrar es solo poner o quitar clases: el movimiento lo hace
-// el CSS (transform + transition en .sidebar).
-// Ahora hay DOS sidebars (perfil y ajustes), así que abrirSidebar()
-// recibe el id del que quieres abrir: una sola función para los dos.
-function abrirSidebar(id) {
-  cerrarSidebar(); // por si había otro abierto: solo uno a la vez
+// ===================== VISTAS (pestañas de la cuenta) =====================
+const VISTAS = ['inicio', 'catalogo', 'mundos', 'pedidos', 'perfil'];
 
-  const sidebar = document.getElementById(id);
-  sidebar.classList.add('abierto');
-  sidebar.inert = false; // ya se puede usar con Tab y clic
-  document.getElementById('fondo-sidebar').classList.add('visible');
+// cliente.html#pedidos abre directamente "Mis pedidos"
+const vistaDesdeUrl = () => (VISTAS.includes(location.hash.slice(1)) ? location.hash.slice(1) : 'inicio');
 
-  // Pone el cursor en el primer campo editable (o el primer botón que
-  // no sea la ✕). "?." = si no encuentra nada, no hace nada (sin error).
-  sidebar
-    .querySelector('input:not([readonly]), button:not(.btn-cerrar-sidebar)')
-    ?.focus();
-}
-
-// Cierra el que esté abierto, sea cual sea
-function cerrarSidebar() {
-  document.querySelectorAll('.sidebar.abierto').forEach((sidebar) => {
-    sidebar.classList.remove('abierto');
-    sidebar.inert = true;
+function mostrarVista(nombre) {
+  VISTAS.forEach((v) => {
+    document.getElementById('vista-' + v).hidden = v !== nombre;
   });
-  document.getElementById('fondo-sidebar').classList.remove('visible');
+  document.querySelectorAll('[data-vista]').forEach((b) => {
+    if (b.dataset.vista === nombre) b.setAttribute('aria-current', 'page');
+    else b.removeAttribute('aria-current');
+  });
+  // replaceState cambia la URL (#catalogo) sin recargar ni llenar el historial
+  history.replaceState(null, '', '#' + nombre);
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+
+  // Cada vista se refresca al abrirla: siempre datos actuales
+  if (nombre === 'inicio') cargarInicio();
+  if (nombre === 'pedidos') cargarMisPedidos();
 }
 
-// () => abrirSidebar('...') : se escribe así (y no abrirSidebar('...')
-// a secas) porque addEventListener necesita una FUNCIÓN para llamar
-// después, no el resultado de llamarla ya.
-document.getElementById('btn-editar-perfil')
-  .addEventListener('click', () => abrirSidebar('sidebar-perfil'));
-document.getElementById('btn-ajustes')
-  .addEventListener('click', () => abrirSidebar('sidebar-ajustes'));
-
-// Cada sidebar tiene su propia ✕ — por eso es clase, no id
-document.querySelectorAll('.btn-cerrar-sidebar').forEach((boton) => {
-  boton.addEventListener('click', cerrarSidebar);
+// Botones de la barra (data-vista) y atajos dentro de la página (data-ir)
+document.addEventListener('click', (event) => {
+  const boton = event.target.closest('[data-vista], [data-ir]');
+  if (boton) mostrarVista(boton.dataset.vista || boton.dataset.ir);
 });
-document.getElementById('fondo-sidebar').addEventListener('click', cerrarSidebar);
 
-// La tecla Escape también lo cierra
-document.addEventListener('keydown', (event) => {
-  if (event.key === 'Escape') cerrarSidebar();
+
+// ===================== INICIO =====================
+// Saludo, números de la cuenta, último pedido y ofertas
+let misPedidos = [];
+
+async function cargarInicio() {
+  const { data } = await db.auth.getUser();
+  if (!data.user) return;
+
+  const pedidos = await traerPedidos(data.user.id);   // pedidos.js
+  misPedidos = pedidos || [];
+
+  const enCurso = misPedidos.filter((p) => p.estado === 'confirmado' || p.estado === 'enviado').length;
+  const comprado = misPedidos
+    .filter((p) => p.estado !== 'cancelado')
+    .reduce((suma, p) => suma + Number(p.total), 0);
+
+  document.getElementById('stat-pedidos').textContent = misPedidos.length;
+  document.getElementById('stat-en-curso').textContent = enCurso;
+  document.getElementById('stat-comprado').textContent = pesos(comprado);
+  document.getElementById('stat-carrito').textContent = totalUnidades();   // galeria.js
+
+  const ultimo = document.getElementById('ultimo-pedido');
+  ultimo.innerHTML = misPedidos.length
+    ? tarjetaPedido(misPedidos[0], { arriba: progresoPedido(misPedidos[0].estado) })
+    : `<p class="pedidos-vacio">Aún no tienes pedidos.<br>
+         <button type="button" class="boton-texto" data-ir="catalogo">Elige tu primera joya →</button></p>`;
+
+  await productosListos;   // galeria.js: espera a que lleguen los productos
+  const ofertas = productos
+    .filter((p) => sePuedeComprar(p) && p.descuento > 0)
+    .sort((a, b) => b.descuento - a.descuento)
+    .slice(0, 10);
+  document.getElementById('carrusel-recomendados').innerHTML = ofertas.length
+    ? ofertas.map(tarjetaProducto).join('')
+    : '<p class="sin-resultados">Pronto habrá ofertas nuevas ✦</p>';
+}
+
+// Mundos: los mini (Inicio) y los grandes (pestaña Mundos). Al elegir
+// uno, galeria.js filtra (data-grupo/data-valor) y aquí abrimos el catálogo.
+function pintarMundosCuenta() {
+  document.getElementById('mundos-mini').innerHTML = MUNDOS.map((m) => `
+    <button type="button" class="mundo-mini" data-grupo="mundo" data-valor="${m.clave}">
+      <img src="${m.imagen}" alt="" loading="lazy"><span>${m.nombre}</span>
+    </button>`).join('');
+
+  document.getElementById('lista-mundos-cuenta').innerHTML = MUNDOS.map((m, i) => `
+    <button type="button" class="mundo-tarjeta" data-grupo="mundo" data-valor="${m.clave}" style="--i: ${i}">
+      <img src="${m.imagen}" alt="" loading="lazy">
+      <span class="mundo-estudio">${m.estudio}</span>
+      <span class="mundo-nombre">${m.nombre}</span>
+      <span class="mundo-cuenta">${m.frase}</span>
+    </button>`).join('');
+}
+pintarMundosCuenta();
+
+document.addEventListener('click', (event) => {
+  if (event.target.closest('.mundo-mini, #lista-mundos-cuenta .mundo-tarjeta')) mostrarVista('catalogo');
 });
 
 
 // ===================== LEER (SELECT) =====================
 // Trae la fila de clientes_practica de este usuario.
-// .eq('id', id) filtra igual que en modificarProducto(); además, la
-// política RLS ya impide ver filas de otras personas.
 // .maybeSingle() devuelve UN objeto (no un array), o null si no hay fila
 // — por ejemplo, si el signUp funcionó pero el insert del perfil falló.
 async function leerCliente(id) {
@@ -241,18 +288,16 @@ async function leerCliente(id) {
     console.log('Error al leer el perfil:', error);
     return null;
   }
-
   return data;
 }
 
 // Lee el cliente y pone cada dato en su campo del formulario.
-// "?? ''" = si la columna viene en null (aún no la llenó), deja el campo
-// vacío en vez de escribir la palabra "null".
+// "?? ''" = si la columna viene en null, deja el campo vacío.
 async function cargarPerfil(id) {
   const cliente = await leerCliente(id);
 
   if (!cliente) {
-    document.getElementById('estado-sesion').textContent =
+    document.getElementById('mensaje-perfil').textContent =
       'Iniciaste sesión, pero no se encontró tu perfil. Revisa la consola.';
     return;
   }
@@ -266,14 +311,18 @@ async function cargarPerfil(id) {
   pintarResumen(cliente);
 }
 
-// Escribe los datos en la tarjeta "Mi perfil".
+// Escribe los datos en la tarjeta del perfil y en el saludo.
 // "|| '—'" = si el dato está vacío o en null, muestra una raya.
 function pintarResumen(cliente) {
-  document.getElementById('resumen-nombre').textContent    = cliente.nombre || '—';
+  const nombre = cliente.nombre || '—';
+  document.getElementById('resumen-nombre').textContent    = nombre;
   document.getElementById('resumen-correo').textContent    = cliente.correo || '—';
   document.getElementById('resumen-telefono').textContent  = cliente.telefono || '—';
   document.getElementById('resumen-direccion').textContent = cliente.direccion || '—';
   document.getElementById('resumen-ciudad').textContent    = cliente.ciudad || '—';
+  document.getElementById('avatar-inicial').textContent    = (cliente.nombre || '✦').trim().charAt(0).toUpperCase();
+  // En el saludo, solo el primer nombre
+  document.getElementById('saludo-nombre').textContent     = (cliente.nombre || '').trim().split(' ')[0] || 'de nuevo';
 }
 
 
@@ -293,23 +342,19 @@ async function actualizarCliente(id, cambios) {
     console.log('Error al actualizar el perfil:', error);
     return null;
   }
-
   if (data.length === 0) {
     console.log('No se actualizó ninguna fila (¿falta la política RLS de update?)');
     return null;
   }
-
   return data[0];
 }
 
 document.getElementById('form-perfil').addEventListener('submit', async (event) => {
   event.preventDefault();
+  const mensaje = document.getElementById('mensaje-perfil');
 
-  // El id sale de la sesión, no de un campo del formulario:
-  // así nadie puede escribir el id de otra persona.
   const { data } = await db.auth.getUser();
 
-  // Solo mandamos las columnas editables — correo y rol no van aquí
   const cliente = await actualizarCliente(data.user.id, {
     nombre:    document.getElementById('perfil-nombre').value.trim(),
     telefono:  document.getElementById('perfil-telefono').value.trim(),
@@ -318,15 +363,11 @@ document.getElementById('form-perfil').addEventListener('submit', async (event) 
   });
 
   if (cliente) {
-    // update().select() devuelve la fila YA actualizada: con ella
-    // repintamos el resumen sin tener que volver a leer la tabla
     pintarResumen(cliente);
-    cerrarSidebar();
-    document.getElementById('estado-sesion').textContent = 'Datos guardados ✔';
+    mensaje.textContent = 'Datos guardados ✔';
+    mostrarAviso('Perfil actualizado ✦');   // galeria.js
   } else {
-    // El sidebar queda abierto para que no se pierda lo que escribió
-    document.getElementById('estado-sesion').textContent =
-      'No se pudieron guardar los cambios. Revisa la consola.';
+    mensaje.textContent = 'No se pudieron guardar los cambios. Revisa la consola.';
   }
 });
 
@@ -334,6 +375,8 @@ document.getElementById('form-perfil').addEventListener('submit', async (event) 
 // ===================== MIS PEDIDOS =====================
 // Usa traerPedidos() y tarjetaPedido() de pedidos.js. El cliente solo ve
 // el estado: quien lo cambia (enviado, entregado...) es el admin.
+let filtroPedidos = 'todos';
+
 async function cargarMisPedidos() {
   const lista = document.getElementById('lista-mis-pedidos');
   lista.innerHTML = '<p class="pedidos-vacio">Cargando tus pedidos…</p>';
@@ -341,44 +384,64 @@ async function cargarMisPedidos() {
   const { data } = await db.auth.getUser();
   if (!data.user) return;
 
-  // Filtramos por su id aunque RLS ya lo haga: así la consulta es clara
   const pedidos = await traerPedidos(data.user.id);
-
   if (!pedidos) {
     lista.innerHTML = '<p class="pedidos-vacio">No pudimos cargar tus pedidos. Revisa la consola (F12).</p>';
     return;
   }
-  if (pedidos.length === 0) {
-    lista.innerHTML = `
-      <p class="pedidos-vacio">
-        Aún no tienes pedidos.<br>
-        <a href="galeria.html">Ir a la tienda →</a>
-      </p>`;
+  misPedidos = pedidos;
+  pintarMisPedidos();
+}
+
+function pintarMisPedidos() {
+  const lista = document.getElementById('lista-mis-pedidos');
+  const visibles = misPedidos.filter((p) =>
+    filtroPedidos === 'todos' ||
+    (filtroPedidos === 'curso' && (p.estado === 'confirmado' || p.estado === 'enviado')) ||
+    p.estado === filtroPedidos);
+
+  if (visibles.length === 0) {
+    lista.innerHTML = misPedidos.length
+      ? '<p class="pedidos-vacio">No hay pedidos en este estado.</p>'
+      : `<p class="pedidos-vacio">Aún no tienes pedidos.<br>
+           <button type="button" class="boton-texto" data-ir="catalogo">Ir al catálogo →</button></p>`;
     return;
   }
 
-  lista.innerHTML = pedidos
+  lista.innerHTML = visibles
     .map((p) => tarjetaPedido(p, { arriba: progresoPedido(p.estado) }))
     .join('');
 }
 
-// Se recarga cada vez que se abre: el admin pudo cambiar un estado
-document.getElementById('btn-mis-pedidos').addEventListener('click', () => {
-  abrirSidebar('sidebar-pedidos');
-  cargarMisPedidos();
+// Filtro "Todos / En curso / Entregados / Cancelados" (sin volver a Supabase)
+document.querySelector('.filtro-pedidos').addEventListener('click', (event) => {
+  const boton = event.target.closest('[data-filtro-pedidos]');
+  if (!boton) return;
+  filtroPedidos = boton.dataset.filtroPedidos;
+  document.querySelectorAll('[data-filtro-pedidos]').forEach((b) => b.setAttribute('aria-pressed', b === boton));
+  pintarMisPedidos();
+});
+
+// galeria.js avisa cuando se confirma un pedido desde el carrito
+document.addEventListener('pedido-confirmado', () => {
+  const abierta = vistaDesdeUrl();
+  if (abierta === 'inicio') cargarInicio();
+  if (abierta === 'pedidos') cargarMisPedidos();
 });
 
 
-//CERRAR SESION//
-// Una sola función para los DOS botones (el de Ajustes y el de arriba a
-// la derecha), así si algún día cambia, se cambia en un solo lugar.
+// ===================== CERRAR SESIÓN =====================
+// Una sola función para los DOS botones (el de Mi perfil y el de la barra)
 async function cerrarSesion() {
-  await db.auth.signOut();
+  await db.auth.signOut();   // galeria.js vacía el carrito local al oír SIGNED_OUT
+  history.replaceState(null, '', location.pathname);
   mostrarEstadoSesion();
 }
 
 document.getElementById('btn-logout').addEventListener('click', cerrarSesion);
 document.getElementById('btn-logout-superior').addEventListener('click', cerrarSesion);
 
-// Al cargar la página, revisa si ya había una sesión activa
+
+// ===================== ARRANQUE =====================
+// Al abrir la página: ¿ya había una sesión guardada?
 mostrarEstadoSesion();

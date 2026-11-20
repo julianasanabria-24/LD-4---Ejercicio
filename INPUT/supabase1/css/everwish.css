@@ -1,113 +1,146 @@
 /* =================================================================
-   EVERWISH · TEMA COMPARTIDO
-   Lo cargan TODAS las páginas de la tienda (index, galeria, cliente,
-   admin) ANTES de su propio CSS. Aquí viven:
-     - los colores (variables) de día "Aurora" y de noche "Medianoche"
-     - las tipografías
-     - el fondo: cielo con estrellas y una aurora que se mueve despacio
+   EVERWISH · SISTEMA VISUAL COMPARTIDO
+   Lo cargan TODAS las páginas (index, galeria, cliente, admin) ANTES
+   de su propio CSS. Aquí viven:
+     1. Los colores (variables) de día y de noche
+     2. Tipografías y base
+     3. Componentes que se repiten: botones, campos, etiquetas,
+        barra superior, pie de página, aviso (toast), acceso (login)
+     4. Animaciones (aparecer, revelar al hacer scroll)
    Para cambiar un color de toda la tienda, se cambia SOLO aquí.
    ================================================================= */
 
-/* ===================== COLORES · DÍA (Aurora) ===================== */
+/* ===================== 1. COLORES · DÍA ===================== */
 :root {
-  /* Tipografías: títulos con serif de cuento, texto con sans legible */
-  --fuente-titulos: "Cormorant Garamond", Georgia, "Times New Roman", serif;
-  --fuente-texto: "DM Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --fuente-titulos: "Fraunces", Georgia, "Times New Roman", serif;
+  --fuente-texto: "Plus Jakarta Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
 
-  --fondo: #f6f2ff;           /* fondo de la página (perla lavanda) */
-  --superficie: #ffffff;      /* tarjetas y campos activos */
-  --texto: #221a45;           /* texto principal (índigo profundo) */
-  --texto-suave: #675f8c;     /* etiquetas y ayudas */
-  --acento: #7052dc;          /* botones, detalles, foco */
-  --acento-fuerte: #4c33b0;   /* precios, títulos destacados */
-  --oro: #9c6f1e;             /* texto dorado (legible sobre claro) */
-  --oro-brillo: #e3bd72;      /* destellos y bordes dorados */
-  --borde-suave: #d8cdf6;
-  --campo-suave: #efe9ff;     /* fondo de encabezados de tabla, etc. */
-  --campo: #fbf9ff;           /* fondo de campos de formulario */
-  --linea: #e5ddf9;           /* bordes finos */
-  --peligro: #c2304d;
-  --exito: #1d7f55;
-  --anillo: rgba(112, 82, 220, 0.2);           /* halo del campo activo */
-  --sombra: rgba(52, 33, 120, 0.1);
-  --sombra-color: rgba(60, 38, 140, 0.3);
-  --boton-hover: #4c33b0;
-  --degradado: linear-gradient(135deg, #6a4be0 0%, #9d5bd2 55%, #c98c45 100%);
-  --degradado-oro: linear-gradient(135deg, #b88a3a 0%, #e8c57d 50%, #b88a3a 100%);
-  --vidrio: rgba(255, 255, 255, 0.72);         /* tarjetas semitransparentes */
-  --borde-vidrio: rgba(255, 255, 255, 0.92);
-  --campo-vidrio: rgba(255, 255, 255, 0.78);
-  --aurora-1: rgba(122, 92, 255, 0.22);        /* luces de fondo */
-  --aurora-2: rgba(232, 182, 98, 0.22);
-  --aurora-3: rgba(96, 168, 230, 0.16);
-  --brillo-1: rgba(122, 92, 255, 0.12);
-  --brillo-2: rgba(232, 182, 98, 0.12);
-  --estrella: rgba(112, 82, 220, 0.38);        /* puntitos del cielo */
-  --estrellas-opacidad: 0.55;
+  --fondo: #fbf8fc;            /* perla con un toque lila */
+  --fondo-alt: #f4eef9;        /* secciones alternas */
+  --superficie: #ffffff;       /* tarjetas */
+  --texto: #1d1736;            /* índigo casi negro: se lee muy bien */
+  --texto-suave: #6a6384;
+  --acento: #6c4ad8;           /* violeta mágico */
+  --acento-fuerte: #4b2db0;
+  --acento-suave: #efe9fd;
+  --rosa: #d94f82;             /* rosa princesa */
+  --rosa-suave: #fde8f0;
+  --oro: #94661c;              /* dorado legible sobre claro */
+  --oro-brillo: #e7c578;       /* destellos */
+  --noche: #15112e;            /* bandas oscuras (hero, pie) en los dos temas */
+  --noche-2: #2a1f5c;
+  --borde-suave: #ddd3f3;
+  --linea: #ebe5f4;
+  --campo: #ffffff;
+  --campo-suave: #f3eefb;
+  --peligro: #c62f52;
+  --exito: #1c7d55;
+  --anillo: rgba(108, 74, 216, 0.2);
+  --sombra: rgba(40, 24, 100, 0.1);
+  --sombra-color: rgba(50, 30, 120, 0.28);
+  --sombra-1: 0 1px 2px rgba(30, 20, 70, 0.05), 0 10px 28px -14px rgba(50, 30, 120, 0.22);
+  --sombra-2: 0 2px 4px rgba(30, 20, 70, 0.04), 0 28px 56px -26px rgba(50, 30, 120, 0.4);
+  --boton-hover: #4b2db0;
+  --degradado: linear-gradient(120deg, #6a47dc 0%, #b04fc6 55%, #e39a4e 100%);
+  --degradado-oro: linear-gradient(135deg, #b88a3a 0%, #f0d48c 50%, #b88a3a 100%);
+  --degradado-noche: radial-gradient(120% 90% at 80% 0%, #3b2a7d 0%, #1b1440 45%, #110c27 100%);
+  --vidrio: rgba(255, 255, 255, 0.78);
+  --borde-vidrio: rgba(255, 255, 255, 0.95);
+  --campo-vidrio: rgba(255, 255, 255, 0.85);
+  --aurora-1: rgba(122, 92, 255, 0.14);
+  --aurora-2: rgba(240, 150, 190, 0.14);
+  --aurora-3: rgba(232, 190, 110, 0.12);
+  --estrella: rgba(108, 74, 216, 0.35);
+  --estrellas-opacidad: 0.35;
+
+  --radio-s: 10px;
+  --radio: 16px;
+  --radio-l: 26px;
+  --ancho: 1240px;             /* ancho máximo del contenido */
+  --barra-alto: 72px;
 }
 
-/* ===================== COLORES · NOCHE (Medianoche) ===================== */
+/* ===================== COLORES · NOCHE ===================== */
 :root[data-tema="oscuro"] {
-  --fondo: #0d0a24;
-  --superficie: #1a1540;
-  --texto: #f2edff;
-  --texto-suave: #b3a8d8;
-  --acento: #a48bff;
-  --acento-fuerte: #cdbcff;
-  --oro: #ecc873;
+  --fondo: #0d0a1f;
+  --fondo-alt: #130f2b;
+  --superficie: #19143a;
+  --texto: #f3efff;
+  --texto-suave: #b2a9d6;
+  --acento: #a58cff;
+  --acento-fuerte: #cdbfff;
+  --acento-suave: #241d4d;
+  --rosa: #ff8fb7;
+  --rosa-suave: #3a1c3c;
+  --oro: #edca7a;
   --oro-brillo: #f3d896;
-  --borde-suave: #3c3274;
-  --campo-suave: #231c4d;
-  --campo: #140f31;
-  --linea: #2c2559;
-  --peligro: #ff7088;
+  --noche: #090716;
+  --noche-2: #1d1645;
+  --borde-suave: #3a3270;
+  --linea: #2a2453;
+  --campo: #140f2e;
+  --campo-suave: #1f1945;
+  --peligro: #ff7393;
   --exito: #5fd39a;
-  --anillo: rgba(164, 139, 255, 0.28);
+  --anillo: rgba(165, 140, 255, 0.3);
   --sombra: rgba(0, 0, 0, 0.45);
-  --sombra-color: rgba(0, 0, 0, 0.65);
+  --sombra-color: rgba(0, 0, 0, 0.6);
+  --sombra-1: 0 1px 2px rgba(0, 0, 0, 0.3), 0 12px 28px -14px rgba(0, 0, 0, 0.7);
+  --sombra-2: 0 2px 4px rgba(0, 0, 0, 0.3), 0 30px 60px -24px rgba(0, 0, 0, 0.8);
   --boton-hover: #7b5cf0;
-  --degradado: linear-gradient(135deg, #7a5cff 0%, #b866df 55%, #e0a95b 100%);
-  --degradado-oro: linear-gradient(135deg, #c99a45 0%, #f3d896 50%, #c99a45 100%);
-  --vidrio: rgba(26, 21, 64, 0.64);
-  --borde-vidrio: rgba(255, 255, 255, 0.1);
+  --degradado: linear-gradient(120deg, #7c5cff 0%, #c05ad8 55%, #eba95c 100%);
+  --vidrio: rgba(25, 20, 58, 0.72);
+  --borde-vidrio: rgba(255, 255, 255, 0.08);
   --campo-vidrio: rgba(255, 255, 255, 0.05);
-  --aurora-1: rgba(122, 92, 255, 0.3);
-  --aurora-2: rgba(236, 200, 115, 0.13);
-  --aurora-3: rgba(70, 150, 230, 0.2);
-  --brillo-1: rgba(122, 92, 255, 0.16);
-  --brillo-2: rgba(236, 200, 115, 0.08);
-  --estrella: rgba(255, 255, 255, 0.8);
-  --estrellas-opacidad: 0.8;
+  --aurora-1: rgba(122, 92, 255, 0.24);
+  --aurora-2: rgba(255, 120, 180, 0.1);
+  --aurora-3: rgba(236, 200, 115, 0.1);
+  --estrella: rgba(255, 255, 255, 0.85);
+  --estrellas-opacidad: 0.75;
   color-scheme: dark;   /* barras de scroll y controles nativos en oscuro */
 }
 
 
-/* ===================== BASE ===================== */
+/* ===================== 2. BASE ===================== */
+*, *::before, *::after { box-sizing: border-box; }
 
 /* hidden deja de funcionar si otra regla le pone display (grid, flex);
    esta regla le devuelve la prioridad */
 [hidden] { display: none !important; }
 
+html { scroll-behavior: smooth; }
+
 body {
+  margin: 0;
+  min-height: 100vh;
   font-family: var(--fuente-texto);
+  font-size: 1rem;
+  line-height: 1.6;
   color: var(--texto);
   background: var(--fondo);
   transition: background 0.3s, color 0.3s;
   -webkit-font-smoothing: antialiased;
 }
 
-/* Títulos con la serif de cuento */
-h1, h2, h3,
+img { max-width: 100%; display: block; }
+
+a { color: inherit; }
+
+h1, h2, h3, h4,
 .fuente-titulos {
   font-family: var(--fuente-titulos);
   font-weight: 600;
-  letter-spacing: 0;
+  line-height: 1.12;
+  letter-spacing: -0.015em;
+  margin: 0;
+  text-wrap: balance;
 }
+h1 { font-size: clamp(2.3rem, 5vw, 4rem); }
+h2 { font-size: clamp(1.8rem, 3.4vw, 2.6rem); }
+h3 { font-size: 1.25rem; }
+p  { margin: 0; text-wrap: pretty; }
 
-/* CIELO ESTRELLADO: puntitos de distintos tamaños repetidos en mosaico.
-   Cada radial-gradient es una estrella; background-size repite el
-   dibujo. z-index -1 lo deja detrás del contenido y pointer-events:
-   none hace que los clics lo atraviesen. */
+/* CIELO: puntitos que titilan (muy suaves de día, más visibles de noche) */
 body::before {
   content: "";
   position: fixed;
@@ -116,17 +149,15 @@ body::before {
   pointer-events: none;
   opacity: var(--estrellas-opacidad);
   background-image:
-    radial-gradient(1.6px 1.6px at 22px 34px,  var(--estrella), transparent 70%),
-    radial-gradient(1.2px 1.2px at 140px 80px, var(--estrella), transparent 70%),
-    radial-gradient(2px 2px     at 90px 170px, var(--estrella), transparent 70%),
-    radial-gradient(1px 1px     at 200px 20px, var(--estrella), transparent 70%),
-    radial-gradient(1.4px 1.4px at 250px 210px, var(--estrella), transparent 70%),
-    radial-gradient(1px 1px     at 60px 250px, var(--estrella), transparent 70%);
+    radial-gradient(1.6px 1.6px at 22px 34px,   var(--estrella), transparent 70%),
+    radial-gradient(1.2px 1.2px at 140px 80px,  var(--estrella), transparent 70%),
+    radial-gradient(2px 2px     at 90px 170px,  var(--estrella), transparent 70%),
+    radial-gradient(1px 1px     at 200px 20px,  var(--estrella), transparent 70%),
+    radial-gradient(1.4px 1.4px at 250px 210px, var(--estrella), transparent 70%);
   background-size: 290px 290px;
   animation: titilar 7s ease-in-out infinite alternate;
 }
-
-/* AURORA: tres luces difuminadas que se mueven muy despacio */
+/* AURORA: tres luces difuminadas detrás de todo */
 body::after {
   content: "";
   position: fixed;
@@ -134,23 +165,25 @@ body::after {
   z-index: -2;
   pointer-events: none;
   background:
-    radial-gradient(circle at 15% 18%, var(--aurora-1), transparent 34%),
-    radial-gradient(circle at 85% 12%, var(--aurora-2), transparent 30%),
-    radial-gradient(circle at 70% 88%, var(--aurora-3), transparent 36%);
-  filter: blur(46px);
+    radial-gradient(circle at 12% 15%, var(--aurora-1), transparent 32%),
+    radial-gradient(circle at 88% 10%, var(--aurora-2), transparent 30%),
+    radial-gradient(circle at 70% 90%, var(--aurora-3), transparent 34%);
+  filter: blur(40px);
   animation: flotar 26s ease-in-out infinite alternate;
 }
 
-@keyframes titilar {
-  from { opacity: calc(var(--estrellas-opacidad) * 0.6); }
-  to   { opacity: var(--estrellas-opacidad); }
-}
-@keyframes flotar {
-  from { transform: translate(0, 0) rotate(0deg); }
-  to   { transform: translate(4%, -3%) rotate(8deg); }
+@keyframes titilar { from { opacity: calc(var(--estrellas-opacidad) * 0.55); } to { opacity: var(--estrellas-opacidad); } }
+@keyframes flotar  { from { transform: translate(0, 0); } to { transform: translate(3%, -3%) rotate(6deg); } }
+
+/* Contenedor centrado con márgenes a los lados (16px mínimo en celular) */
+.contenedor {
+  width: 100%;
+  max-width: var(--ancho);
+  margin-inline: auto;
+  padding-inline: clamp(16px, 4vw, 32px);
 }
 
-/* Texto con degradado (violeta → oro): el fondo se recorta a las letras */
+/* Texto con degradado (violeta → rosa → oro) recortado a las letras */
 .texto-degradado {
   background: var(--degradado);
   -webkit-background-clip: text;
@@ -159,19 +192,16 @@ body::after {
   font-style: italic;
 }
 
-/* Destello ✦ dorado que se usa como adorno en títulos y etiquetas */
-.destello { color: var(--oro); }
-
-/* Marca "✦ Everwish" (barra superior y encabezados) */
+/* MARCA "✦ Everwish" */
 .marca {
   display: inline-flex;
   align-items: center;
   gap: 8px;
   font-family: var(--fuente-titulos);
-  font-size: 1.65rem;
+  font-size: 1.6rem;
   font-weight: 700;
   font-style: italic;
-  letter-spacing: 0.01em;
+  letter-spacing: -0.01em;
   color: var(--texto);
   text-decoration: none;
   white-space: nowrap;
@@ -179,24 +209,535 @@ body::after {
 .marca::before {
   content: "✦";
   font-style: normal;
-  font-size: 0.8em;
-  color: var(--oro);
-  text-shadow: 0 0 12px var(--oro-brillo);
+  font-size: 0.75em;
+  color: var(--oro-brillo);
+  text-shadow: 0 0 14px var(--oro-brillo);
+  animation: girar-destello 6s linear infinite;
 }
+@keyframes girar-destello { to { transform: rotate(360deg); } }
+
+/* ETIQUETA SUPERIOR: pastilla pequeña encima de un título */
+.etiqueta-superior {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 14px;
+  border-radius: 999px;
+  background: var(--acento-suave);
+  color: var(--acento-fuerte);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.etiqueta-superior::before { content: "✦"; color: var(--oro); }
 
 /* Foco visible con el color de acento (teclado) */
-:focus-visible {
-  outline: 2px solid var(--acento);
-  outline-offset: 2px;
+:focus-visible { outline: 2px solid var(--acento); outline-offset: 3px; }
+
+
+/* ===================== 3. BOTONES ===================== */
+/* Todo <button> nace como botón principal. Los botones especiales
+   (chips, íconos, pestañas) lo sobrescriben con su propia clase. */
+button,
+.boton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 22px;
+  border: 0;
+  border-radius: 999px;
+  background: var(--degradado);
+  background-size: 160% 100%;
+  background-position: 0% 50%;
+  color: #fff;
+  font: inherit;
+  font-weight: 700;
+  font-size: 0.95rem;
+  line-height: 1.2;
+  text-decoration: none;
+  cursor: pointer;
+  box-shadow: 0 12px 26px -14px var(--acento);
+  transition: transform 0.18s, box-shadow 0.18s, background-position 0.4s, opacity 0.18s;
+  user-select: none;
+  -webkit-user-select: none;
+}
+button:hover,
+.boton:hover {
+  background-position: 100% 50%;
+  transform: translateY(-2px);
+  box-shadow: 0 18px 32px -14px var(--acento);
+}
+button:active,
+.boton:active { transform: translateY(0) scale(0.98); }
+
+button:disabled,
+button:disabled:hover {
+  cursor: not-allowed;
+  opacity: 0.45;
+  filter: grayscale(0.8);
+  transform: none;
+  box-shadow: none;
 }
 
-/* Aparecer: sube un poco mientras se hace visible */
+/* De contorno: para acciones secundarias */
+button.secundario,
+.boton.secundario {
+  background: transparent;
+  color: var(--texto);
+  border: 1.5px solid var(--borde-suave);
+  box-shadow: none;
+}
+button.secundario:hover,
+.boton.secundario:hover {
+  border-color: var(--acento);
+  color: var(--acento-fuerte);
+  background: var(--acento-suave);
+}
+
+/* Claro: para usar sobre fondos oscuros (hero) */
+.boton.claro {
+  background: #fff;
+  color: #1d1736;
+  box-shadow: 0 14px 30px -14px rgba(0, 0, 0, 0.6);
+}
+.boton.claro:hover { background: #fff; color: #4b2db0; }
+.boton.contorno-claro {
+  background: rgba(255, 255, 255, 0.08);
+  color: #fff;
+  border: 1.5px solid rgba(255, 255, 255, 0.35);
+  box-shadow: none;
+}
+.boton.contorno-claro:hover { background: rgba(255, 255, 255, 0.16); }
+
+/* Botón redondo de solo ícono (tema, carrito, flechas) */
+.boton-icono,
+#btn-tema {
+  position: relative;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: var(--superficie);
+  color: var(--texto);
+  border: 1px solid var(--linea);
+  box-shadow: var(--sombra-1);
+  font-size: 1.1rem;
+}
+.boton-icono:hover,
+#btn-tema:hover {
+  background: var(--acento-suave);
+  color: var(--acento-fuerte);
+  border-color: var(--borde-suave);
+}
+
+
+/* ===================== CAMPOS DE FORMULARIO ===================== */
+input[type="text"], input[type="email"], input[type="password"],
+input[type="search"], input[type="tel"], input[type="number"],
+input[type="url"], select, textarea {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1.5px solid var(--linea);
+  border-radius: var(--radio-s);
+  background: var(--campo);
+  color: var(--texto);
+  font: inherit;
+  font-size: 0.95rem;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+input:hover, select:hover, textarea:hover { border-color: var(--borde-suave); }
+input:focus, select:focus, textarea:focus {
+  outline: none;
+  border-color: var(--acento);
+  box-shadow: 0 0 0 4px var(--anillo);
+}
+input::placeholder, textarea::placeholder { color: var(--texto-suave); opacity: 0.7; }
+input[readonly] { background: var(--campo-suave); color: var(--texto-suave); }
+input[type="checkbox"], input[type="radio"] { accent-color: var(--acento); width: 18px; height: 18px; }
+
+/* Etiqueta encima del campo */
+.campo {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--texto-suave);
+}
+
+
+/* ===================== BARRA DE ANUNCIOS (marquesina) ===================== */
+.barra-promo {
+  overflow: hidden;
+  background: var(--noche);
+  color: #f1e9ff;
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+/* El contenido está DOS veces seguido: al moverse -50% vuelve a empezar
+   sin que se note el salto */
+.barra-promo-pista {
+  display: flex;
+  width: max-content;
+  animation: marquesina 38s linear infinite;
+}
+.barra-promo:hover .barra-promo-pista { animation-play-state: paused; }
+.barra-promo span { padding: 9px 28px; white-space: nowrap; }
+.barra-promo span::before { content: "✦"; margin-right: 28px; color: var(--oro-brillo); }
+@keyframes marquesina { to { transform: translateX(-50%); } }
+
+
+/* ===================== BARRA SUPERIOR ===================== */
+.barra {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: color-mix(in srgb, var(--fondo) 82%, transparent);
+  backdrop-filter: blur(16px) saturate(160%);
+  -webkit-backdrop-filter: blur(16px) saturate(160%);
+  border-bottom: 1px solid transparent;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+/* efectos.js le pone .con-sombra al bajar un poco */
+.barra.con-sombra {
+  border-bottom-color: var(--linea);
+  box-shadow: 0 10px 30px -24px var(--sombra-color);
+}
+.barra-interior {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  min-height: var(--barra-alto);
+}
+
+.nav-enlaces {
+  display: flex;
+  gap: 4px;
+  margin: 0 auto;
+  padding: 0;
+  list-style: none;
+}
+.nav-enlaces a {
+  position: relative;
+  display: block;
+  padding: 8px 14px;
+  border-radius: 999px;
+  color: var(--texto-suave);
+  font-weight: 600;
+  font-size: 0.92rem;
+  text-decoration: none;
+  transition: color 0.15s, background 0.15s;
+}
+.nav-enlaces a:hover { color: var(--texto); background: var(--acento-suave); }
+.nav-enlaces a[aria-current="page"] { color: var(--acento-fuerte); }
+.nav-enlaces a[aria-current="page"]::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: 2px;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--rosa);
+  transform: translateX(-50%);
+}
+
+.barra-acciones {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* "Mi cuenta" y "Carrito": pastillas con ícono */
+.boton-barra {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 44px;
+  padding: 0 16px;
+  border-radius: 999px;
+  background: var(--superficie);
+  color: var(--texto);
+  border: 1px solid var(--linea);
+  box-shadow: var(--sombra-1);
+  font-weight: 700;
+  font-size: 0.9rem;
+  text-decoration: none;
+}
+.boton-barra:hover {
+  background: var(--acento-suave);
+  color: var(--acento-fuerte);
+  transform: translateY(-1px);
+}
+.boton-barra.principal {
+  background: var(--texto);
+  color: var(--fondo);
+  border-color: transparent;
+}
+.boton-barra.principal:hover { background: var(--acento-fuerte); color: #fff; }
+
+/* Numerito del carrito */
+#contador-carrito {
+  display: inline-grid;
+  place-items: center;
+  min-width: 22px;
+  height: 22px;
+  padding: 0 6px;
+  border-radius: 999px;
+  background: var(--rosa);
+  color: #fff;
+  font-size: 0.75rem;
+  font-weight: 800;
+}
+#contador-carrito.rebote { animation: rebote 0.45s ease; }
+@keyframes rebote {
+  0%, 100% { transform: scale(1); }
+  40% { transform: scale(1.45); }
+  70% { transform: scale(0.9); }
+}
+
+/* En celular: solo íconos y los enlaces pasan a una fila con scroll */
+@media (max-width: 860px) {
+  .barra-interior { flex-wrap: wrap; gap: 8px 12px; padding-block: 10px; }
+  .barra-acciones { margin-left: auto; }
+  .nav-enlaces {
+    order: 3;
+    width: 100%;
+    margin: 0;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .nav-enlaces a { white-space: nowrap; }
+  .texto-boton { display: none; }
+  .boton-barra { width: 44px; padding: 0; justify-content: center; position: relative; }
+  .boton-barra #contador-carrito { position: absolute; top: -4px; right: -6px; }
+}
+
+
+/* ===================== PIE DE PÁGINA ===================== */
+.pie-pagina {
+  margin-top: 96px;
+  background: var(--degradado-noche);
+  color: #d9d1f5;
+}
+.pie-pagina .marca { color: #fff; }
+.pie-grilla {
+  display: grid;
+  grid-template-columns: 1.4fr repeat(3, 1fr);
+  gap: 40px;
+  padding-block: 64px 40px;
+}
+.pie-grilla p { margin-top: 12px; max-width: 34ch; font-size: 0.92rem; color: #b9b0dc; }
+.pie-pagina h4 {
+  margin-bottom: 14px;
+  font-family: var(--fuente-texto);
+  font-size: 0.78rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--oro-brillo);
+}
+.pie-enlaces { margin: 0; padding: 0; list-style: none; display: grid; gap: 8px; }
+.pie-enlaces a { color: #d9d1f5; text-decoration: none; font-size: 0.92rem; }
+.pie-enlaces a:hover { color: #fff; text-decoration: underline; text-underline-offset: 4px; }
+.pie-legal {
+  padding-block: 20px 28px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  font-size: 0.78rem;
+  color: #9d93c4;
+}
+@media (max-width: 860px) {
+  .pie-grilla { grid-template-columns: 1fr 1fr; gap: 28px; }
+  .pie-grilla > :first-child { grid-column: 1 / -1; }
+}
+
+
+/* ===================== AVISO (toast) ===================== */
+#aviso {
+  position: fixed;
+  left: 50%;
+  bottom: 24px;
+  z-index: 200;
+  max-width: calc(100% - 32px);
+  padding: 12px 20px;
+  border-radius: 999px;
+  background: var(--texto);
+  color: var(--fondo);
+  font-weight: 700;
+  font-size: 0.9rem;
+  box-shadow: var(--sombra-2);
+  opacity: 0;
+  pointer-events: none;
+  transform: translate(-50%, 20px);
+  transition: opacity 0.25s, transform 0.25s;
+}
+#aviso.visible { opacity: 1; transform: translate(-50%, 0); }
+
+
+/* ===================== ACCESO (login de cliente y de admin) ===================== */
+/* Pantalla partida: arte nocturno a la izquierda, formulario a la derecha */
+.acceso {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  min-height: 100vh;
+}
+.acceso-arte {
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 40px;
+  padding: clamp(28px, 5vw, 64px);
+  background: var(--degradado-noche);
+  color: #fff;
+}
+/* Destellos que flotan sobre el arte */
+.acceso-arte::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image:
+    radial-gradient(2px 2px at 30px 40px, #fff, transparent 70%),
+    radial-gradient(1.5px 1.5px at 160px 120px, #f3d896, transparent 70%),
+    radial-gradient(1px 1px at 80px 200px, #fff, transparent 70%),
+    radial-gradient(2px 2px at 230px 60px, #fff, transparent 70%);
+  background-size: 260px 260px;
+  opacity: 0.6;
+  animation: titilar 5s ease-in-out infinite alternate;
+  pointer-events: none;
+}
+.acceso-arte > * { position: relative; }
+.acceso-arte .marca { color: #fff; }
+.acceso-arte h1 { color: #fff; font-size: clamp(2.2rem, 4vw, 3.4rem); }
+.acceso-arte .texto-degradado { background: linear-gradient(120deg, #f0d48c, #ff9cc2); -webkit-background-clip: text; background-clip: text; }
+.acceso-arte p { color: #cfc6ef; max-width: 42ch; margin-top: 16px; }
+.acceso-beneficios { display: grid; gap: 12px; margin: 0; padding: 0; list-style: none; }
+.acceso-beneficios li {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  border-radius: var(--radio);
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  font-size: 0.92rem;
+  color: #ece6ff;
+}
+.acceso-beneficios span { font-size: 1.25rem; }
+.acceso-collage { display: flex; gap: 12px; }
+.acceso-collage img {
+  width: 30%;
+  border-radius: var(--radio);
+  box-shadow: 0 20px 40px -20px #000;
+  animation: levitar 6s ease-in-out infinite;
+}
+.acceso-collage img:nth-child(2) { animation-delay: -2s; transform: translateY(16px); }
+.acceso-collage img:nth-child(3) { animation-delay: -4s; }
+@keyframes levitar { 50% { translate: 0 -10px; } }
+
+.acceso-formulario {
+  display: grid;
+  place-items: center;
+  padding: clamp(24px, 5vw, 64px) clamp(16px, 4vw, 48px);
+}
+.acceso-caja { width: min(440px, 100%); }
+.acceso-caja > h2 { margin: 14px 0 6px; }
+.acceso-caja > p { color: var(--texto-suave); margin-bottom: 24px; }
+
+/* Selector "Iniciar sesión | Crear cuenta" */
+.selector-acceso {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4px;
+  padding: 4px;
+  margin-bottom: 20px;
+  border-radius: 999px;
+  background: var(--campo-suave);
+  border: 1px solid var(--linea);
+}
+.selector-acceso button {
+  padding: 10px;
+  background: transparent;
+  color: var(--texto-suave);
+  box-shadow: none;
+}
+.selector-acceso button:hover { transform: none; color: var(--texto); box-shadow: none; }
+.selector-acceso button[aria-selected="true"] {
+  background: var(--superficie);
+  color: var(--texto);
+  box-shadow: var(--sombra-1);
+}
+
+.formulario-acceso {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  animation: aparecer 0.35s ease both;
+}
+.formulario-acceso h3 { font-size: 1.5rem; }
+.formulario-acceso button[type="submit"] { margin-top: 6px; padding-block: 14px; }
+
+/* Mensaje de estado (errores del login, "sesión iniciada"...) */
+.estado-acceso {
+  padding: 12px 16px;
+  border-radius: var(--radio-s);
+  background: var(--acento-suave);
+  color: var(--acento-fuerte);
+  font-size: 0.88rem;
+  font-weight: 600;
+}
+.estado-acceso:empty { display: none; }
+
+.separador-acceso {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 8px 0 0;
+  font-size: 0.8rem;
+  color: var(--texto-suave);
+}
+.separador-acceso::before,
+.separador-acceso::after { content: ""; flex: 1; height: 1px; background: var(--linea); }
+.nota-acceso { font-size: 0.85rem; text-align: center; color: var(--texto-suave); }
+.volver-tienda {
+  display: inline-flex;
+  margin-top: 24px;
+  color: var(--texto-suave);
+  font-size: 0.88rem;
+  font-weight: 600;
+  text-decoration: none;
+}
+.volver-tienda:hover { color: var(--acento-fuerte); }
+
+@media (max-width: 860px) {
+  .acceso { grid-template-columns: 1fr; min-height: 0; }
+  .acceso-arte { gap: 24px; justify-content: flex-start; padding-top: 28px; }
+  .acceso-collage, .acceso-beneficios { display: none; }
+}
+
+
+/* ===================== 4. ANIMACIONES ===================== */
 @keyframes aparecer {
-  from { opacity: 0; transform: translateY(12px); }
+  from { opacity: 0; transform: translateY(14px); }
   to   { opacity: 1; transform: none; }
 }
 
-/* Si la persona tiene activado "reducir movimiento", apagamos animaciones */
+/* REVELAR al hacer scroll: efectos.js le pone .revelado cuando entra
+   en pantalla. Sin JavaScript se ve normal (por la clase .js en <html>) */
+.js [data-revelar] {
+  opacity: 0;
+  transform: translateY(28px);
+  transition: opacity 0.7s ease, transform 0.7s cubic-bezier(0.2, 0.7, 0.2, 1);
+  transition-delay: calc(var(--retraso, 0) * 90ms);
+}
+.js [data-revelar].revelado { opacity: 1; transform: none; }
+
+/* Si la persona activó "reducir movimiento", apagamos animaciones */
 @media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after { animation: none !important; transition: none !important; }
+  *, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
+  .js [data-revelar] { opacity: 1; transform: none; }
 }

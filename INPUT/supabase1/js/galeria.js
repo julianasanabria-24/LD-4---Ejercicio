@@ -1,5 +1,7 @@
 // =================================================================
-// GALERÍA DE PRODUCTOS (galeria.html)
+// TIENDA: catálogo, filtros y carrito
+// La usan galeria.html y cliente.html (pestaña "Catálogo"). Necesita
+// que antes se cargue js/mundos.js (MUNDOS, TIPOS, mundoDe, tipoDe...).
 // Los productos vienen de la tabla products_practice de Supabase (la
 // misma que administras en admin.html). Ver cargarProductos() al final.
 // =================================================================
@@ -7,10 +9,17 @@
 // Todos los productos (se llena en cargarProductos)
 let productos = [];
 
-// Filtros actuales: lo que se escribió en el buscador y el chip activo.
-// categoriaActiva se guarda NORMALIZADA ("tecnologia", sin tilde).
-let textoBusqueda = "";
-let categoriaActiva = "todas";
+// Filtros actuales. Mundo y tipo se guardan como CLAVE (sin tildes):
+// "todos" = sin filtro. precioMax = null → sin límite.
+const filtros = {
+  texto: "",
+  mundo: "todos",
+  tipo: "todos",
+  precioMax: null,
+  soloDisponibles: false,
+  soloOferta: false,
+  orden: "destacados",
+};
 
 
 // ===================== UTILIDADES =====================
@@ -21,10 +30,8 @@ const formato = (n) => "$" + Math.round(n).toLocaleString("es-CO");
 // Precio con el descuento aplicado: 100000 con 0.15 → 85000
 const precioFinal = (p) => p.precio * (1 - (p.descuento || 0));
 
-// Quita tildes y pasa a minúsculas: "Cámara" → "camara" (igual que en admin.js)
-function normalizar(texto) {
-  return texto.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase();
-}
+// Quita tildes y pasa a minúsculas: "Cámara" → "camara" (sinTildes está en mundos.js)
+const normalizar = sinTildes;
 
 // Busca un producto por id en el array (find devuelve el primero que cumple)
 const buscarProducto = (id) => productos.find((p) => p.id === id);
@@ -336,6 +343,12 @@ function tarjetaProducto(p, i) {
   const etiquetas = [];
   if (p.descuento > 0) etiquetas.push(`<span class="etiqueta">-${Math.round(p.descuento * 100)}%</span>`);
   if (!sePuedeComprar(p)) etiquetas.push(`<span class="etiqueta agotado">Agotado</span>`);
+  else if (p.unidades <= 5) etiquetas.push(`<span class="etiqueta ultimas">¡Últimas ${p.unidades}!</span>`);
+
+  // Encima del nombre: el mundo (con su nombre bonito) y el tipo de joya
+  const mundo = datosMundo(mundoDe(p));
+  const tipo = datosTipo(tipoDe(p));
+  const linea = [mundo?.nombre, tipo?.nombre].filter(Boolean).join(" · ") || (p.categorias || []).join(" · ");
 
   return `
     <article class="producto ${sePuedeComprar(p) ? "" : "esta-agotado"}" data-producto="${p.id}" style="--i: ${i}">
@@ -345,7 +358,7 @@ function tarjetaProducto(p, i) {
       </div>
 
       <div class="producto-cuerpo">
-        <span class="producto-categorias">${(p.categorias || []).join(" · ")}</span>
+        <span class="producto-mundo">${linea}</span>
         <h3 class="producto-nombre">${p.nombre}</h3>
         <p class="producto-descripcion">${p.description || ""}</p>
 
@@ -353,7 +366,6 @@ function tarjetaProducto(p, i) {
           <span class="precio-final">${formato(precioFinal(p))}</span>
           ${p.descuento > 0 ? `<span class="precio-antes">${formato(p.precio)}</span>` : ""}
         </div>
-        ${sePuedeComprar(p) && p.unidades <= 5 ? `<span class="stock-bajo">¡Quedan solo ${p.unidades}!</span>` : ""}
       </div>
 
       <div class="producto-pie">${pieTarjeta(p)}</div>
@@ -362,86 +374,185 @@ function tarjetaProducto(p, i) {
 
 // Redibuja SOLO el pie de una tarjeta. Si redibujáramos toda la grilla,
 // todas las tarjetas repetirían su animación de entrada con cada clic.
+// (querySelectorAll: el mismo producto puede estar en la grilla y en un carrusel)
 function actualizarPieTarjeta(id) {
-  const pie = document.querySelector(`[data-producto="${id}"] .producto-pie`);
-  if (pie) pie.innerHTML = pieTarjeta(buscarProducto(id));
+  document.querySelectorAll(`[data-producto="${id}"] .producto-pie`).forEach((pie) => {
+    pie.innerHTML = pieTarjeta(buscarProducto(id));
+  });
 }
 
-// Aplica el buscador y el chip, y dibuja la grilla
-function mostrarProductos() {
-  const buscado = normalizar(textoBusqueda);
+// ¿El producto pasa TODOS los filtros? "excepto" deja fuera uno de ellos:
+// sirve para contar cuántos productos tendría cada opción del panel
+function pasaFiltros(p, excepto = "") {
+  const buscado = normalizar(filtros.texto);
+  const texto = !buscado ||
+    normalizar(p.nombre).includes(buscado) ||
+    normalizar(p.description).includes(buscado) ||
+    (p.categorias || []).some((c) => normalizar(c).includes(buscado)) ||
+    normalizar(datosMundo(mundoDe(p))?.nombre).includes(buscado);
 
-  const visibles = productos.filter((p) => {
-    const coincideTexto =
-      normalizar(p.nombre).includes(buscado) ||
-      (p.categorias || []).some((c) => normalizar(c).includes(buscado));
-    // Comparamos normalizado: "tecnología" y "tecnologia" cuentan igual
-    const coincideCategoria =
-      categoriaActiva === "todas" ||
-      (p.categorias || []).some((c) => normalizar(c) === categoriaActiva);
-    return coincideTexto && coincideCategoria;
-  });
+  return texto &&
+    (excepto === "mundo" || filtros.mundo === "todos" || mundoDe(p) === filtros.mundo) &&
+    (excepto === "tipo"  || filtros.tipo === "todos"  || tipoDe(p) === filtros.tipo) &&
+    (filtros.precioMax === null || precioFinal(p) <= filtros.precioMax) &&
+    (!filtros.soloDisponibles || sePuedeComprar(p)) &&
+    (!filtros.soloOferta || p.descuento > 0);
+}
+
+// Formas de ordenar: cada una es la función que recibe sort()
+const ORDENES = {
+  destacados:    (a, b) => (sePuedeComprar(b) - sePuedeComprar(a)) || (b.descuento - a.descuento) || (a.id - b.id),
+  nuevos:        (a, b) => b.id - a.id,
+  "precio-asc":  (a, b) => precioFinal(a) - precioFinal(b),
+  "precio-desc": (a, b) => precioFinal(b) - precioFinal(a),
+  nombre:        (a, b) => a.nombre.localeCompare(b.nombre, "es"),
+};
+
+// Aplica filtros y orden, y dibuja la grilla
+function mostrarProductos() {
+  const visibles = productos
+    .filter((p) => pasaFiltros(p))
+    .sort(ORDENES[filtros.orden] || ORDENES.destacados);
 
   const grilla = document.getElementById("grilla-productos");
   grilla.innerHTML = visibles.length
     ? visibles.map(tarjetaProducto).join("")
-    : `<p class="sin-resultados">Ningún kit coincide con ese deseo… prueba otra búsqueda ✦</p>`;
+    : `<p class="sin-resultados">Ninguna joya coincide con ese deseo… prueba quitando algún filtro ✦</p>`;
 
   document.getElementById("conteo-resultados").innerText =
-    `${visibles.length} de ${productos.length} kits y accesorios`;
+    `${visibles.length} de ${productos.length} joyas`;
+
+  pintarFiltros();
+  actualizarTituloTienda();
 }
 
 
-// ===================== CHIPS DE CATEGORÍA =====================
-// Sacamos las categorías de los mismos productos: si agregas uno con
-// una categoría nueva en admin.html, su chip aparece solo.
-function mostrarChips() {
-  // En la base hay "tecnología" (con tilde) y "tecnologia" (sin tilde).
-  // Un Set las vería distintas y saldrían DOS chips. Por eso usamos un
-  // Map: la clave es la versión normalizada ("tecnologia") y el valor es
-  // el texto que se muestra (el primero que aparezca).
-  const categorias = new Map();
-  productos
-    .flatMap((p) => p.categorias || [])   // flatMap junta todos los arrays en uno
-    .forEach((c) => {
-      const clave = normalizar(c.trim());
-      if (clave && !categorias.has(clave)) categorias.set(clave, c.trim());
-    });
+// ===================== PANEL DE FILTROS =====================
+// Cada opción muestra cuántos productos tendría si la eligieras
+function opcionesFiltro(grupo, lista) {
+  const cuantos = (clave) => productos.filter((p) =>
+    pasaFiltros(p, grupo) && (clave === "todos" || (grupo === "mundo" ? mundoDe(p) : tipoDe(p)) === clave)).length;
 
-  // Ordenamos por la clave, y "todas" siempre va primero (se muestra como "todo")
-  const chips = [["todas", "todo"], ...[...categorias].sort(([a], [b]) => a.localeCompare(b))];
-
-  document.getElementById("chips-categorias").innerHTML = chips
-    .map(([clave, texto]) => `
-      <button type="button" class="chip" data-categoria="${clave}"
-        aria-pressed="${clave === categoriaActiva}">${texto}</button>`)
+  return [{ clave: "todos", nombre: "Todos" }, ...lista]
+    .map((o) => `
+      <button type="button" class="filtro-opcion" data-grupo="${grupo}" data-valor="${o.clave}"
+        aria-pressed="${filtros[grupo] === o.clave}">${o.icono ? o.icono + " " : ""}${o.nombre} <span>${cuantos(o.clave)}</span></button>`)
     .join("");
 }
 
-document.getElementById("chips-categorias").addEventListener("click", (evento) => {
-  const chip = evento.target.closest(".chip");
-  if (!chip) return;
+function pintarFiltros() {
+  const mundos = document.getElementById("filtros-mundo");
+  const tipos = document.getElementById("filtros-tipo");
+  if (mundos) mundos.innerHTML = opcionesFiltro("mundo", MUNDOS);
+  if (tipos) tipos.innerHTML = opcionesFiltro("tipo", TIPOS);
 
-  categoriaActiva = chip.dataset.categoria;
-  // aria-pressed marca el chip activo (el CSS lo pinta con degradado)
-  document.querySelectorAll(".chip").forEach((c) => {
-    c.setAttribute("aria-pressed", c === chip);
-  });
+  // Botones rápidos de mundo en el encabezado (solo en galeria.html)
+  const rapidos = document.getElementById("mundos-rapidos");
+  if (rapidos) {
+    rapidos.innerHTML = [{ clave: "todos", nombre: "Todos los mundos" }, ...MUNDOS]
+      .map((m) => `<button type="button" data-grupo="mundo" data-valor="${m.clave}"
+        aria-pressed="${filtros.mundo === m.clave}">${m.nombre}</button>`)
+      .join("");
+  }
+}
+
+// El título del encabezado cambia con el mundo elegido
+function actualizarTituloTienda() {
+  const titulo = document.getElementById("titulo-tienda");
+  const subtitulo = document.getElementById("subtitulo-tienda");
+  if (!titulo) return;
+  const mundo = datosMundo(filtros.mundo);
+  titulo.innerHTML = mundo
+    ? `Mundo <span class="texto-degradado">${mundo.nombre}</span>`
+    : `Todas las <span class="texto-degradado">joyas</span> de cuento`;
+  if (subtitulo) {
+    subtitulo.textContent = mundo
+      ? `${mundo.frase} Inspiración ${mundo.estudio}.`
+      : "Collares, aretes, anillos, pulseras y kits inspirados en las películas que te hicieron soñar.";
+  }
+}
+
+// Elegir un mundo o un tipo desde fuera (cliente.js lo usa en "Mundos")
+function elegirFiltro(grupo, valor) {
+  filtros[grupo] = valor;
   mostrarProductos();
+}
+
+// Un solo listener para todos los botones con data-grupo (delegación)
+document.addEventListener("click", (evento) => {
+  const opcion = evento.target.closest("[data-grupo][data-valor]");
+  if (!opcion) return;
+  elegirFiltro(opcion.dataset.grupo, opcion.dataset.valor);
 });
 
 // "input" se dispara con cada tecla: la grilla filtra mientras escribes
 document.getElementById("input-busqueda").addEventListener("input", (evento) => {
-  textoBusqueda = evento.target.value.trim();
+  filtros.texto = evento.target.value.trim();
   mostrarProductos();
 });
+
+// Los demás controles son opcionales: ?. evita errores si una página no los tiene
+const rangoPrecio = document.getElementById("filtro-precio");
+rangoPrecio?.addEventListener("input", () => {
+  const valor = Number(rangoPrecio.value);
+  filtros.precioMax = valor >= Number(rangoPrecio.max) ? null : valor;   // al tope = sin límite
+  document.getElementById("filtro-precio-valor").textContent =
+    filtros.precioMax === null ? "Cualquier precio" : `Hasta ${formato(valor)}`;
+  mostrarProductos();
+});
+
+document.getElementById("filtro-disponibles")?.addEventListener("change", (evento) => {
+  filtros.soloDisponibles = evento.target.checked;
+  mostrarProductos();
+});
+document.getElementById("filtro-oferta")?.addEventListener("change", (evento) => {
+  filtros.soloOferta = evento.target.checked;
+  mostrarProductos();
+});
+document.getElementById("orden-productos")?.addEventListener("change", (evento) => {
+  filtros.orden = evento.target.value;
+  mostrarProductos();
+});
+
+function limpiarFiltros() {
+  Object.assign(filtros, { texto: "", mundo: "todos", tipo: "todos", precioMax: null, soloDisponibles: false, soloOferta: false });
+  document.getElementById("input-busqueda").value = "";
+  if (rangoPrecio) {
+    rangoPrecio.value = rangoPrecio.max;
+    document.getElementById("filtro-precio-valor").textContent = "Cualquier precio";
+  }
+  document.querySelectorAll("#filtro-disponibles, #filtro-oferta").forEach((c) => { c.checked = false; });
+  mostrarProductos();
+}
+document.getElementById("btn-limpiar-filtros")?.addEventListener("click", limpiarFiltros);
+
+// En celular el panel de filtros es un cajón que entra desde la izquierda
+const panelFiltros = document.getElementById("panel-filtros");
+function abrirFiltros(abrir) {
+  panelFiltros?.classList.toggle("abierto", abrir);
+  document.getElementById("fondo-filtros")?.classList.toggle("visible", abrir);
+}
+document.getElementById("btn-filtros")?.addEventListener("click", () => abrirFiltros(true));
+document.getElementById("btn-cerrar-filtros")?.addEventListener("click", () => abrirFiltros(false));
+document.getElementById("fondo-filtros")?.addEventListener("click", () => abrirFiltros(false));
+
+// El rango de precio va de 0 al precio más alto del catálogo
+function prepararRangoPrecio() {
+  if (!rangoPrecio || productos.length === 0) return;
+  const maximo = Math.ceil(Math.max(...productos.map(precioFinal)) / 10000) * 10000;
+  rangoPrecio.max = maximo;
+  rangoPrecio.step = 5000;
+  rangoPrecio.value = maximo;
+}
 
 
 // ===================== CLICS EN LAS TARJETAS =====================
 // Delegación de eventos (igual que en admin.js): los botones se crean y
-// se borran, así que escuchamos en la grilla, que siempre existe.
-document.getElementById("grilla-productos").addEventListener("click", (evento) => {
-  const boton = evento.target.closest("[data-accion]");
+// se borran, así que escuchamos en el documento, que siempre existe, y
+// solo atendemos botones que estén dentro de una tarjeta (.producto).
+// Así funcionan igual en la grilla y en los carruseles de cliente.html.
+document.addEventListener("click", (evento) => {
+  const boton = evento.target.closest(".producto [data-accion]");
   if (!boton) return;
 
   // "Agregar al carrito" va a Supabase; el selector − n + sigue igual que antes
@@ -484,7 +595,8 @@ async function clicAgregar(btn) {
 // al contenedor como un clic, por eso usamos captura (el "true" final)
 document.addEventListener("error", (evento) => {
   const img = evento.target;
-  if (img.tagName === "IMG") img.outerHTML = fotoSinImagen(img.alt);
+  // Solo fotos de productos (las portadas de mundos tienen su propio fondo)
+  if (img.tagName === "IMG" && img.closest(".producto-foto, .item-carrito")) img.outerHTML = fotoSinImagen(img.alt);
 }, true);
 
 
@@ -651,8 +763,11 @@ formCheckout.addEventListener("submit", async (evento) => {
 
   // El pedido ya quedó confirmado aunque fallara la lectura del total
   mensajeCarrito.textContent = conTotal
-    ? `Pedido #${data.id} confirmado. Total: ${formato(Number(conTotal.total))}`
-    : `Pedido #${data.id} confirmado.`;
+    ? `Pedido #${data.id} confirmado ✦ Total: ${formato(Number(conTotal.total))}`
+    : `Pedido #${data.id} confirmado ✦`;
+
+  // Aviso para quien quiera enterarse (cliente.js actualiza "Mis pedidos")
+  document.dispatchEvent(new CustomEvent("pedido-confirmado", { detail: { id: data.id } }));
 });
 
 
@@ -678,7 +793,10 @@ document.getElementById("btn-carrito").addEventListener("click", abrirCarrito);
 document.getElementById("btn-cerrar-carrito").addEventListener("click", cerrarCarrito);
 document.getElementById("fondo-carrito").addEventListener("click", cerrarCarrito);
 document.addEventListener("keydown", (evento) => {
-  if (evento.key === "Escape") cerrarCarrito();
+  if (evento.key === "Escape") {
+    cerrarCarrito();
+    abrirFiltros(false);
+  }
 });
 
 
@@ -724,15 +842,27 @@ async function cargarProductos() {
     descuento: Number(p.descuento) || 0,
   }));
 
-  // Si se llegó desde una colección de la portada (galeria.html?categoria=princesas),
-  // ese chip empieza activo. Solo si esa categoría existe en los productos.
-  const enUrl = new URLSearchParams(location.search).get("categoria");
-  if (enUrl && productos.some((p) => (p.categorias || []).some((c) => normalizar(c) === normalizar(enUrl)))) {
-    categoriaActiva = normalizar(enUrl);
+  // Si se llegó desde la portada (galeria.html?mundo=princesas, ?tipo=aretes
+  // u ?orden=precio-asc), esos filtros empiezan activos. ?categoria= es el
+  // enlace viejo: sirve tanto para un mundo como para un tipo.
+  const url = new URLSearchParams(location.search);
+  const pedido = normalizar(url.get("mundo") || url.get("categoria") || "");
+  const tipoPedido = normalizar(url.get("tipo") || url.get("categoria") || "");
+  if (datosMundo(pedido)) filtros.mundo = pedido;
+  if (datosTipo(tipoPedido)) filtros.tipo = tipoPedido;
+  if (url.get("oferta")) {
+    filtros.soloOferta = true;
+    const casilla = document.getElementById("filtro-oferta");
+    if (casilla) casilla.checked = true;
+  }
+  if (ORDENES[url.get("orden")]) {
+    filtros.orden = url.get("orden");
+    const selector = document.getElementById("orden-productos");
+    if (selector) selector.value = filtros.orden;
   }
 
   limpiarCarrito();
-  mostrarChips();
+  prepararRangoPrecio();
   mostrarProductos();
   pintarCarrito();
 }

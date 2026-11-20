@@ -9,14 +9,10 @@
        todavía cuando supabaseClient.js intente usarlo -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-  <!-- Tipografías de Everwish: Cormorant Garamond (títulos) y DM Sans (texto) -->
+  <!-- Tipografías: Fraunces (títulos) y Plus Jakarta Sans (texto) -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500;1,600&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700&display=swap" rel="stylesheet">
-  <!-- 1° tema de Everwish (colores, fuentes, cielo estrellado)
-       2° tarjetas de pedido, pestañas y "Mis clientes" -->
-  <link rel="stylesheet" href="css/everwish.css">
-  <link rel="stylesheet" href="css/pedidos.css">
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500;1,9..144,600&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
   <!-- Pone el tema ANTES de dibujar la página (así no "parpadea" en claro).
        Usa el que guardaste la última vez; si no hay, el del sistema operativo -->
@@ -27,1349 +23,358 @@
       (matchMedia("(prefers-color-scheme: dark)").matches ? "oscuro" : "claro");
   </script>
 
-  <style>
-    /* Los colores (claro y oscuro), las fuentes y el cielo estrellado
-       vienen de css/everwish.css, que se carga antes de este <style>. */
-
-    /* Botón de tema fijo arriba a la derecha */
-    #btn-tema {
-      position: fixed;
-      top: 12px;
-      right: 12px;
-      z-index: 10;
-      padding: 8px 14px;
-      background: var(--superficie);
-      color: var(--texto);
-      border: 1px solid var(--linea);
-    }
-    #btn-tema:hover { background: var(--campo-suave); }
-
-    /* Fuente, color y fondo estrellado del body: css/everwish.css */
-    body {
-      padding: 24px 16px;
-      min-height: 100vh;
-      margin: 0;
-      box-sizing: border-box;
-    }
-
-    /* La "tarjeta" del formulario: bordes finos, sombra amplia y suave */
-    #form-producto {
-      margin: 0;                 /* el ancho lo da su columna en .layout */
-      background: var(--superficie);
-      padding: 32px;
-      border-radius: 20px;
-      border: 1px solid var(--linea);
-      box-shadow: 0 1px 2px var(--sombra), 0 20px 48px -24px var(--sombra);
-    }
-
-    /* Título a la izquierda, con una línea fina debajo */
-    #form-producto h2 {
-      margin: 0;
-      padding-bottom: 16px;
-      border-bottom: 1px solid var(--linea);
-      font-size: 1.35rem;
-      letter-spacing: -0.01em;
-      color: var(--texto);
-    }
-
-    /* Subtítulo de cada grupo de campos: pequeño, en mayúsculas y en color */
-    #form-producto .grupo {
-      margin: 10px 0 -2px;
-      font-size: 0.72rem;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.1em;
-      color: var(--acento);
-    }
-
-    /* Cada label se vuelve una columna: texto arriba, campo abajo */
-    #form-producto label {
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-      font-weight: 600;
-      font-size: 0.82rem;
-      color: var(--texto-suave);
-    }
-
-    /* Texto de ayuda debajo del campo */
-    #form-producto small {
-      font-size: 0.75rem;
-      font-weight: normal;
-      color: var(--texto-suave);
-      opacity: 0.8;
-    }
-
-    #form-producto input[type="text"],
-    #form-producto input[type="number"],
-    #form-producto input[type="url"],
-    #form-producto textarea {
-      padding: 11px 14px;
-      border: 1px solid var(--linea);
-      border-radius: 10px;
-      background: var(--campo);
-      color: var(--texto);
-      font: inherit;
-      font-size: 0.95rem;
-      font-weight: normal;
-      transition: border-color 0.15s, box-shadow 0.15s, background 0.15s;
-      /* El campo mide exactamente lo que mide su columna (el padding y
-         el borde quedan por dentro gracias a border-box) */
-      width: 100%;
-      min-width: 0;
-      box-sizing: border-box;
-    }
-
-    #form-producto input::placeholder,
-    #form-producto textarea::placeholder { color: var(--texto-suave); opacity: 0.55; }
-
-    /* Al pasar el mouse el borde se marca un poco */
-    #form-producto input:hover,
-    #form-producto textarea:hover { border-color: var(--borde-suave); }
-
-    #form-producto textarea {
-      min-height: 80px;
-      resize: vertical;
-    }
-
-    /* GRID: en vez de un campo debajo del otro, los acomodamos en
-       3 columnas. Cada "área" tiene un nombre, y el dibujo de abajo
-       dice dónde va cada una (repetir un nombre = ocupar más celdas).
-       Así el formulario queda más ancho y mucho menos alto. */
-    #form-producto {
-      display: grid;
-      /* minmax(0, 1fr) y no solo 1fr: "1fr" en realidad significa
-         minmax(auto, 1fr), y ese "auto" NO deja que la columna sea más
-         angosta que su contenido (un input tiene un ancho mínimo propio).
-         Con 0 como mínimo, las columnas sí se encogen y nada se sale. */
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      grid-template-areas:
-        "titulo      titulo      titulo"
-        "g1          g1          g1"
-        "nombre      nombre      categorias"
-        "g2          g2          g2"
-        "precio      unidades    descuento"
-        "g3          g3          g3"
-        "descripcion descripcion imagen"
-        "descripcion descripcion disponible";
-      gap: 14px 16px;            /* espacio entre filas / entre columnas */
-    }
-
-    /* :has() elige el label que CONTIENE ese campo */
-    #form-producto h2                                 { grid-area: titulo; }
-    #form-producto .grupo-1                           { grid-area: g1; }
-    #form-producto .grupo-2                           { grid-area: g2; }
-    #form-producto .grupo-3                           { grid-area: g3; }
-    #form-producto label:has([name="nombre"])         { grid-area: nombre; }
-    #form-producto label:has([name="categorias"])     { grid-area: categorias; }
-    #form-producto label:has([name="precio"])         { grid-area: precio; }
-    #form-producto label:has([name="unidades"])       { grid-area: unidades; }
-    #form-producto label:has([name="descuento"])      { grid-area: descuento; }
-    #form-producto label:has([name="description"])    { grid-area: descripcion; }
-    #form-producto label:has([name="imagen_url"])     { grid-area: imagen; }
-    #form-producto label:has([name="disponible"])     { grid-area: disponible; }
-
-    /* La descripción llena todo el alto de sus dos filas */
-    #form-producto label:has(textarea) textarea { flex: 1; }
-
-    /* Los botones y el catálogo ocupan todo el ancho (de la línea 1 a la última) */
-    #form-producto > button,
-    #form-producto .catalogo { grid-column: 1 / -1; }
-
-    /* En pantallas angostas (celular) volvemos a una sola columna */
-    @media (max-width: 640px) {
-      #form-producto { grid-template-columns: minmax(0, 1fr); grid-template-areas: none; padding: 22px; }
-      #form-producto h2,
-      #form-producto .grupo,
-      #form-producto label { grid-area: auto; }
-    }
-
-    /* :focus = cuando el usuario está escribiendo en ese campo */
-    #form-producto input:focus,
-    #form-producto textarea:focus {
-      outline: none;
-      border-color: var(--acento);
-      background: var(--superficie);
-      box-shadow: 0 0 0 4px var(--anillo);
-    }
-
-    /* "Disponible": se ve como una caja del mismo alto que un campo,
-       con el texto a la izquierda y la casilla a la derecha */
-    #form-producto label:has(input[type="checkbox"]) {
-      flex-direction: row;
-      align-items: center;
-      justify-content: space-between;
-      align-self: end;
-      padding: 11px 14px;
-      border: 1px solid var(--linea);
-      border-radius: 10px;
-      background: var(--campo);
-      cursor: pointer;
-    }
-
-    #form-producto input[type="checkbox"] {
-      width: 18px;
-      height: 18px;
-      margin: 0;
-      accent-color: var(--acento);  /* colorea la casilla marcada */
-      cursor: pointer;
-    }
-
-    /* Botones (el del formulario y "Traer productos") */
-    button {
-      background: var(--acento);
-      color: #fff;
-      border: none;
-      padding: 12px 20px;
-      border-radius: 999px;
-      font: inherit;
-      font-weight: 700;
-      cursor: pointer;
-      transition: background 0.2s, transform 0.1s;
-    }
-
-    /* Dentro del formulario: esquinas menos redondas, más "minimalista" */
-    #form-producto button {
-      width: 100%;
-      border-radius: 12px;
-      letter-spacing: 0.01em;
-    }
-    #form-producto #btn2 { margin-top: 8px; }
-
-    /* Botón "Cancelar" del modo edición: menos llamativo que el principal */
-    #form-producto button.secundario {
-      background: transparent;
-      color: var(--texto-suave);
-      border: 1px solid var(--linea);
-    }
-    #form-producto button.secundario:hover { background: var(--campo); }
-
-    /* Botones Editar / Eliminar de cada fila, uno al lado del otro */
-    .acciones-fila {
-      display: flex;
-      gap: 6px;
-    }
-    .acciones-fila button { padding: 6px 12px; font-size: 0.82rem; }
-
-    /* Eliminar: contorno rojo, se rellena al pasar el mouse
-       (para que no se confunda con Editar y no se clique sin querer) */
-    .btn-eliminar {
-      background: transparent;
-      color: var(--peligro);
-      border: 1.5px solid var(--peligro);
-    }
-    .btn-eliminar:hover { background: var(--peligro); color: #fff; }
-
-    /* Sección "Catálogo" dentro del formulario: una línea la separa
-       de los campos de arriba */
-    .catalogo {
-      margin-top: 24px;
-      padding-top: 16px;
-      border-top: 1px solid var(--linea);
-    }
-
-    /* "Catálogo" con el mismo estilo que los subtítulos de grupo */
-    .catalogo h3 {
-      margin: 0 0 12px;
-      font-size: 0.72rem;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.1em;
-      color: var(--acento);
-    }
-
-    /* El JSON de #resultado es un texto larguísimo sin espacios:
-       sin esto se saldría de la tarjeta */
-    .catalogo div { overflow-wrap: anywhere; font-weight: normal; }
-
-    button:hover  { background: var(--boton-hover); }
-    button:active { transform: scale(0.97); }   /* efecto de "presionado" */
-
-    /* Mensaje de "Producto agregado con ID..." */
-    #notificacion {
-      max-width: 480px;
-      margin: 0 auto;
-      text-align: center;
-      color: var(--acento-fuerte);
-      font-weight: 600;
-    }
-
-    /* Buscador: campo y botón en la misma fila */
-    /* DOS COLUMNAS: formulario | recuadro de productos (más ancho).
-       minmax(0, ...) evita que un contenido largo ensanche la columna */
-    .layout {
-      max-width: 1400px;
-      margin: 48px auto 0;       /* deja espacio al botón de tema fijo */
-      display: grid;
-      grid-template-columns: minmax(0, 1fr) minmax(0, 1.6fr);
-      gap: 24px;
-      align-items: start;        /* cada columna con su propio alto */
-    }
-
-    /* En pantallas medianas/celular: el recuadro pasa debajo del formulario */
-    @media (max-width: 1000px) {
-      .layout { grid-template-columns: minmax(0, 1fr); }
-    }
-
-    /* El recuadro de productos: misma "tarjeta" que el formulario.
-       sticky = se queda fijo a la vista mientras bajas por el formulario */
-    #panel-productos {
-      position: sticky;
-      top: 16px;
-      background: var(--superficie);
-      padding: 28px;
-      border-radius: 20px;
-      border: 1px solid var(--linea);
-      box-shadow: 0 1px 2px var(--sombra), 0 20px 48px -24px var(--sombra);
-    }
-
-    /* Mismo estilo de título que el formulario: a la izquierda y con línea fina */
-    #panel-productos h2 {
-      margin: 0 0 16px;
-      padding-bottom: 16px;
-      border-bottom: 1px solid var(--linea);
-      font-size: 1.35rem;
-      letter-spacing: -0.01em;
-      color: var(--texto);
-    }
-
-    #form-busqueda {
-      margin: 0 0 16px;
-      display: flex;
-      gap: 8px;
-    }
-
-    #input-busqueda {
-      flex: 1;              /* ocupa todo el espacio que deja el botón */
-      padding: 12px 16px;
-      border: 1px solid var(--linea);
-      border-radius: 999px;
-      background: var(--campo);
-      color: var(--texto);
-      font: inherit;
-    }
-
-    #input-busqueda:focus {
-      outline: none;
-      border-color: var(--acento);
-      box-shadow: 0 0 0 3px rgba(240, 98, 146, 0.25);
-    }
-
-    /* Contenedor de la tabla: si hay muchos productos no crece, hace
-       scroll por dentro (y de lado si la tabla no cabe a lo ancho) */
-    #resultados-busqueda {
-      max-height: 70vh;
-      overflow: auto;
-      border: 1px solid var(--linea);
-      border-radius: 12px;
-    }
-
-    .sin-resultados { margin: 16px; text-align: center; }
-
-    /* TABLA DE PRODUCTOS */
-    .tabla-productos {
-      width: 100%;
-      border-collapse: collapse;   /* une los bordes de las celdas en uno solo */
-      font-size: 0.9rem;
-    }
-
-    .tabla-productos th,
-    .tabla-productos td {
-      padding: 10px 12px;
-      text-align: left;
-      vertical-align: middle;
-      border-bottom: 1px solid var(--linea);
-    }
-
-    /* Encabezado fijo: sticky lo deja arriba mientras haces scroll en la tabla */
-    .tabla-productos thead th {
-      position: sticky;
-      top: 0;
-      z-index: 1;
-      background: var(--campo-suave);
-      color: var(--acento-fuerte);
-      font-size: 0.8rem;
-      text-transform: uppercase;
-      letter-spacing: 0.03em;
-      white-space: nowrap;
-    }
-
-    .tabla-productos tbody tr:last-child td { border-bottom: none; }
-
-    /* La fila se ilumina al pasar el mouse, para saber en cuál estás */
-    .tabla-productos tbody tr:hover { background: var(--fondo); }
-
-    .miniatura {
-      display: block;
-      width: 44px;
-      height: 44px;
-      object-fit: cover;
-      border-radius: 8px;
-    }
-    .miniatura.sin-foto {
-      display: grid;
-      place-items: center;
-      background: var(--campo-suave);
-      color: var(--borde-suave);
-    }
-
-    /* Nombre arriba y categorías abajo, dentro de la misma celda */
-    .nombre-producto { display: block; font-weight: 600; }
-    .tabla-productos .categorias { font-size: 0.8rem; color: var(--acento); }
-
-    /* Etiqueta de estado tipo "píldora" */
-    .estado {
-      display: inline-block;
-      padding: 3px 10px;
-      border-radius: 999px;
-      font-size: 0.78rem;
-      font-weight: 600;
-      white-space: nowrap;
-    }
-    .estado.disponible { background: var(--campo-suave); color: var(--acento-fuerte); }
-    .estado.agotado    { border: 1px solid var(--peligro); color: var(--peligro); }
-
-
-    /* =================================================================
-       CAPA DE DISEÑO: estas reglas van AL FINAL a propósito, para que
-       ganen sobre las de arriba (en CSS, a igual fuerza, gana la última).
-       Si algún día quieres volver al estilo simple, borra desde aquí
-       hasta el final de la etiqueta style.
-       ================================================================= */
-
-    /* ENCABEZADO: título grande con texto en degradado + estadísticas */
-    .encabezado {
-      max-width: 1400px;
-      margin: 40px auto 28px;
-      display: flex;
-      flex-wrap: wrap;
-      align-items: flex-end;
-      justify-content: space-between;
-      gap: 20px;
-      animation: aparecer 0.6s ease both;
-    }
-
-    .etiqueta-superior {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      padding: 6px 12px;
-      border-radius: 999px;
-      background: var(--vidrio);
-      border: 1px solid var(--linea);
-      font-size: 0.75rem;
-      font-weight: 700;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      color: var(--texto-suave);
-    }
-
-    /* El puntito verde que "late" = conectado a la base de datos */
-    .etiqueta-superior::before {
-      content: "";
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      background: #22c55e;
-      box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.6);
-      animation: latido 2s infinite;
-    }
-
-    @keyframes latido {
-      70%  { box-shadow: 0 0 0 8px rgba(34, 197, 94, 0); }
-      100% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0); }
-    }
-
-    .encabezado h1 {
-      margin: 12px 0 6px;
-      font-size: clamp(2rem, 4vw, 3rem);   /* crece con la pantalla, con mínimo y máximo */
-      font-weight: 800;
-      letter-spacing: -0.03em;
-      line-height: 1.05;
-    }
-
-    /* Texto con degradado: el fondo es el degradado y se "recorta" a las letras */
-    .texto-degradado {
-      background: var(--degradado);
-      -webkit-background-clip: text;
-      background-clip: text;
-      color: transparent;
-    }
-
-    .encabezado p { margin: 0; color: var(--texto-suave); }
-
-    /* Tarjetitas de estadísticas */
-    .estadisticas {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 12px;
-    }
-
-    .estadistica {
-      min-width: 110px;
-      padding: 14px 18px;
-      border-radius: 16px;
-      background: var(--vidrio);
-      border: 1px solid var(--linea);
-      backdrop-filter: blur(14px);
-      -webkit-backdrop-filter: blur(14px);
-    }
-
-    .estadistica strong {
-      display: block;
-      font-size: 1.6rem;
-      font-weight: 800;
-      letter-spacing: -0.02em;
-    }
-
-    .estadistica span {
-      font-size: 0.72rem;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      color: var(--texto-suave);
-    }
-
-    .layout { margin-top: 0; }
-
-    /* VIDRIO ("glassmorphism"): las tarjetas son semitransparentes y
-       difuminan lo que hay detrás, así se ven las manchas de color */
-    #form-producto,
-    #panel-productos {
-      position: relative;
-      overflow: hidden;
-      background: var(--vidrio);
-      backdrop-filter: blur(20px) saturate(150%);
-      -webkit-backdrop-filter: blur(20px) saturate(150%);
-      border: 1px solid var(--borde-vidrio);
-      border-radius: 24px;
-      box-shadow: 0 30px 60px -30px var(--sombra-color), inset 0 1px 0 var(--borde-vidrio);
-      animation: aparecer 0.6s ease both;
-    }
-    #panel-productos { position: sticky; animation-delay: 0.1s; }
-
-    /* Franja de color arriba de cada tarjeta */
-    #form-producto::before,
-    #panel-productos::before {
-      content: "";
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      height: 4px;
-      background: var(--degradado);
-    }
-
-    /* Títulos de las tarjetas con un cuadradito de color al lado */
-    #form-producto h2,
-    #panel-productos h2 {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      font-size: 1.4rem;
-      font-weight: 800;
-    }
-    #form-producto h2::before,
-    #panel-productos h2::before {
-      content: "";
-      width: 12px;
-      height: 12px;
-      border-radius: 4px;
-      background: var(--degradado);
-      box-shadow: 0 0 16px var(--acento);
-      flex-shrink: 0;
-    }
-
-    /* GRUPOS NUMERADOS: 01, 02, 03 con un contador automático de CSS,
-       y una línea que llena el resto del ancho */
-    #form-producto { counter-reset: grupo; }
-    #form-producto .grupo {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      counter-increment: grupo;
-      color: var(--texto);
-    }
-    #form-producto .grupo::before {
-      content: counter(grupo, decimal-leading-zero);
-      display: grid;
-      place-items: center;
-      width: 26px;
-      height: 26px;
-      border-radius: 8px;
-      background: var(--degradado);
-      color: #fff;
-      font-size: 0.7rem;
-      letter-spacing: 0;
-    }
-    #form-producto .grupo::after {
-      content: "";
-      flex: 1;
-      height: 1px;
-      background: linear-gradient(to right, var(--linea), transparent);
-    }
-
-    /* Campos un poco más "llenos" y con halo de color al escribir */
-    #form-producto input[type="text"],
-    #form-producto input[type="number"],
-    #form-producto input[type="url"],
-    #form-producto textarea,
-    #form-producto label:has(input[type="checkbox"]),
-    #input-busqueda {
-      background: var(--campo-vidrio);
-      border-color: var(--borde-vidrio);
-      border-radius: 12px;
-    }
-    #form-producto input:focus,
-    #form-producto textarea:focus,
-    #input-busqueda:focus {
-      background: var(--superficie);
-      border-color: var(--acento);
-      box-shadow: 0 0 0 4px var(--anillo), 0 8px 24px -12px var(--acento);
-    }
-
-    /* BOTONES con degradado, sombra de color y se "levantan" al pasar el mouse */
-    button {
-      background: var(--degradado);
-      box-shadow: 0 10px 24px -12px var(--acento);
-      transition: transform 0.15s, box-shadow 0.15s, filter 0.15s, background 0.15s;
-    }
-    button:hover {
-      background: var(--degradado);
-      filter: brightness(1.08);
-      transform: translateY(-2px);
-      box-shadow: 0 16px 30px -12px var(--acento);
-    }
-    button:active { transform: translateY(0) scale(0.98); }
-
-    #form-producto #btn2 { padding: 15px 20px; font-size: 1rem; }
-
-    /* Los botones "de contorno" no llevan degradado ni sombra */
-    #btn-tema,
-    #form-producto button.secundario,
-    .btn-eliminar {
-      box-shadow: none;
-    }
-    #btn-tema {
-      background: var(--vidrio);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-      border: 1px solid var(--borde-vidrio);
-    }
-    #btn-tema:hover,
-    #form-producto button.secundario:hover { background: var(--campo-vidrio); }
-    #form-producto button.secundario { background: transparent; }
-    .btn-eliminar { background: transparent; }
-    .btn-eliminar:hover { background: var(--peligro); box-shadow: 0 10px 20px -10px var(--peligro); }
-
-    /* TABLA: encabezado transparente, filas con barrita de color al pasar el mouse */
-    #resultados-busqueda { border-color: var(--borde-vidrio); background: var(--campo-vidrio); }
-    .tabla-productos thead th {
-      background: var(--superficie);
-      color: var(--texto-suave);
-      font-size: 0.7rem;
-      letter-spacing: 0.08em;
-    }
-    .tabla-productos tbody tr {
-      transition: background 0.15s, box-shadow 0.15s;
-      animation: aparecer 0.4s ease both;
-      animation-delay: calc(var(--i, 0) * 40ms);   /* cada fila aparece un poquito después */
-    }
-    .tabla-productos tbody tr:hover {
-      background: var(--anillo);
-      box-shadow: inset 3px 0 0 var(--acento);
-    }
-    .miniatura {
-      width: 46px;
-      height: 46px;
-      border-radius: 12px;
-      box-shadow: 0 6px 14px -6px var(--sombra-color);
-    }
-    .tabla-productos .precio-celda { font-weight: 800; white-space: nowrap; }
-
-    .estado { padding: 4px 10px 4px 8px; display: inline-flex; align-items: center; gap: 6px; }
-    .estado::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
-    .estado.disponible { background: rgba(34, 197, 94, 0.14); color: #16a34a; }
-    .estado.agotado    { background: rgba(239, 68, 68, 0.12); border: none; }
-
-    /* Notificación como "pastilla" flotante */
-    #notificacion:not(:empty) {
-      margin-top: 16px;
-      padding: 12px 18px;
-      border-radius: 14px;
-      background: var(--vidrio);
-      border: 1px solid var(--borde-vidrio);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-      animation: aparecer 0.3s ease both;
-    }
-
-    /* PRODUCTO SIN FOTO: cuadrito con degradado y la inicial del nombre */
-    .miniatura.sin-foto {
-      background: var(--degradado);
-      color: #fff;
-      font-weight: 800;
-      font-size: 1.1rem;
-    }
-
-    /* FOTO CLICABLE en la tabla: quitamos el estilo de botón normal
-       (degradado, relleno, sombra) para que solo se vea la foto */
-    .btn-foto,
-    .btn-foto:hover,
-    .btn-foto:active {
-      position: relative;
-      display: block;
-      padding: 0;
-      background: none;
-      box-shadow: none;
-      border-radius: 12px;
-      transform: none;
-      filter: none;
-    }
-
-    /* Al pasar el mouse aparece un lápiz encima de la foto */
-    .btn-foto::after {
-      content: "✎";
-      position: absolute;
-      inset: 0;
-      display: grid;
-      place-items: center;
-      border-radius: 12px;
-      background: rgba(0, 0, 0, 0.5);
-      color: #fff;
-      font-size: 1.1rem;
-      opacity: 0;
-      transition: opacity 0.15s;
-    }
-    .btn-foto:hover::after,
-    .btn-foto:focus-visible::after { opacity: 1; }
-
-    /* VISTA PREVIA en el formulario: campo de URL + cuadrito al lado */
-    .campo-imagen {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-    .campo-imagen input { flex: 1; min-width: 0; }   /* min-width: 0 deja que se encoja */
-
-    #vista-previa {
-      width: 44px;
-      height: 44px;
-      box-sizing: border-box;    /* el borde no agranda el cuadrito */
-      flex-shrink: 0;
-      object-fit: cover;
-      border-radius: 12px;
-      border: 1px dashed var(--borde-suave);
-      background: var(--campo-vidrio);
-      transition: border-color 0.2s, box-shadow 0.2s;
-    }
-    #vista-previa.cargada {
-      border: 2px solid transparent;
-      box-shadow: 0 0 0 2px var(--acento), 0 8px 18px -8px var(--acento);
-    }
-    #vista-previa.con-error { border: 1.5px solid var(--peligro); }
-
-    /* El texto de ayuda cambia de color según el resultado */
-    label:has(#vista-previa.cargada) #ayuda-imagen   { color: #16a34a; opacity: 1; }
-    label:has(#vista-previa.con-error) #ayuda-imagen { color: var(--peligro); opacity: 1; }
-
-    /* BOTÓN DE VISTA (Tabla / Tarjetas): de contorno, como el de tema */
-    #btn-vista {
-      white-space: nowrap;
-      background: var(--campo-vidrio);
-      color: var(--texto);
-      border: 1px solid var(--borde-vidrio);
-      box-shadow: none;
-    }
-    #btn-vista:hover { background: var(--superficie); }
-
-    /* VISTA EN TARJETAS: auto-fill mete tantas columnas como quepan,
-       cada una de mínimo 170px; si sobra espacio, se reparten (1fr) */
-    .grilla-tarjetas {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
-      gap: 14px;
-      padding: 14px;
-    }
-
-    .tarjeta {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-      padding: 10px 10px 12px;
-      border-radius: 16px;
-      background: var(--vidrio);
-      border: 1px solid var(--borde-vidrio);
-      box-shadow: 0 14px 30px -20px var(--sombra-color);
-      transition: transform 0.15s, box-shadow 0.15s;
-      animation: aparecer 0.4s ease both;
-      animation-delay: calc(var(--i, 0) * 40ms);  /* igual que las filas */
-    }
-    .tarjeta:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 20px 36px -18px var(--sombra-color);
-    }
-
-    /* La foto ocupa todo el ancho y queda cuadrada (aspect-ratio 1 / 1).
-       Sirve para la <img> y para el cuadrito con la inicial */
-    .tarjeta .btn-foto { width: 100%; }
-    .tarjeta .miniatura {
-      width: 100%;
-      height: auto;
-      aspect-ratio: 1 / 1;
-      font-size: 2.4rem;
-    }
-
-    .tarjeta .nombre-producto { font-size: 0.95rem; line-height: 1.25; }
-    .tarjeta .categorias { font-size: 0.75rem; color: var(--acento); }
-
-    /* Precio a la izquierda, stock a la derecha */
-    .tarjeta-fila {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 8px;
-      flex-wrap: wrap;
-    }
-    .tarjeta .precio { font-weight: 800; font-size: 1.05rem; }
-    .tarjeta .stock  { font-size: 0.78rem; color: var(--texto-suave); }
-
-    /* Los botones al fondo de la tarjeta, repartidos a lo ancho */
-    .tarjeta .acciones-fila { margin-top: auto; }
-    .tarjeta .acciones-fila button { flex: 1; }
-
-    /* =================================================================
-       ACCESO DE ADMINISTRADOR (registro + login)
-       Misma estética que cliente.html (css/cuenta.css): tarjetas de
-       vidrio, franja de degradado arriba y título con cuadrito.
-       ================================================================= */
-
-    /* hidden deja de funcionar si otra regla le pone display (grid, flex)
-       al mismo elemento; esta regla le devuelve la prioridad */
-    [hidden] { display: none !important; }
-
-    #zona-acceso-admin {
-      max-width: 960px;
-      margin: 0 auto;
-    }
-
-    /* Encabezado centrado (el del panel va a dos lados, este no) */
-    .encabezado-acceso {
-      margin: 8px auto 28px;
-      text-align: center;
-      animation: aparecer 0.6s ease both;
-    }
-    .encabezado-acceso h1 {
-      margin: 12px 0 6px;
-      font-size: clamp(2rem, 4vw, 3rem);
-      font-weight: 800;
-      letter-spacing: -0.03em;
-      line-height: 1.05;
-    }
-    .encabezado-acceso p { margin: 0; color: var(--texto-suave); }
-
-    /* En la pastilla de acceso el puntito es rosa y quieto: todavía no
-       estamos "conectados" como admin */
-    .etiqueta-superior.candado::before {
-      background: var(--acento);
-      animation: none;
-    }
-
-    /* ESTADO DE SESIÓN como "pastilla" de vidrio, centrada.
-       fit-content = mide lo que mide el texto, no todo el ancho */
-    #estado-sesion-admin {
-      width: fit-content;
-      max-width: 100%;
-      box-sizing: border-box;
-      margin: 40px auto 20px;   /* deja espacio a los botones fijos de arriba */
-      padding: 12px 18px;
-      text-align: center;
-      border-radius: 14px;
-      background: var(--vidrio);
-      border: 1px solid var(--borde-vidrio);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-      color: var(--acento-fuerte);
-      font-weight: 600;
-    }
-
-    /* UNA COLUMNA centrada: solo se ve una tarjeta a la vez.
-       min(440px, 100%) = 440px, o todo el ancho si la pantalla es más angosta */
-    .tarjetas-acceso {
-      width: min(440px, 100%);
-      margin: 0 auto;
-    }
-
-    /* VIDRIO: igual que #form-producto y #panel-productos */
-    #form-registro-admin,
-    #form-login-admin {
-      position: relative;
-      overflow: hidden;
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-      padding: 32px;
-      background: var(--vidrio);
-      backdrop-filter: blur(20px) saturate(150%);
-      -webkit-backdrop-filter: blur(20px) saturate(150%);
-      border: 1px solid var(--borde-vidrio);
-      border-radius: 24px;
-      box-shadow: 0 30px 60px -30px var(--sombra-color), inset 0 1px 0 var(--borde-vidrio);
-      animation: aparecer 0.6s ease both;
-    }
-
-    /* Franja de color arriba de cada tarjeta */
-    #form-registro-admin::before,
-    #form-login-admin::before {
-      content: "";
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      height: 4px;
-      background: var(--degradado);
-    }
-
-    /* Título con línea fina debajo y un cuadradito de color al lado */
-    #zona-acceso-admin h3 {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      margin: 0 0 8px;
-      padding-bottom: 16px;
-      border-bottom: 1px solid var(--linea);
-      font-size: 1.4rem;
-      font-weight: 800;
-      letter-spacing: -0.01em;
-    }
-    #zona-acceso-admin h3::before {
-      content: "";
-      width: 12px;
-      height: 12px;
-      border-radius: 4px;
-      background: var(--degradado);
-      box-shadow: 0 0 16px var(--acento);
-      flex-shrink: 0;
-    }
-
-    /* Etiquetas pequeñas encima de cada campo */
-    #zona-acceso-admin label {
-      margin-top: 6px;
-      font-weight: 600;
-      font-size: 0.82rem;
-      color: var(--texto-suave);
-    }
-
-    #zona-acceso-admin input {
-      padding: 11px 14px;
-      border: 1px solid var(--borde-vidrio);
-      border-radius: 12px;
-      background: var(--campo-vidrio);
-      color: var(--texto);
-      font: inherit;
-      font-size: 0.95rem;
-      transition: border-color 0.15s, box-shadow 0.15s, background 0.15s;
-    }
-    #zona-acceso-admin input:hover { border-color: var(--borde-suave); }
-
-    /* :focus = cuando el usuario está escribiendo en ese campo */
-    #zona-acceso-admin input:focus {
-      outline: none;
-      background: var(--superficie);
-      border-color: var(--acento);
-      box-shadow: 0 0 0 4px var(--anillo), 0 8px 24px -12px var(--acento);
-    }
-
-    /* Botón de cada formulario: ancho completo, esquinas menos redondas */
-    #zona-acceso-admin button {
-      margin-top: 16px;
-      padding: 15px 20px;
-      border-radius: 12px;
-      font-size: 1rem;
-    }
-
-    /* "¿Aún no tienes cuenta?" con una línea a cada lado */
-    .separador-acceso {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      margin: 16px 0 0;
-      font-size: 0.8rem;
-      color: var(--texto-suave);
-    }
-    .separador-acceso::before,
-    .separador-acceso::after {
-      content: "";
-      flex: 1;
-      height: 1px;
-      background: var(--linea);
-    }
-    .nota-acceso {
-      margin: 8px 0 0;
-      font-size: 0.85rem;
-      text-align: center;
-      color: var(--texto-suave);
-    }
-
-    /* Botones secundarios (Registrar / Volver): de contorno, sin
-       degradado, para que no compitan con el botón principal */
-    #zona-acceso-admin button.secundario {
-      margin-top: 8px;
-      padding: 12px 20px;
-      font-size: 0.92rem;
-      background: transparent;
-      color: var(--acento-fuerte);
-      border: 1px solid var(--linea);
-      box-shadow: none;
-    }
-    #zona-acceso-admin button.secundario:hover {
-      background: var(--campo-vidrio);
-      border-color: var(--acento);
-    }
-
-    /* CERRAR SESIÓN: botón "de contorno" de vidrio, fijo arriba a la
-       izquierda (espejo del botón de tema). Al pasar el mouse se pone
-       rojo, para que se note que es "salir" */
-    #btn-logout-admin {
-      position: fixed;
-      top: 12px;
-      left: 12px;
-      z-index: 10;
-      padding: 8px 14px;
-      color: var(--texto-suave);
-      background: var(--vidrio);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-      border: 1px solid var(--borde-vidrio);
-      box-shadow: none;
-    }
-    #btn-logout-admin:hover {
-      background: var(--campo-vidrio);
-      color: var(--peligro);
-      border-color: var(--peligro);
-    }
-
-    /* Aparecer: sube un poco mientras se hace visible */
-    @keyframes aparecer {
-      from { opacity: 0; transform: translateY(12px); }
-      to   { opacity: 1; transform: none; }
-    }
-
-    /* Si la persona tiene activado "reducir movimiento" en su sistema,
-       apagamos las animaciones (accesibilidad) */
-    @media (prefers-reduced-motion: reduce) {
-      *, *::before, *::after { animation: none !important; transition: none !important; }
-    }
-
-    /* =================================================================
-       CAPA EVERWISH: va al final para ganarle a las reglas de arriba
-       (a igual fuerza gana la última). Cambia los títulos a la serif de
-       cuento y los adornos (cuadraditos, puntito verde) por destellos ✦.
-       ================================================================= */
-    .encabezado h1,
-    .encabezado-acceso h1 {
-      font-size: clamp(2.6rem, 5vw, 3.8rem);
-      font-weight: 600;
-      letter-spacing: 0;
-      line-height: 1.02;
-    }
-    .texto-degradado { font-style: italic; }
-
-    #form-producto h2,
-    #panel-productos h2,
-    #zona-acceso-admin h3 {
-      font-size: 1.75rem;
-      font-weight: 600;
-      letter-spacing: 0;
-    }
-    #form-producto h2::before,
-    #panel-productos h2::before,
-    #zona-acceso-admin h3::before {
-      content: "✦";
-      width: auto;
-      height: auto;
-      border-radius: 0;
-      background: none;
-      box-shadow: none;
-      font-size: 0.75em;
-      color: var(--oro);
-      text-shadow: 0 0 12px var(--oro-brillo);
-    }
-
-    /* Etiqueta de arriba: destello dorado que late (antes, puntito verde) */
-    .etiqueta-superior::before {
-      content: "✦";
-      width: auto;
-      height: auto;
-      border-radius: 0;
-      background: none;
-      box-shadow: none;
-      color: var(--oro);
-      animation: latido-destello 2.4s ease-in-out infinite;
-    }
-    .etiqueta-superior.candado::before { content: "🔒"; animation: none; }
-    @keyframes latido-destello {
-      0%, 100% { text-shadow: 0 0 0 transparent; transform: scale(1); }
-      50%      { text-shadow: 0 0 10px var(--oro-brillo); transform: scale(1.2); }
-    }
-
-    /* Marca "✦ Everwish" encima de los títulos: lleva al inicio */
-    .encabezado .marca,
-    .encabezado-acceso .marca {
-      display: flex;
-      width: fit-content;
-      margin-bottom: 10px;
-    }
-    .encabezado-acceso .marca { margin-inline: auto; }
-
-    /* Precios y estadísticas en dorado/violeta de la marca */
-    .estadistica strong { font-family: var(--fuente-titulos); font-size: 2rem; font-weight: 700; }
-  </style>
-
+  <!-- 1° sistema visual (colores, botones, pantalla de acceso)
+       2° tarjetas de pedido, clientes y administradores
+       3° el panel: barra lateral, productos, tabla y tarjetas -->
+  <link rel="stylesheet" href="css/everwish.css">
+  <link rel="stylesheet" href="css/pedidos.css">
+  <link rel="stylesheet" href="css/admin.css">
 </head>
 <body>
 
-  <!-- "Cerrar sesión": fijo arriba a la izquierda (el tema está a la derecha) -->
-  <button id="btn-logout-admin" type="button" hidden>Cerrar sesión</button>
-
-  <!-- ESTADO DE LA SESIÓN: queda FUERA de #zona-acceso-admin para que se
-       siga viendo cuando los formularios se ocultan (ej: "Sesión iniciada
-       como Ana (admin).") -->
-  <p id="estado-sesion-admin" role="status">No has iniciado sesión.</p>
-
-  <!-- ACCESO: se ve mientras NO haya un admin confirmado -->
-  <section id="zona-acceso-admin">
-  <header class="encabezado-acceso">
-    <a href="index.html" class="marca">Everwish</a>
-    <span class="etiqueta-superior candado">Acceso restringido</span>
-    <h1>Taller de <span class="texto-degradado">deseos</span></h1>
-    <p>Inicia sesión con tu cuenta de administrador para gestionar el catálogo, los pedidos y los clientes.</p>
-  </header>
-
-  <!-- Solo hay login. Ya NO hay registro de administradores desde la
-       página: si el navegador pudiera escribir en admins_practica,
-       cualquier cliente con sesión podría darse permisos de admin.
-       Los admins se crean desde Supabase (ver sql/proteger_admins.sql). -->
-  <div class="tarjetas-acceso">
-  <form id="form-login-admin">
-    <h3>Iniciar sesión</h3>
-    <label for="admin-login-correo">Correo</label>
-    <input id="admin-login-correo" type="email" required>
-
-    <label for="admin-login-password">Contraseña</label>
-    <input id="admin-login-password" type="password" required>
-
-    <button type="submit">Iniciar sesión</button>
-
-    <p class="separador-acceso">¿Necesitas una cuenta?</p>
-    <p class="nota-acceso">Las cuentas de administrador las crea el dueño de la tienda desde Supabase.</p>
-  </form>
+  <!-- Tema y "Cerrar sesión": fijos arriba a la derecha, se ven en el
+       login y en el panel. Salir aparece con CUALQUIER sesión (admin.js),
+       para que alguien sin perfil de admin también pueda cerrarla -->
+  <div class="esquina-admin">
+    <button type="button" id="btn-tema" aria-label="Cambiar tema">🌙</button>
+    <button id="btn-logout-admin" type="button" class="boton-salir" hidden>⎋ Salir</button>
   </div>
+
+  <!-- ===================== ACCESO ===================== -->
+  <!-- Se ve mientras NO haya un admin confirmado -->
+  <section id="zona-acceso-admin" class="acceso">
+    <div class="acceso-arte">
+      <a href="index.html" class="marca">Everwish</a>
+      <div>
+        <span class="etiqueta-superior candado">Acceso restringido</span>
+        <h1>Taller de <span class="texto-degradado">deseos</span></h1>
+        <p>Gestiona el catálogo, atiende los pedidos y conoce a tus clientes desde un solo lugar.</p>
+      </div>
+      <ul class="acceso-beneficios">
+        <li><span>💎</span> Crea y edita las joyas de los 7 mundos</li>
+        <li><span>🧾</span> Cambia el estado de los pedidos</li>
+        <li><span>👥</span> Revisa clientes y administradores</li>
+      </ul>
+    </div>
+
+    <div class="acceso-formulario">
+      <div class="acceso-caja">
+        <span class="etiqueta-superior">Panel de administración</span>
+        <h2>Entra a tu taller</h2>
+        <p>Solo para el equipo de Everwish.</p>
+
+        <!-- ESTADO DE LA SESIÓN: errores del login o "sin perfil de admin" -->
+        <p id="estado-sesion-admin" class="estado-acceso" role="status">No has iniciado sesión.</p>
+
+        <!-- Login + registro con CÓDIGO DE INVITACIÓN. El navegador sigue sin
+             poder escribir en admins_practica: el registro pasa por la función
+             registrar_admin (sql/registro_admin_codigo.sql), que solo agrega
+             la cuenta si el código es correcto. Se ve una tarjeta a la vez. -->
+        <form id="form-login-admin" class="formulario-acceso">
+          <label class="campo" for="admin-login-correo">Correo
+            <input id="admin-login-correo" type="email" autocomplete="email" required>
+          </label>
+          <label class="campo" for="admin-login-password">Contraseña
+            <input id="admin-login-password" type="password" autocomplete="current-password" required>
+          </label>
+          <button type="submit">Iniciar sesión</button>
+
+          <p class="separador-acceso">¿Eres nuevo admin?</p>
+          <button type="button" id="btn-mostrar-registro" class="secundario">Crear cuenta de admin</button>
+        </form>
+
+        <form id="form-registro-admin" class="formulario-acceso" hidden>
+          <h3>Crear cuenta de admin</h3>
+          <label class="campo" for="registro-admin-nombre">Nombre
+            <input id="registro-admin-nombre" type="text" required>
+          </label>
+          <label class="campo" for="registro-admin-correo">Correo
+            <input id="registro-admin-correo" type="email" required>
+          </label>
+          <label class="campo" for="registro-admin-password">Contraseña
+            <input id="registro-admin-password" type="password" minlength="6" required autocomplete="new-password">
+          </label>
+          <label class="campo" for="registro-admin-codigo">Código de invitación
+            <input id="registro-admin-codigo" type="password" required autocomplete="off">
+          </label>
+          <button type="submit" id="btn-registrar-admin">Crear cuenta</button>
+          <button type="button" id="btn-volver-login" class="secundario">Volver a iniciar sesión</button>
+          <p class="nota-acceso">Pídele el código a otro administrador de la tienda.</p>
+        </form>
+
+        <a href="index.html" class="volver-tienda">← Volver a la tienda</a>
+      </div>
+    </div>
   </section>
 
-  <!-- El botón del tema queda FUERA del panel, para poder usarlo
-       también en la pantalla de login -->
-  <button type="button" id="btn-tema">🌙 Modo oscuro</button>
 
-  <!-- PANEL DE ADMINISTRADOR: empieza oculto ("hidden"). admin.js lo
-       muestra solo si hay sesión iniciada Y existe fila en admins_practica.
+  <!-- ===================== PANEL ===================== -->
+  <!-- Empieza oculto ("hidden"). admin.js lo muestra solo si hay sesión
+       iniciada Y existe fila en admins_practica.
        OJO: esto solo oculta lo que se VE. Lo que de verdad protege los
        datos son las políticas RLS en Supabase. -->
-  <main id="panel-admin" hidden>
+  <div id="panel-admin" class="admin-app" hidden>
 
-  <!-- ENCABEZADO: título y estadísticas (los números los llena admin.js) -->
-  <header class="encabezado">
-    <div>
+    <!-- BARRA LATERAL: marca, secciones y quién está conectado -->
+    <aside class="admin-lateral">
       <a href="index.html" class="marca">Everwish</a>
-      <span class="etiqueta-superior">Panel de administración</span>
-      <h1>Taller de <span class="texto-degradado">deseos</span></h1>
-      <p>Crea y edita los kits del catálogo, atiende los pedidos y conoce a tus clientes.</p>
-    </div>
-    <div class="estadisticas">
-      <div class="estadistica"><strong id="stat-total">–</strong><span>Productos</span></div>
-      <div class="estadistica"><strong id="stat-disponibles">–</strong><span>Disponibles</span></div>
-      <div class="estadistica"><strong id="stat-agotados">–</strong><span>Agotados</span></div>
-      <div class="estadistica"><strong id="stat-unidades">–</strong><span>Unidades</span></div>
-    </div>
-  </header>
+      <span class="admin-lateral-etiqueta">Panel</span>
 
-  <!-- PESTAÑAS: cada botón muestra una sección y oculta las otras dos
-       (admin-pedidos.js). aria-selected marca la activa; el CSS la pinta. -->
-  <nav class="pestanas-admin" role="tablist" aria-label="Secciones del panel">
-    <button type="button" class="pestana" role="tab" aria-selected="true" data-seccion="seccion-productos">📦 Productos</button>
-    <button type="button" class="pestana" role="tab" aria-selected="false" data-seccion="seccion-pedidos">🧾 Pedidos</button>
-    <button type="button" class="pestana" role="tab" aria-selected="false" data-seccion="seccion-clientes">👥 Mis clientes</button>
-  </nav>
+      <!-- PESTAÑAS: cada botón muestra una sección y oculta las otras
+           (admin-pedidos.js). aria-selected marca la activa; el CSS la pinta. -->
+      <nav class="pestanas-admin" role="tablist" aria-label="Secciones del panel">
+        <button type="button" class="pestana" role="tab" aria-selected="true" data-seccion="seccion-productos"><span>💎</span> Productos</button>
+        <button type="button" class="pestana" role="tab" aria-selected="false" data-seccion="seccion-pedidos"><span>🧾</span> Pedidos</button>
+        <button type="button" class="pestana" role="tab" aria-selected="false" data-seccion="seccion-clientes"><span>👥</span> Clientes</button>
+        <button type="button" class="pestana" role="tab" aria-selected="false" data-seccion="seccion-admins"><span>🛡️</span> Administradores</button>
+      </nav>
 
-  <!-- PEDIDOS DE LOS CLIENTES: admin-pedidos.js los trae al abrir la
-       pestaña. Cada tarjeta tiene un selector para cambiar el estado. -->
-  <section id="seccion-pedidos" class="seccion-admin" hidden>
-    <div class="barra-seccion">
-      <h2>Pedidos</h2>
-      <label class="filtro">Estado
-        <select id="filtro-estado-pedidos">
-          <option value="">Todos</option>
-          <option value="confirmado">Confirmado</option>
-          <option value="enviado">Enviado</option>
-          <option value="entregado">Entregado</option>
-          <option value="cancelado">Cancelado</option>
-        </select>
-      </label>
-      <button type="button" id="btn-recargar-pedidos" class="secundario">↻ Actualizar</button>
-    </div>
-    <p id="resumen-pedidos" class="resumen-seccion"></p>
-    <p id="mensaje-pedidos" class="mensaje-seccion" role="status"></p>
-    <div id="lista-pedidos-admin" class="grilla-pedidos"></div>
-  </section>
+      <div class="admin-usuario">
+        <span id="admin-inicial" class="admin-avatar" aria-hidden="true">A</span>
+        <div>
+          <strong id="admin-nombre">Admin</strong>
+          <small id="admin-correo"></small>
+        </div>
+      </div>
+      <a href="index.html" class="admin-ver-tienda">Ver la tienda ↗</a>
+    </aside>
 
-  <!-- MIS CLIENTES: la tabla reutiliza el estilo .tabla-productos -->
-  <section id="seccion-clientes" class="seccion-admin" hidden>
-    <div class="barra-seccion">
-      <h2>Mis clientes</h2>
-      <input type="search" id="buscar-cliente" placeholder="Buscar por nombre, correo o ciudad..." aria-label="Buscar cliente">
-    </div>
-    <p id="resumen-clientes" class="resumen-seccion"></p>
-    <div class="contenedor-tabla">
-      <table class="tabla-productos tabla-clientes">
-        <thead>
-          <tr>
-            <th>Cliente</th>
-            <th>Teléfono</th>
-            <th>Ciudad</th>
-            <th>Dirección</th>
-            <th>Pedidos</th>
-            <th>Total comprado</th>
-            <th>Cliente desde</th>
-          </tr>
-        </thead>
-        <tbody id="tabla-clientes"></tbody>
-      </table>
-    </div>
-  </section>
+    <main class="admin-principal">
+      <!-- ENCABEZADO: título y estadísticas (los números los llena admin.js) -->
+      <header class="admin-encabezado">
+        <div>
+          <span class="etiqueta-superior">Taller de deseos</span>
+          <h1>Tu <span class="texto-degradado">catálogo</span> mágico</h1>
+          <p>Crea y edita las joyas, atiende los pedidos y conoce a tus clientes.</p>
+        </div>
+      </header>
 
-  <!-- DISEÑO EN DOS COLUMNAS: a la izquierda el formulario,
-       a la derecha el recuadro con los productos -->
-  <div class="layout" id="seccion-productos">
+      <div class="estadisticas">
+        <div class="estadistica"><span>💎</span><strong id="stat-total">–</strong><small>Productos</small></div>
+        <div class="estadistica"><span>✅</span><strong id="stat-disponibles">–</strong><small>Disponibles</small></div>
+        <div class="estadistica"><span>⏳</span><strong id="stat-agotados">–</strong><small>Agotados</small></div>
+        <div class="estadistica"><span>📦</span><strong id="stat-unidades">–</strong><small>Unidades en stock</small></div>
+      </div>
 
-  <div class="columna-form">
-  <!-- FORMULARIO: cada campo corresponde a una propiedad del objeto
-       productoPrueba (y a una columna de la tabla en Supabase).
-       El atributo "name" de cada input es el que usamos en admin.js
-       para leer su valor. "required" hace que el navegador no deje
-       enviar el formulario si ese campo está vacío. -->
-  <form id="form-producto">
-    <h2 id="titulo-form">Agregar producto</h2>
+      <!-- PEDIDOS DE LOS CLIENTES: admin-pedidos.js los trae al abrir la
+           pestaña. Cada tarjeta tiene un selector para cambiar el estado. -->
+      <section id="seccion-pedidos" class="seccion-admin" hidden>
+        <div class="barra-seccion">
+          <h2>Pedidos</h2>
+          <label class="filtro">Estado
+            <select id="filtro-estado-pedidos">
+              <option value="">Todos</option>
+              <option value="confirmado">Confirmado</option>
+              <option value="enviado">Enviado</option>
+              <option value="entregado">Entregado</option>
+              <option value="cancelado">Cancelado</option>
+            </select>
+          </label>
+          <button type="button" id="btn-recargar-pedidos" class="secundario">↻ Actualizar</button>
+        </div>
+        <p id="resumen-pedidos" class="resumen-seccion"></p>
+        <p id="mensaje-pedidos" class="mensaje-seccion" role="status"></p>
+        <div id="lista-pedidos-admin" class="grilla-pedidos"></div>
+      </section>
 
-    <!-- Campo oculto: vacío = agregar; con un id = modificar ese producto -->
-    <input type="hidden" name="id">
-    <!-- Los campos van agrupados en 3 bloques, cada uno con su subtítulo.
-         Las <small> son textos de ayuda que aparecen debajo del campo. -->
+      <!-- MIS CLIENTES: la tabla reutiliza el estilo .tabla-productos -->
+      <section id="seccion-clientes" class="seccion-admin" hidden>
+        <div class="barra-seccion">
+          <h2>Clientes</h2>
+          <input type="search" id="buscar-cliente" placeholder="Buscar por nombre, correo o ciudad..." aria-label="Buscar cliente">
+        </div>
+        <p id="resumen-clientes" class="resumen-seccion"></p>
+        <div class="contenedor-tabla">
+          <table class="tabla-productos tabla-clientes">
+            <thead>
+              <tr>
+                <th>Cliente</th>
+                <th>Teléfono</th>
+                <th>Ciudad</th>
+                <th>Dirección</th>
+                <th>Pedidos</th>
+                <th>Total comprado</th>
+                <th>Cliente desde</th>
+              </tr>
+            </thead>
+            <tbody id="tabla-clientes"></tbody>
+          </table>
+        </div>
+      </section>
 
-    <p class="grupo grupo-1">Información básica</p>
+      <!-- ADMINISTRADORES: lista + formulario para agregar otro admin.
+           admin-pedidos.js crea la cuenta (signUp) y llama a la función
+           agregar_admin de Supabase (sql/agregar_admin.sql), que comprueba
+           que quien la usa ya sea admin. -->
+      <section id="seccion-admins" class="seccion-admin" hidden>
+        <div class="barra-seccion">
+          <h2>Administradores</h2>
+          <button type="button" id="btn-recargar-admins" class="secundario">↻ Actualizar</button>
+        </div>
 
-    <label>Nombre
-      <input type="text" name="nombre" placeholder="Ej: Cinderella Dream Kit" required>
-    </label>
+        <h3 class="subtitulo-admin">Agregar un administrador</h3>
+        <form id="form-nuevo-admin" class="form-nuevo-admin">
+          <label>Nombre
+            <input type="text" name="nombre" required autocomplete="off">
+          </label>
+          <label>Correo
+            <input type="email" name="correo" required autocomplete="off">
+          </label>
+          <label>Contraseña
+            <input type="password" name="contrasena" minlength="6" required autocomplete="new-password">
+          </label>
+          <button type="submit" id="btn-agregar-admin">＋ Agregar admin</button>
+        </form>
+        <p class="resumen-seccion">Si el correo ya tiene cuenta (por ejemplo, un cliente), esa cuenta pasa a ser admin y conserva su contraseña.</p>
+        <p id="mensaje-admins" class="mensaje-seccion" role="status"></p>
 
-    <!-- Las categorías se escriben separadas por coma y en el JS
-         las convertimos en un array: "tecnologia, audio" → ["tecnologia", "audio"] -->
-    <label>Categorías
-      <input type="text" name="categorias" placeholder="kits, princesas">
-      <small>Separadas por coma</small>
-    </label>
+        <!-- Código de invitación: quien lo tenga puede crearse una cuenta de
+             admin desde la pantalla de login. Solo se puede CAMBIAR, no ver
+             (en Supabase se guarda como hash). -->
+        <h3 class="subtitulo-admin">Código de invitación</h3>
+        <form id="form-codigo-admin" class="form-nuevo-admin">
+          <label>Nuevo código de invitación
+            <input type="password" name="codigo" minlength="8" required autocomplete="new-password">
+          </label>
+          <button type="submit" class="secundario">🔑 Cambiar código</button>
+        </form>
+        <p id="mensaje-codigo" class="mensaje-seccion" role="status"></p>
 
-    <p class="grupo grupo-2">Precio e inventario</p>
+        <h3 class="subtitulo-admin">Equipo</h3>
+        <p id="resumen-admins" class="resumen-seccion"></p>
+        <div class="contenedor-tabla">
+          <table class="tabla-productos tabla-clientes">
+            <thead>
+              <tr>
+                <th>Administrador</th>
+                <th>Rol</th>
+                <th>Admin desde</th>
+              </tr>
+            </thead>
+            <tbody id="tabla-admins"></tbody>
+          </table>
+        </div>
+      </section>
 
-    <!-- type="number" solo deja escribir números (sin step solo acepta enteros) -->
-    <label>Precio
-      <input type="number" name="precio" min="0" placeholder="0" required>
-    </label>
+      <!-- PRODUCTOS: a la izquierda el formulario, a la derecha la lista -->
+      <div class="layout" id="seccion-productos">
 
-    <label>Unidades
-      <input type="number" name="unidades" min="0" placeholder="0" required>
-    </label>
+        <div class="columna-form">
+          <!-- FORMULARIO: cada campo corresponde a una columna de la tabla
+               products_practice. El atributo "name" de cada input es el que
+               usamos en admin.js para leer su valor. "required" hace que el
+               navegador no deje enviar el formulario si ese campo está vacío. -->
+          <form id="form-producto">
+            <h2 id="titulo-form">Agregar producto</h2>
 
-    <!-- El descuento va de 0 a 1 (0.1 = 10%), igual que en productoPrueba -->
-    <label>Descuento
-      <input type="number" name="descuento" min="0" max="1" step="any" value="0">
-      <small>De 0 a 1 · 0.1 = 10%</small>
-    </label>
+            <!-- Campo oculto: vacío = agregar; con un id = modificar ese producto -->
+            <input type="hidden" name="id">
 
-    <p class="grupo grupo-3">Detalles</p>
+            <p class="grupo">Información básica</p>
 
-    <label>Descripción
-      <textarea name="description" placeholder="¿Qué trae el kit y qué cuento evoca?" required></textarea>
-    </label>
+            <label>Nombre
+              <input type="text" name="nombre" placeholder="Ej: Collar Flor de Magnolia" required>
+            </label>
 
-    <label>URL de la imagen
-      <!-- Campo + cuadrito con la vista previa de la imagen al lado -->
-      <span class="campo-imagen">
-        <!-- type="text" (no "url"): así acepta también rutas del proyecto
-             como img/productos/mickey-magic-box.svg, que no empiezan con https -->
-        <input type="text" name="imagen_url" placeholder="img/productos/....svg o https://...jpg">
-        <img id="vista-previa" alt="">
-      </span>
-      <small id="ayuda-imagen"></small>
-    </label>
+            <!-- Las categorías se escriben separadas por coma y en el JS
+                 las convertimos en un array: "collares, princesas" → ["collares", "princesas"] -->
+            <label>Categorías
+              <input type="text" name="categorias" placeholder="collares, princesas">
+              <small>Primero el tipo, luego el mundo · separadas por coma</small>
+            </label>
 
-    <!-- Un checkbox da true/false, perfecto para "disponible" -->
-    <label>Disponible
-      <input type="checkbox" name="disponible" checked>
-    </label>
+            <p class="grupo">Precio e inventario</p>
 
-    <!-- type="submit": al hacer clic se dispara el evento "submit" del formulario -->
-    <button type="submit" id="btn2">Agregar Producto</button>
-    <!-- Solo aparece en modo edición (hidden lo oculta) -->
-    <button type="button" id="btn-cancelar" class="secundario" hidden>Cancelar</button>
+            <div class="fila-3">
+              <!-- type="number" solo deja escribir números (sin step solo acepta enteros) -->
+              <label>Precio
+                <input type="number" name="precio" min="0" placeholder="0" required>
+              </label>
+              <label>Unidades
+                <input type="number" name="unidades" min="0" placeholder="0" required>
+              </label>
+              <!-- El descuento va de 0 a 1 (0.1 = 10%) -->
+              <label>Descuento
+                <input type="number" name="descuento" min="0" max="1" step="any" value="0">
+                <small>0.1 = 10%</small>
+              </label>
+            </div>
 
-    <!-- CATÁLOGO: sección dentro del formulario con el botón "Traer productos".
-         OJO: type="button" es obligatorio aquí. Un <button> dentro de un
-         <form> sin type es "submit" por defecto, y al clicarlo intentaría
-         agregar un producto en vez de traer la lista. -->
-    <section class="catalogo">
-      <h3>Catálogo</h3>
-      <button type="button" id="btn-traer">Traer productos</button>
+            <p class="grupo">Detalles</p>
 
-      <div id="resultado"></div>
-      <div id="resultado2"></div>
-      <div id="resultado3"></div>
-      <div id="resultado4"></div>
-      <div id="resultado5"></div>
-      <div id="resultado6"></div>
-      <div id="resultado7"></div>
-      <div id="resultado8"></div>
-    </section>
-  </form>
-  <div id="notificacion"></div>
+            <label>Descripción
+              <textarea name="description" rows="3" placeholder="¿Qué joya es y qué película evoca?" required></textarea>
+            </label>
+
+            <label>URL de la imagen
+              <!-- Campo + cuadrito con la vista previa de la imagen al lado -->
+              <span class="campo-imagen">
+                <!-- type="text" (no "url"): así acepta también rutas del proyecto
+                     como img/productos/aretes-rayo.svg, que no empiezan con https -->
+                <input type="text" name="imagen_url" placeholder="img/productos/....svg o https://...jpg">
+                <img id="vista-previa" alt="">
+              </span>
+              <small id="ayuda-imagen"></small>
+            </label>
+
+            <!-- Un checkbox da true/false, perfecto para "disponible" -->
+            <label class="casilla-disponible">
+              <input type="checkbox" name="disponible" checked> Disponible para la venta
+            </label>
+
+            <div class="botones-form">
+              <!-- type="submit": al hacer clic se dispara el evento "submit" del formulario -->
+              <button type="submit" id="btn2">Agregar Producto</button>
+              <!-- Solo aparece en modo edición (hidden lo oculta) -->
+              <button type="button" id="btn-cancelar" class="secundario" hidden>Cancelar</button>
+            </div>
+          </form>
+          <div id="notificacion" role="status"></div>
+
+          <!-- EJERCICIO DE CLASE: "Traer productos" muestra en crudo lo que
+               devuelve Supabase (JSON, map, filter...). Va plegado en un
+               <details> para no estorbar; se abre con un clic.
+               OJO: type="button" en el botón para que no envíe nada. -->
+          <details class="catalogo">
+            <summary>Ejercicio: traer productos (JSON)</summary>
+            <button type="button" id="btn-traer">Traer productos</button>
+            <div id="resultado"></div>
+            <div id="resultado2"></div>
+            <div id="resultado3"></div>
+            <div id="resultado4"></div>
+            <div id="resultado5"></div>
+            <div id="resultado6"></div>
+            <div id="resultado7"></div>
+            <div id="resultado8"></div>
+          </details>
+        </div>
+
+        <!-- RECUADRO DE PRODUCTOS: al abrir la página muestra todos.
+             El buscador filtra por nombre, por categoría, o por ID si
+             escribes solo un número. Con el campo vacío vuelve a mostrar todos. -->
+        <aside id="panel-productos">
+          <div class="panel-productos-cabecera">
+            <h2>Productos</h2>
+            <form id="form-busqueda">
+              <input type="search" id="input-busqueda" placeholder="Buscar por nombre, categoría o ID...">
+              <button type="submit" id="btn-buscar">Buscar</button>
+              <!-- Cambia entre tabla y tarjetas. type="button" para que NO envíe el buscador -->
+              <button type="button" id="btn-vista" class="secundario" title="Cambiar vista">▦ Tarjetas</button>
+            </form>
+          </div>
+          <div id="resultados-busqueda"></div>
+        </aside>
+      </div>
+    </main>
   </div>
 
-  <!-- RECUADRO DE PRODUCTOS: al abrir la página muestra todos.
-       El buscador filtra por nombre, por categoría, o por ID si
-       escribes solo un número. Con el campo vacío vuelve a mostrar todos. -->
-  <aside id="panel-productos">
-    <h2>Productos</h2>
-    <form id="form-busqueda">
-      <input type="search" id="input-busqueda"
-             placeholder="Buscar por nombre, categoría o ID...">
-      <button type="submit" id="btn-buscar">Buscar</button>
-      <!-- Cambia entre ver los productos en tabla o en tarjetas.
-           type="button" para que NO envíe el buscador al clicarlo -->
-      <button type="button" id="btn-vista" title="Cambiar vista">▦ Tarjetas</button>
-    </form>
-    <div id="resultados-busqueda"></div>
-  </aside>
-
-  </div>
-  </main>
-
-  <!-- supabaseClient.js crea "db" (sección 4.3): el cliente ya
-       conectado a tu proyecto de Supabase. Lo vamos a usar en
-       admin.js, por eso tiene que cargarse ANTES que ese archivo -->
+  <!-- supabaseClient.js crea "db": el cliente ya conectado a tu proyecto
+       de Supabase. Lo usa admin.js, por eso se carga ANTES -->
   <script src="js/supabaseClient.js"></script>
   <!-- admin.js: lógica del panel (listar, agregar, buscar, editar, eliminar) -->
   <script src="js/admin.js"></script>
   <!-- pedidos.js: funciones compartidas con cliente.html.
-       admin-pedidos.js: pestañas, pedidos (cambiar estado) y clientes -->
+       admin-pedidos.js: pestañas, pedidos (cambiar estado), clientes y admins -->
   <script src="js/pedidos.js"></script>
   <script src="js/admin-pedidos.js"></script>
 </body>

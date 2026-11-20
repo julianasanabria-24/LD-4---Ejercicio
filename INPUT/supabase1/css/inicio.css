@@ -1,193 +1,289 @@
 /* =================================================================
    EVERWISH · PORTADA (index.html)
-   Solo lo propio de la portada. La barra, las tarjetas de producto y
-   el pie vienen de css/galeria.css, y los colores de css/everwish.css.
+   Se carga después de everwish.css y galeria.css (tarjetas, carrusel
+   y mundos vienen de ahí). Aquí solo lo propio de la portada.
    ================================================================= */
 
-/* ===================== PORTADA ===================== */
-/* Dos columnas: texto | ilustración. En tablet y celular, una sola */
-.portada {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: clamp(32px, 6vw, 72px) 16px 24px;
-  display: grid;
-  grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
-  align-items: center;
-  gap: clamp(24px, 5vw, 64px);
-}
-
-.portada-texto { animation: aparecer 0.7s ease both; }
-
-.portada h1 {
-  margin: 18px 0 16px;
-  font-size: clamp(2.8rem, 6.5vw, 5rem);
-  line-height: 0.98;
-}
-.portada p {
-  max-width: 520px;
-  margin: 0;
-  color: var(--texto-suave);
-  font-size: 1.08rem;
-  line-height: 1.65;
-}
-
-.portada-botones {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 12px;
-  margin-top: 28px;
-}
-
-/* Tres datos cortos con ícono, separados por puntitos dorados */
-.portada-datos {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px 20px;
-  margin: 28px 0 0;
-  padding: 0;
-  list-style: none;
-  font-size: 0.9rem;
-  color: var(--texto-suave);
-}
-.portada-datos strong { margin-right: 4px; }
-
-/* La ilustración flota despacio */
-.portada-arte {
+/* ===================== HERO ===================== */
+.hero {
   position: relative;
-  animation: aparecer 0.9s ease 0.15s both;
+  overflow: hidden;
+  display: grid;
+  grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr);
+  align-items: center;
+  gap: 32px;
+  margin-top: 20px;
+  padding: clamp(32px, 6vw, 72px);
+  min-height: min(640px, 80vh);
+  border-radius: 32px;
+  background: var(--degradado-noche);
+  color: #fff;
+  isolation: isolate;
 }
-.portada-arte img {
-  display: block;
-  width: 100%;
-  height: auto;
-  max-width: 480px;
-  margin: 0 auto;
-  filter: drop-shadow(0 30px 40px var(--sombra-color));
-  animation: flotar-arte 7s ease-in-out infinite alternate;
+/* Cielo con estrellas dentro del hero */
+.hero::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background-image:
+    radial-gradient(2px 2px at 30px 40px, #fff, transparent 70%),
+    radial-gradient(1.5px 1.5px at 160px 120px, #f3d896, transparent 70%),
+    radial-gradient(1px 1px at 80px 220px, #fff, transparent 70%),
+    radial-gradient(2px 2px at 240px 70px, #fff, transparent 70%),
+    radial-gradient(1px 1px at 200px 250px, #ffb3d1, transparent 70%);
+  background-size: 280px 280px;
+  opacity: 0.7;
+  animation: titilar 4s ease-in-out infinite alternate;
 }
-@keyframes flotar-arte {
-  from { transform: translateY(0); }
-  to   { transform: translateY(-14px); }
+/* Luz rosa y dorada detrás del arte */
+.hero::after {
+  content: "";
+  position: absolute;
+  right: -10%;
+  top: 10%;
+  z-index: -1;
+  width: 60%;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 140, 190, 0.35), rgba(240, 200, 120, 0.12) 45%, transparent 70%);
+  filter: blur(20px);
+  animation: latir 6s ease-in-out infinite;
 }
+@keyframes latir { 50% { transform: scale(1.12); opacity: 0.8; } }
+
+.hero-texto { animation: aparecer 0.8s ease both; }
+.hero .etiqueta-superior { background: rgba(255, 255, 255, 0.1); color: #f3d896; }
+.hero .etiqueta-superior::before { color: #f3d896; }
+.hero h1 { margin-top: 18px; color: #fff; }
+.hero .texto-degradado { background: linear-gradient(120deg, #f0d48c, #ff9cc2 60%, #c7b0ff); -webkit-background-clip: text; background-clip: text; }
+.hero-texto > p { margin-top: 18px; font-size: 1.08rem; color: #d6cdf3; max-width: 46ch; }
+.hero-botones { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 30px; }
+.hero-botones .boton { padding: 15px 26px; }
+
+.hero-datos {
+  display: flex;
+  gap: 28px;
+  margin: 36px 0 0;
+  padding-top: 24px;
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
+}
+.hero-datos dt { font-family: var(--fuente-titulos); font-size: 2rem; font-weight: 600; color: #f3d896; line-height: 1; }
+.hero-datos dd { margin: 4px 0 0; font-size: 0.82rem; color: #b9b0dc; }
+
+/* Arte: arco con la ilustración y tres joyas flotando alrededor */
+.hero-arte {
+  position: relative;
+  justify-self: center;
+  width: min(440px, 100%);
+  aspect-ratio: 4 / 4.6;
+}
+.hero-arco {
+  position: absolute;
+  inset: 0 12%;
+  overflow: hidden;
+  border-radius: 999px 999px 28px 28px;
+  border: 2px solid rgba(243, 216, 150, 0.6);
+  box-shadow: 0 40px 80px -30px rgba(0, 0, 0, 0.8), 0 0 0 10px rgba(255, 255, 255, 0.04);
+  animation: aparecer 1s 0.2s ease both;
+}
+.hero-arco img { width: 100%; height: 100%; object-fit: cover; }
+
+.hero-flotante {
+  position: absolute;
+  width: 34%;
+  border-radius: 22px;
+  border: 3px solid rgba(255, 255, 255, 0.85);
+  box-shadow: 0 24px 40px -18px rgba(0, 0, 0, 0.7);
+  animation: levitar 6s ease-in-out infinite;
+}
+.hero-flotante.f1 { top: 4%; left: -6%; rotate: -8deg; }
+.hero-flotante.f2 { top: 38%; right: -8%; rotate: 7deg; animation-delay: -2s; }
+.hero-flotante.f3 { bottom: -2%; left: 4%; width: 28%; rotate: 4deg; animation-delay: -4s; }
+
+.chispa {
+  position: absolute;
+  color: #f3d896;
+  text-shadow: 0 0 16px #f3d896;
+  animation: destellar 2.4s ease-in-out infinite;
+}
+.chispa.c1 { top: 0; right: 14%; font-size: 1.6rem; }
+.chispa.c2 { bottom: 18%; right: 2%; font-size: 1.1rem; animation-delay: -0.8s; }
+.chispa.c3 { top: 30%; left: 6%; font-size: 1.3rem; animation-delay: -1.6s; color: #ffb3d1; }
+@keyframes destellar { 50% { opacity: 0.2; transform: scale(0.6) rotate(45deg); } }
 
 @media (max-width: 860px) {
-  .portada {
-    grid-template-columns: minmax(0, 1fr);
-    text-align: center;
-  }
-  .portada p { margin-inline: auto; }
-  .portada-botones,
-  .portada-datos { justify-content: center; }
-  .portada-arte img { max-width: 340px; }
+  .hero { grid-template-columns: 1fr; text-align: left; }
+  .hero-arte { width: min(320px, 85%); margin-top: 16px; }
 }
 
 
-/* ===================== SECCIONES ===================== */
-.seccion {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 56px 16px 8px;
-}
-/* El ancla #colecciones no queda tapada por la barra fija */
-#colecciones { scroll-margin-top: 90px; }
-
-.seccion-titulo {
-  max-width: 620px;
-  margin: 0 auto 32px;
-  text-align: center;
-}
-.seccion-titulo h2 {
-  margin: 14px 0 8px;
-  font-size: clamp(2.2rem, 4.5vw, 3.2rem);
-  line-height: 1.05;
-}
-.seccion-titulo p { margin: 0; color: var(--texto-suave); }
-
-/* La grilla de destacados no necesita el margen grande de la tienda */
-#destacados { margin: 0 auto; padding: 0; }
-
-.seccion-accion { margin: 32px 0 0; text-align: center; }
-
-
-/* ===================== COLECCIONES ===================== */
-.colecciones {
+/* ===================== CONFIANZA ===================== */
+.confianza {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(min(240px, 100%), 1fr));
-  gap: 22px;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  margin: 24px 0 0;
+  padding: 0;
+  list-style: none;
+}
+.confianza li {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 16px 18px;
+  border-radius: var(--radio);
+  background: var(--superficie);
+  border: 1px solid var(--linea);
+  font-size: 0.82rem;
+  color: var(--texto-suave);
+}
+.confianza span {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 44px;
+  height: 44px;
+  border-radius: 14px;
+  background: var(--acento-suave);
+  font-size: 1.3rem;
+}
+.confianza strong { display: block; color: var(--texto); font-size: 0.92rem; }
+@media (max-width: 860px) { .confianza { grid-template-columns: 1fr 1fr; } }
+@media (max-width: 480px) { .confianza { grid-template-columns: 1fr; } }
+
+
+/* ===================== BANNERS ===================== */
+.banner {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+  align-items: center;
+  overflow: hidden;
+  border-radius: 28px;
+  color: #fff;
+  text-decoration: none;
+  isolation: isolate;
+  transition: transform 0.35s, box-shadow 0.35s;
+}
+.banner:hover { transform: translateY(-4px); box-shadow: var(--sombra-2); }
+.banner-texto { padding: clamp(28px, 5vw, 56px); }
+.banner-texto p { margin: 12px 0 22px; color: rgba(255, 255, 255, 0.78); max-width: 40ch; }
+.banner h2 { color: #fff; }
+.banner h2 em { color: #c6f27a; }
+.banner img {
+  width: 100%;
+  height: clamp(240px, 30vw, 380px);
+  object-fit: cover;
+  object-position: center 55%;
+  transition: transform 0.8s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+.banner:hover img { transform: scale(1.06); }
+.banner .etiqueta-superior { background: rgba(255, 255, 255, 0.12); color: #fff; }
+.banner .boton { pointer-events: none; }   /* todo el banner ya es el enlace */
+
+.banner-villanos { background: linear-gradient(120deg, #1a0f2e, #3a1858 60%, #1d3a1a); }
+
+.banners-duo { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+.banners-duo .banner { grid-template-columns: 1fr 0.8fr; }
+.banners-duo .banner img { height: 280px; }
+.banners-duo h3 { font-size: 2rem; color: #fff; margin-top: 6px; }
+.banners-duo .enlace-flecha { color: #f3d896; }
+.banner-estudio { font-size: 0.72rem; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; color: #f3d896; }
+.banner-magico { background: linear-gradient(135deg, #0f1430, #27305e); }
+.banner-aventuras { background: linear-gradient(135deg, #17331a, #3f6b2a); }
+
+@media (max-width: 760px) {
+  .banner, .banners-duo, .banners-duo .banner { grid-template-columns: 1fr; }
+  .banner img, .banners-duo .banner img { height: 220px; }
 }
 
-/* Cada colección es un enlace con forma de tarjeta en arco */
-.coleccion {
+
+/* ===================== TIPOS DE JOYA ===================== */
+.tipos-grilla {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(150px, 100%), 1fr));
+  gap: 14px;
+}
+.tipo-tarjeta {
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 6px;
-  padding: 16px 16px 22px;
-  border-radius: 999px 999px 28px 28px / 220px 220px 28px 28px;
-  background: var(--vidrio);
-  border: 1px solid var(--borde-vidrio);
-  box-shadow: 0 30px 60px -36px var(--sombra-color);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
+  padding: 26px 14px;
+  border-radius: 22px;
+  background: var(--superficie);
+  border: 1px solid var(--linea);
   color: var(--texto);
-  text-align: center;
   text-decoration: none;
-  transition: transform 0.25s, box-shadow 0.25s;
+  text-align: center;
+  transition: transform 0.25s, border-color 0.25s, box-shadow 0.25s;
 }
-.coleccion:hover {
-  transform: translateY(-6px);
-  box-shadow: 0 40px 70px -34px var(--sombra-color), 0 0 0 1px var(--oro-brillo);
+.tipo-tarjeta:hover { transform: translateY(-4px); border-color: var(--acento); box-shadow: var(--sombra-1); }
+.tipo-icono {
+  display: grid;
+  place-items: center;
+  width: 64px;
+  height: 64px;
+  margin-bottom: 6px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--acento-suave), var(--rosa-suave));
+  font-size: 1.8rem;
+  transition: transform 0.4s;
 }
-.coleccion img {
-  width: 100%;
-  aspect-ratio: 1 / 1;
-  object-fit: cover;
-  border-radius: 999px 999px 18px 18px / 200px 200px 18px 18px;
-}
-.coleccion h3 {
-  margin: 10px 0 0;
-  font-size: 1.7rem;
-  font-weight: 700;
-}
-.coleccion p {
-  margin: 0;
-  font-size: 0.9rem;
-  color: var(--texto-suave);
-}
+.tipo-tarjeta:hover .tipo-icono { transform: rotate(-10deg) scale(1.1); }
+.tipo-tarjeta strong { font-family: var(--fuente-titulos); font-size: 1.15rem; font-weight: 600; }
+.tipo-tarjeta span:last-child { font-size: 0.8rem; color: var(--texto-suave); }
 
 
-/* ===================== CÓMO FUNCIONA ===================== */
+/* ===================== PASOS ===================== */
 .pasos {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(min(240px, 100%), 1fr));
-  gap: 22px;
-  margin: 0 0 72px;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+  margin: 0;
   padding: 0;
   list-style: none;
+  counter-reset: paso;
 }
 .pasos li {
-  position: relative;
-  padding: 28px 24px 24px;
-  border-radius: 24px;
-  background: var(--vidrio);
-  border: 1px solid var(--borde-vidrio);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  text-align: center;
+  padding: 28px;
+  border-radius: 22px;
+  background: var(--superficie);
+  border: 1px solid var(--linea);
 }
-/* Número romano dentro de un círculo dorado, como un sello */
 .paso-numero {
   display: grid;
   place-items: center;
-  width: 54px;
-  height: 54px;
-  margin: 0 auto 10px;
+  width: 52px;
+  height: 52px;
+  margin-bottom: 18px;
   border-radius: 50%;
-  border: 1px solid var(--oro-brillo);
+  background: var(--degradado);
+  color: #fff;
   font-family: var(--fuente-titulos);
-  font-size: 1.5rem;
-  font-weight: 700;
-  color: var(--oro);
+  font-size: 1.3rem;
+  font-style: italic;
 }
-.pasos h3 { margin: 0 0 6px; font-size: 1.6rem; }
-.pasos p { margin: 0; color: var(--texto-suave); line-height: 1.55; }
+.pasos p { margin-top: 8px; color: var(--texto-suave); font-size: 0.92rem; }
+@media (max-width: 760px) { .pasos { grid-template-columns: 1fr; } }
+
+
+/* ===================== CLUB ===================== */
+.club {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  padding: clamp(28px, 5vw, 52px);
+  border-radius: 28px;
+  background:
+    radial-gradient(circle at 0% 0%, var(--rosa-suave), transparent 50%),
+    radial-gradient(circle at 100% 100%, var(--acento-suave), transparent 55%),
+    var(--superficie);
+  border: 1px solid var(--linea);
+}
+.club h2 { margin-top: 12px; }
+.club p { margin-top: 10px; max-width: 52ch; color: var(--texto-suave); }
+.club .boton { padding: 16px 28px; }

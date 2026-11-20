@@ -1,7 +1,8 @@
 // ===================== LOGIN DEL ADMINISTRADOR =====================
-// Aquí NO hay registro: si la página pudiera insertar en admins_practica,
-// cualquier cliente con sesión podría hacerse admin desde la consola.
-// Los admins se crean desde Supabase (ver sql/proteger_admins.sql).
+// La página sigue SIN poder insertar en admins_practica (si pudiera,
+// cualquier cliente con sesión se haría admin desde la consola).
+// El registro pasa por la función registrar_admin de Supabase, que
+// exige el código de invitación (sql/registro_admin_codigo.sql).
 
 document.getElementById('form-login-admin').addEventListener('submit', async (evento) => {
   evento.preventDefault();
@@ -61,11 +62,86 @@ async function mostrarEstadoSesionAdmin() {
   }
 
   estado.innerText = 'Sesión iniciada como ' + perfil.nombre + ' (admin).';
+  // Saludo y avatar en el panel (barra lateral y encabezado)
+  document.getElementById('admin-nombre').innerText = perfil.nombre;
+  document.getElementById('admin-inicial').innerText = (perfil.nombre || 'A').trim().charAt(0).toUpperCase();
+  document.getElementById('admin-correo').innerText = data.user.email;
 
   // Solo ahora cargamos los datos: requestSubmit() "envía" el buscador
   // vacío por código → trae todos los productos y las estadísticas
   document.getElementById('form-busqueda').requestSubmit();
 }
+
+// ===================== REGISTRO CON CÓDIGO DE INVITACIÓN =====================
+// Se ve una tarjeta a la vez: login o registro
+function mostrarTarjetaAcceso(registro) {
+  document.getElementById('form-login-admin').hidden = registro;
+  document.getElementById('form-registro-admin').hidden = !registro;
+}
+document.getElementById('btn-mostrar-registro').addEventListener('click', () => mostrarTarjetaAcceso(true));
+document.getElementById('btn-volver-login').addEventListener('click', () => mostrarTarjetaAcceso(false));
+
+document.getElementById('form-registro-admin').addEventListener('submit', async (evento) => {
+  evento.preventDefault();
+  const form = evento.target;
+  const estado = document.getElementById('estado-sesion-admin');
+  const boton = document.getElementById('btn-registrar-admin');
+
+  const nombre = form.elements['registro-admin-nombre'].value.trim();
+  const correo = form.elements['registro-admin-correo'].value.trim().toLowerCase();
+  const contrasena = form.elements['registro-admin-password'].value;
+  const codigo = form.elements['registro-admin-codigo'].value;
+
+  boton.disabled = true;
+  estado.innerText = 'Creando cuenta de administrador…';
+
+  // 1° La cuenta (auth.users)
+  const { data: cuenta, error: errorCuenta } = await db.auth.signUp({ email: correo, password: contrasena });
+  const yaExistia = (errorCuenta && /already registered|already exists/i.test(errorCuenta.message))
+    || cuenta?.user?.identities?.length === 0;   // así responde Supabase a un correo repetido
+
+  if (errorCuenta && !yaExistia) {
+    console.log('Error al crear la cuenta:', errorCuenta);
+    estado.innerText = 'No se pudo crear la cuenta: ' + errorCuenta.message;
+    boton.disabled = false;
+    return;
+  }
+
+  // Si el correo ya tenía cuenta (ej: un cliente), primero probamos que la
+  // contraseña sea suya: sin esto, con el código se podría volver admin
+  // la cuenta de otra persona.
+  if (yaExistia) {
+    const { error: errorClave } = await db.auth.signInWithPassword({ email: correo, password: contrasena });
+    if (errorClave) {
+      estado.innerText = 'Ese correo ya tiene cuenta y no se pudo comprobar la contraseña: ' + errorClave.message;
+      boton.disabled = false;
+      return;
+    }
+  }
+
+  // 2° Supabase revisa el código y, si es correcto, la agrega a admins_practica
+  const { error } = await db.rpc('registrar_admin', { p_nombre: nombre, p_correo: correo, p_codigo: codigo });
+  if (error) {
+    console.log('Error al registrar admin:', error);
+    estado.innerText = 'No se pudo registrar: ' + error.message;
+    await db.auth.signOut();   // por si signUp dejó una sesión de una cuenta sin rol
+    boton.disabled = false;
+    return;
+  }
+
+  // 3° Entrar con la cuenta nueva (la función ya confirmó el correo)
+  const { error: errorLogin } = await db.auth.signInWithPassword({ email: correo, password: contrasena });
+  boton.disabled = false;
+  if (errorLogin) {
+    estado.innerText = 'Ya eres admin, pero no se pudo iniciar sesión: ' + errorLogin.message;
+    mostrarTarjetaAcceso(false);
+    return;
+  }
+
+  form.reset();
+  mostrarTarjetaAcceso(false);
+  mostrarEstadoSesionAdmin();
+});
 
 document.getElementById('btn-logout-admin').addEventListener('click', async () => {
   await db.auth.signOut();
@@ -702,7 +778,11 @@ const btnTema = document.getElementById("btn-tema");
 
 function aplicarTema(tema) {
   document.documentElement.dataset.tema = tema;
-  btnTema.innerText = tema === "oscuro" ? "☀️ Modo claro" : "🌙 Modo oscuro";
+  // Solo ícono (como en la tienda); aria-label lo dice en palabras
+  const siguiente = tema === "oscuro" ? "Modo claro" : "Modo oscuro";
+  btnTema.innerText = tema === "oscuro" ? "☀️" : "🌙";
+  btnTema.setAttribute("aria-label", siguiente);
+  btnTema.title = siguiente;
 
   // localStorage (semana 7) recuerda la elección aunque recargues la página
   try { localStorage.setItem("tema", tema); } catch (e) {}

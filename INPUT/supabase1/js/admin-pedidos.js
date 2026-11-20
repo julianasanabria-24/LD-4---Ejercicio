@@ -10,7 +10,7 @@
 
 
 // ===================== PESTAÑAS =====================
-const SECCIONES_ADMIN = ['seccion-productos', 'seccion-pedidos', 'seccion-clientes'];
+const SECCIONES_ADMIN = ['seccion-productos', 'seccion-pedidos', 'seccion-clientes', 'seccion-admins'];
 
 function mostrarSeccionAdmin(id) {
   document.querySelectorAll('.pestanas-admin .pestana').forEach((boton) => {
@@ -23,6 +23,7 @@ function mostrarSeccionAdmin(id) {
   // Se recargan al abrir la pestaña: siempre datos frescos
   if (id === 'seccion-pedidos') cargarPedidosAdmin();
   if (id === 'seccion-clientes') cargarClientesAdmin();
+  if (id === 'seccion-admins') cargarAdmins();
 }
 
 document.querySelector('.pestanas-admin').addEventListener('click', (evento) => {
@@ -250,3 +251,98 @@ function pintarClientes() {
 }
 
 document.getElementById('buscar-cliente').addEventListener('input', pintarClientes);
+
+
+// ===================== ADMINISTRADORES =====================
+// admins_practica está cerrada para el navegador (proteger_admins.sql).
+// Por eso la lista y el alta pasan por funciones de Supabase
+// (sql/agregar_admin.sql) que primero comprueban que quien llama es admin.
+
+async function cargarAdmins() {
+  const cuerpo = document.getElementById('tabla-admins');
+  cuerpo.innerHTML = '<tr><td colspan="3" class="pedidos-vacio">Cargando administradores…</td></tr>';
+
+  const { data, error } = await db.rpc('listar_admins');
+  if (error) {
+    console.log('Error al traer los admins:', error);
+    cuerpo.innerHTML = '<tr><td colspan="3" class="pedidos-vacio">No pudimos cargar los administradores. ¿Ya ejecutaste sql/agregar_admin.sql en Supabase?</td></tr>';
+    return;
+  }
+
+  document.getElementById('resumen-admins').textContent =
+    `${data.length} ${data.length === 1 ? 'administrador' : 'administradores'}`;
+
+  cuerpo.innerHTML = data.map((a, i) => `
+      <tr style="--i: ${i}">
+        <td>
+          <span class="nombre-producto">${escaparHTML(a.nombre || 'Sin nombre')}</span>
+          <span class="correo-cliente">${escaparHTML(a.correo)}</span>
+        </td>
+        <td>${escaparHTML(a.rol || 'admin')}</td>
+        <td>${a.created_at ? new Date(a.created_at).toLocaleDateString('es-CO', { dateStyle: 'medium' }) : '—'}</td>
+      </tr>`).join('');
+}
+
+// Cliente TEMPORAL solo para el signUp: no guarda sesión, así crear la
+// cuenta del nuevo admin no cierra la sesión del admin que usa el panel
+// (db sigue siendo el único cliente "con sesión").
+const dbRegistroAdmin = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+  auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: false, storageKey: 'registro-admin' },
+});
+
+document.getElementById('form-nuevo-admin').addEventListener('submit', async (evento) => {
+  evento.preventDefault();
+  const form = evento.target;
+  const mensaje = document.getElementById('mensaje-admins');
+  const boton = document.getElementById('btn-agregar-admin');
+
+  const nombre = form.elements['nombre'].value.trim();
+  const correo = form.elements['correo'].value.trim().toLowerCase();
+  const contrasena = form.elements['contrasena'].value;
+
+  boton.disabled = true;
+  mensaje.textContent = 'Agregando administrador…';
+
+  // 1° La cuenta (auth.users). Si el correo ya está registrado no es
+  //    problema: el paso 2 usa esa cuenta existente.
+  const { error: errorCuenta } = await dbRegistroAdmin.auth.signUp({ email: correo, password: contrasena });
+  if (errorCuenta && !/already registered|already exists/i.test(errorCuenta.message)) {
+    console.log('Error al crear la cuenta:', errorCuenta);
+    mensaje.textContent = 'No se pudo crear la cuenta: ' + errorCuenta.message;
+    boton.disabled = false;
+    return;
+  }
+
+  // 2° La fila en admins_practica, a través de la función segura
+  const { error } = await db.rpc('agregar_admin', { p_nombre: nombre, p_correo: correo });
+  boton.disabled = false;
+
+  if (error) {
+    console.log('Error al agregar admin:', error);
+    mensaje.textContent = 'No se pudo agregar: ' + error.message;
+    return;
+  }
+
+  form.reset();
+  mensaje.textContent = `✓ ${nombre} ahora es administrador. Ya puede iniciar sesión con ${correo}.`;
+  cargarAdmins();
+});
+
+document.getElementById('btn-recargar-admins').addEventListener('click', cargarAdmins);
+
+// Cambiar el código de invitación (sql/registro_admin_codigo.sql)
+document.getElementById('form-codigo-admin').addEventListener('submit', async (evento) => {
+  evento.preventDefault();
+  const form = evento.target;
+  const mensaje = document.getElementById('mensaje-codigo');
+
+  const { error } = await db.rpc('cambiar_codigo_admin', { p_codigo: form.elements['codigo'].value });
+  if (error) {
+    console.log('Error al cambiar el código:', error);
+    mensaje.textContent = 'No se pudo cambiar el código: ' + error.message;
+    return;
+  }
+
+  form.reset();
+  mensaje.textContent = '✓ Código cambiado. Compártelo solo con los nuevos administradores.';
+});

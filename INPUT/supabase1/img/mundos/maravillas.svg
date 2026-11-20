@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 750" role="img" aria-label="Mundo país de las maravillas">
+  <defs>
+    <linearGradient id="fondo" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#f3f0ff"/><stop offset="1" stop-color="#c9c2f2"/>
+    </linearGradient>
+  <linearGradient id="oro" x1="0" y1="0" x2="1" y2="1">
+    <stop offset="0" stop-color="#b8862f"/><stop offset=".45" stop-color="#f6dc93"/><stop offset="1" stop-color="#a87526"/>
+  </linearGradient>
+  <path id="chispa" d="M0-1C.12-.12.12-.12 1 0C.12.12.12.12 0 1C-.12.12-.12.12-1 0C-.12-.12-.12-.12 0-1Z"/>
+  </defs>
+  <rect width="600" height="750" fill="url(#fondo)"/>
+  <path d="M90 750V330C90 190 185 110 300 110C415 110 510 190 510 330V750" fill="#fff" opacity="0.32"/>
+  <path d="M90 750V330C90 190 185 110 300 110C415 110 510 190 510 330V750" fill="none" stroke="url(#oro)" stroke-width="5"/>
+  <use href="#chispa" transform="translate(90 110) scale(14)" fill="#ffffff" opacity="0.55"/><use href="#chispa" transform="translate(500 90) scale(18)" fill="#ffffff" opacity="0.7000000000000001"/><use href="#chispa" transform="translate(520 300) scale(10)" fill="#ffffff" opacity="0.8500000000000001"/><use href="#chispa" transform="translate(80 380) scale(12)" fill="#ffffff" opacity="0.55"/><use href="#chispa" transform="translate(470 470) scale(16)" fill="#ffffff" opacity="0.7000000000000001"/><use href="#chispa" transform="translate(140 520) scale(9)" fill="#ffffff" opacity="0.8500000000000001"/><use href="#chispa" transform="translate(300 70) scale(8)" fill="#ffffff" opacity="0.55"/>
+  <use href="#chispa" transform="translate(150 640) scale(12)" fill="url(#oro)"/>
+  <use href="#chispa" transform="translate(460 600) scale(16)" fill="url(#oro)"/>
+  <g transform="translate(300 400) scale(2.2)"><path d="M0 46C-40 18-56-4-56-22C-56-40-42-52-27-52C-14-52-5-44 0-34C5-44 14-52 27-52C42-52 56-40 56-22C56-4 40 18 0 46Z" fill="#e2363f" stroke="#3b2f7a" stroke-width="3"/>
+              <ellipse cx="-24" cy="-26" rx="10" ry="6" fill="#fff" opacity=".55" transform="rotate(-30 -24 -26)"/></g>
+</svg>
