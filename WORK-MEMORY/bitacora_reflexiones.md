@@ -423,4 +423,8 @@ layout) tiene más sentido para el proyecto.
 - Probar con sesión: login de cliente y admin, carrito, checkout, cambio de estados y alta de admins.
 
 **Reflexión**
-- _(pendiente: la escribe el estudiante)_
+- _(Redactada por el agente a pedido del estudiante, a partir de lo que pasó en la sesión.)_
+- Lo que más costó fue quedarme sin acceso al panel por olvidar la contraseña: ahí entendí que el botón sí existía, pero que la página solo lo muestra si hay sesión y si mi cuenta está en `admins_practica`. Una cosa es quién soy (iniciar sesión) y otra qué puedo hacer (ser admin).
+- Aprendí que no conviene "abrir" una tabla para que algo funcione más fácil: el código de invitación con hash me dejó crear admins desde la página sin quitar la protección contra clientes que quieran volverse admin.
+- Me llevo revisar lo que de verdad hay en la base antes de confiar en un script: el catálogo no se había actualizado y el UPDATE no avisaba nada. Es la segunda vez que algo "no hace nada" sin error, así que ahora reviso cuántas filas cambian.
+- Para el diseño, mirar tiendas de referencia me ayudó a ordenar la página (anuncios, mundos, novedades, filtros) antes de pensar en colores. Me falta probarlo todo con mi sesión y cambiar las ilustraciones por las fotos reales.
